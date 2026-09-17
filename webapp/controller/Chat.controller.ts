@@ -1,3 +1,46 @@
+/**
+ * Chat.controller.ts
+ *
+ * Primary application controller for Floria — NL2OData Explorer.
+ *
+ * Orchestrates the full query pipeline:
+ *   1. User types a natural-language question in the search bar.
+ *   2. If WebGPU is available and the model is loaded, WebLLMService translates
+ *      the question into a structured QueryPlan; otherwise detectEntity /
+ *      extractKeyTerm produce a lightweight direct-mode plan.
+ *   3. QueryValidator checks field names against the Northwind schema and
+ *      surfaces human-readable errors before any network request is made.
+ *   4. ODataQueryBuilder assembles the validated plan into an OData v4 URL.
+ *   5. The URL is fetched via the local CORS proxy (port 4004).
+ *   6. Results are rendered in a dynamically rebuilt sap.m.Table.
+ *
+ * Research features
+ * -----------------
+ * The Research Dashboard section implements the evaluation framework described
+ * in the NL2OData paper (submitted to ICON India 2026):
+ *   - Query taxonomy classification T1–T5 (classifyQueryType)
+ *   - Session statistics strip with Effective Success Rate (updateStats)
+ *   - Query history panel with per-entry metadata (pushHistory)
+ *   - 10-query benchmark runner with entity match + result presence checks
+ *     (onRunBenchmark)
+ *
+ * Model structure (JSONModel at /):
+ *   /query             — current textarea value
+ *   /loading           — spinner visibility
+ *   /hasResults        — results panel visibility
+ *   /noResults         — empty-result MessageStrip visibility
+ *   /results[]         — fetched records
+ *   /countLabel        — "77 records · showing 20" text
+ *   /oDataQuery/…      — plan + URL + metadata for the query log panel
+ *   /timing/…          — parseMs, fetchMs, totalMs (pipeline timing display)
+ *   /validation/…      — state, text, errors[] for the validation bar
+ *   /llm/…             — loading, ready, progress, status icon/text/state
+ *   /stats/…           — session counters and ESR%
+ *   /history[]         — query history entries (max 50, newest first)
+ *   /benchmark/…       — running flag, results[], accuracy, progress
+ *   /error             — error MessageStrip text
+ */
+
 import Controller from "sap/ui/core/mvc/Controller";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import MessageToast from "sap/m/MessageToast";
@@ -11,8 +54,14 @@ import WebLLMService, { QueryPlan } from "../util/WebLLMService";
 import ODataQueryBuilder from "../util/ODataQueryBuilder";
 import QueryValidator, { ValidationResult } from "../util/QueryValidator";
 
+/** Column definition used by ENTITY_COLS to drive dynamic table column creation. */
 interface ColDef { key: string; label: string; width: string; numeric?: boolean }
 
+/**
+ * A single entry in the query history list.
+ * Immutable once created — we push new entries to the front of the array
+ * rather than mutating existing ones so model binding stays reactive.
+ */
 interface HistoryEntry {
   id: number;
   query: string;
@@ -31,6 +80,11 @@ interface HistoryEntry {
   url: string;
 }
 
+/**
+ * One row in the benchmark runner table.
+ * entityMatch and hasResults are the two pass criteria;
+ * `passed` is their conjunction.
+ */
 interface BenchmarkResult {
   idx: number;
   query: string;
@@ -48,6 +102,12 @@ interface BenchmarkResult {
 
 // ─── Static data ───────────────────────────────────────────────────────────────
 
+/**
+ * Column definitions for each Northwind entity.
+ * Keys match the OData field names exactly (case-sensitive) — they are used as
+ * binding paths in Text and ObjectNumber cells. Add or remove fields here to
+ * change what is displayed in the results table without touching the view.
+ */
 const ENTITY_COLS: Record<string, ColDef[]> = {
   Products: [
     { key: "ProductName",     label: "Product Name",  width: "30%"              },
@@ -98,6 +158,12 @@ const ENTITY_COLS: Record<string, ColDef[]> = {
   ],
 };
 
+/**
+ * Keyword list used by the entity auto-detection algorithm (detectEntity).
+ * Multi-word phrases ("recent order", "line item") score 2 points because they
+ * are unambiguous; single words score 1. The entity with the highest total score
+ * wins. Default is Products when no keywords match.
+ */
 const ENTITY_KEYWORDS: Record<string, string[]> = {
   Products:      ["product","products","item","items","price","prices","stock","inventory",
                   "cheap","expensive","discontinued","unit","pack","sku","catalog"],
@@ -113,6 +179,12 @@ const ENTITY_KEYWORDS: Record<string, string[]> = {
                   "quantities","discount","discounts"],
 };
 
+/**
+ * Words stripped from the user query before key-term extraction (direct mode).
+ * Without stop-word removal, extractKeyTerm("recent orders to france") would
+ * return "recent" rather than "France", producing a useless filter.
+ * Entity names are included so they don't crowd out the actual search term.
+ */
 const STOP_WORDS = new Set([
   "show","me","give","find","list","get","fetch","search","display",
   "all","the","a","an","some","any",
@@ -125,6 +197,12 @@ const STOP_WORDS = new Set([
   "order_detail","order_details",
 ]);
 
+/**
+ * Direct-mode filter builders for each entity — one function per entity that
+ * accepts an extracted key term and returns an OData v4 $filter string.
+ * Orders uses ShipCountry/ShipCity rather than CustomerID as the primary signal
+ * because most geographic queries target the destination ("orders to France").
+ */
 const DIRECT_FILTERS: Record<string, (t: string) => string> = {
   Products:      t => t ? `contains(ProductName,'${t}')` : "",
   Categories:    t => t ? `contains(CategoryName,'${t}')` : "",
@@ -135,7 +213,12 @@ const DIRECT_FILTERS: Record<string, (t: string) => string> = {
   Order_Details: () => "",
 };
 
-// 10 benchmark queries — 2 per taxonomy type
+/**
+ * The 10 benchmark queries used to evaluate the pipeline.
+ * Two queries per taxonomy type T1–T5, matching the evaluation table in the
+ * NL2OData paper. Pass criteria: entity is correctly detected AND results are
+ * non-empty (proxy for OData filter correctness).
+ */
 const BENCHMARK_QUERIES: Array<{ query: string; expectedEntity: string; type: string }> = [
   { query: "list all categories",              expectedEntity: "Categories", type: "T1" },
   { query: "show all employees",               expectedEntity: "Employees",  type: "T1" },
@@ -149,6 +232,7 @@ const BENCHMARK_QUERIES: Array<{ query: string; expectedEntity: string; type: st
   { query: "orders to France or Brazil",       expectedEntity: "Orders",     type: "T5" },
 ];
 
+/** Human-readable label map for query taxonomy type codes. */
 const TYPE_LABELS: Record<string, string> = {
   T1: "T1 · Entity Read",
   T2: "T2 · Numeric Range",
@@ -165,9 +249,20 @@ export default class ChatController extends Controller {
   private llmService!: WebLLMService;
   private queryBuilder!: ODataQueryBuilder;
   private queryValidator!: QueryValidator;
+
+  /** Auto-incrementing ID for history entries — monotone so React-style keys are stable. */
   private historySeq = 0;
+
+  /** OData proxy base. The proxy (srv/server.mjs) adds CORS headers for browser fetch. */
   private readonly ODATA_BASE = "http://localhost:4004/odata";
 
+  /**
+   * Lifecycle: called once when the view is instantiated.
+   * Initialises the JSON model with all paths the view binds to, ensuring every
+   * binding resolves immediately rather than waiting for the first user action.
+   * Starting the LLM here (not on first query) means the ~4 s warm-up overhead
+   * is hidden behind the user reading the page.
+   */
   public onInit(): void {
     this.model = new JSONModel({
       query: "",
@@ -213,11 +308,20 @@ export default class ChatController extends Controller {
     this.queryBuilder  = new ODataQueryBuilder();
     this.queryValidator = new QueryValidator();
 
+    // Start model warm-up only when WebGPU is present; the await is intentionally
+    // fire-and-forget — errors are caught inside initLLM and the UI degrades
+    // gracefully to direct-mode search.
     if (WebLLMService.isWebGPUAvailable()) void this.initLLM();
   }
 
   // ─── LLM init ──────────────────────────────────────────────────────────────
 
+  /**
+   * Starts WebLLM initialisation and mirrors progress into the model.
+   * On success, /llm/ready flips to true and all subsequent searches use the AI
+   * path. On failure, the app silently continues in direct-mode — no error is
+   * shown to the user because direct-mode still produces useful results.
+   */
   private async initLLM(): Promise<void> {
     this.model.setProperty("/llm/loading", true);
     this.model.setProperty("/llm/loadingText", "Downloading Qwen2.5-0.5B (~300 MB, cached after first run)…");
@@ -246,10 +350,23 @@ export default class ChatController extends Controller {
 
   // ─── Search ────────────────────────────────────────────────────────────────
 
+  /**
+   * Main query handler — bound to the Search button and Enter key in the view.
+   *
+   * Pipeline:
+   *   Step 1 (Parse)    — LLM or direct-mode produces a QueryPlan.
+   *   Step 2 (Validate) — QueryValidator checks field names and updates the UI bar.
+   *   Step 3 (Execute)  — OData URL is fetched through the local CORS proxy.
+   *   Post              — History entry and session statistics are updated.
+   *
+   * All three steps are timed independently; the timings feed the pipeline
+   * visualisation bar in the "Generated OData v4 Query" section.
+   */
   public async onSearch(): Promise<void> {
     const text = (this.model.getProperty("/query") as string).trim();
     if (!text) return;
 
+    // Reset result state so stale data never bleeds into a new query's display
     this.model.setProperty("/loading", true);
     this.model.setProperty("/error", "");
     this.model.setProperty("/hasResults", false);
@@ -274,6 +391,7 @@ export default class ChatController extends Controller {
       if (llmReady) {
         plan = await this.llmService.generateQueryPlan(text);
       } else {
+        // Direct mode: detect entity by keyword scoring, extract key term for filter
         const entity = this.detectEntity(text);
         const term   = this.extractKeyTerm(text);
         plan = { entity, filter: (DIRECT_FILTERS[entity] ?? DIRECT_FILTERS.Products)(term), orderby: "", top: 20 };
@@ -292,6 +410,7 @@ export default class ChatController extends Controller {
       const confidence = this.computeConfidence(vr, llmReady);
       const url        = this.queryBuilder.build(plan, this.ODATA_BASE);
 
+      // Populate the query log panel in the view
       this.model.setProperty("/oDataQuery/url",           url);
       this.model.setProperty("/oDataQuery/entity",        plan.entity);
       this.model.setProperty("/oDataQuery/filter",        plan.filter  ?? "");
@@ -334,7 +453,7 @@ export default class ChatController extends Controller {
         this.refreshResultTable(plan.entity);
       }
 
-      // ── History + stats ──
+      // Record the query in history and update session statistics
       this.pushHistory({
         query: text, entity: plan.entity, queryType, typeLabel: TYPE_LABELS[queryType] ?? queryType,
         validationState: vr.statusState, validatorCaught,
@@ -361,6 +480,21 @@ export default class ChatController extends Controller {
 
   // ─── Benchmark ─────────────────────────────────────────────────────────────
 
+  /**
+   * Runs all 10 benchmark queries sequentially and populates the benchmark
+   * results table row-by-row so the user can watch progress in real time.
+   *
+   * Each query runs the same pipeline as onSearch (plan → validate → fetch)
+   * but uses a simplified pass/fail criterion:
+   *   PASS = entity correctly detected AND results array is non-empty
+   *
+   * The accuracy percentage shown in the table header corresponds to Table II
+   * in the NL2OData paper submission.
+   *
+   * Note: This method is intentionally sequential rather than concurrent —
+   * the WebLLM engine processes one request at a time, and the visual
+   * row-by-row update demonstrates the live pipeline to conference reviewers.
+   */
   public async onRunBenchmark(): Promise<void> {
     if (this.model.getProperty("/benchmark/running") as boolean) return;
 
@@ -406,7 +540,7 @@ export default class ChatController extends Controller {
           const data = await res.json() as { value: unknown[] };
           hasResults = (data.value ?? []).length > 0;
         }
-      } catch { /* count as failed */ }
+      } catch { /* count as failed; continue to next benchmark query */ }
 
       const totalMs  = Math.round(performance.now() - t0);
       const isPassed = entityMatch && hasResults;
@@ -420,6 +554,7 @@ export default class ChatController extends Controller {
         statusState: isPassed ? "Success" : "Error"
       };
 
+      // Append immutably so the List binding detects the array reference change
       const current = this.model.getProperty("/benchmark/results") as BenchmarkResult[];
       this.model.setProperty("/benchmark/results",  [...current, entry]);
       this.model.setProperty("/benchmark/progress", Math.round(((i + 1) / BENCHMARK_QUERIES.length) * 100));
@@ -432,11 +567,20 @@ export default class ChatController extends Controller {
     MessageToast.show(`Benchmark complete — ${passed}/${BENCHMARK_QUERIES.length} passed (${Math.round((passed / BENCHMARK_QUERIES.length) * 100)}%)`);
   }
 
+  /**
+   * Resets the query history list and all session statistics counters.
+   * Bound to the "Clear" button in the Query History toolbar.
+   */
   public onClearHistory(): void {
     this.model.setProperty("/history", []);
     this.model.setProperty("/stats", { total: 0, aiQueries: 0, directQueries: 0, validatorCatches: 0, serverErrors: 0, esr: "—" });
   }
 
+  /**
+   * Replays a history entry: copies its query text into the search field and
+   * immediately re-executes the search. Bound to list item press in the
+   * Query History panel.
+   */
   public onHistoryItemPress(event: { getSource(): { getBindingContext(): { getProperty(p: string): unknown } } }): void {
     const ctx   = event.getSource().getBindingContext();
     const query = ctx.getProperty("query") as string;
@@ -446,6 +590,15 @@ export default class ChatController extends Controller {
 
   // ─── Table rebuild ─────────────────────────────────────────────────────────
 
+  /**
+   * Destroys all existing columns on the results Table and rebuilds them from
+   * ENTITY_COLS for the given entity. Also creates a new item template with
+   * the appropriate cell types (Text for strings, ObjectNumber for numerics).
+   *
+   * This approach is used instead of a static table definition because the 7
+   * Northwind entities have different column sets and cardinalities. Dynamic
+   * column creation is the standard pattern for OData-driven tables in SAP Fiori.
+   */
   private refreshResultTable(entity: string): void {
     const table = this.byId("resultsTable") as Table | undefined;
     if (!table) return;
@@ -470,6 +623,19 @@ export default class ChatController extends Controller {
 
   // ─── Classification helpers ─────────────────────────────────────────────────
 
+  /**
+   * Assigns a taxonomy type T1–T5 to the generated query plan.
+   * Priority order is important — T5 (OR) is checked before T3 (contains)
+   * because a query can have both; classifying it as T5 is more informative.
+   *
+   *   T1 — no filter (entity read only)
+   *   T2 — numeric comparison (lt, gt, le, ge)
+   *   T3 — string function (contains, startswith)
+   *   T4 — categorical equality (eq with a string value)
+   *   T5 — multi-value OR condition
+   *
+   * @param plan  The generated query plan.
+   */
   private classifyQueryType(plan: QueryPlan): string {
     const f = (plan.filter ?? "").toLowerCase();
     if (!f) return "T1";
@@ -479,6 +645,18 @@ export default class ChatController extends Controller {
     return "T4";
   }
 
+  /**
+   * Computes a confidence indicator for the last generated query plan.
+   * Displayed as a coloured badge in the query log panel.
+   *
+   *   High    — AI mode, schema validation passed, no warnings.
+   *   Medium  — AI mode, schema validation passed, but warnings exist.
+   *   Low     — AI mode, schema validation failed (field errors).
+   *   Direct  — LLM not available; plan generated by keyword heuristic.
+   *
+   * @param vr        ValidationResult from QueryValidator.
+   * @param llmReady  Whether the LLM engine is loaded and active.
+   */
   private computeConfidence(vr: ValidationResult, llmReady: boolean): { label: string; state: string } {
     if (!llmReady)    return { label: "Direct Mode",         state: "Warning" };
     if (!vr.valid)    return { label: "Low — schema errors", state: "Error"   };
@@ -488,6 +666,20 @@ export default class ChatController extends Controller {
 
   // ─── Direct-mode helpers ───────────────────────────────────────────────────
 
+  /**
+   * Extracts the most semantically significant word from a natural-language
+   * query to use as the filter term when the LLM is unavailable.
+   *
+   * Algorithm:
+   *   1. Lowercase and strip punctuation.
+   *   2. Split on whitespace, remove stop words and single-character tokens.
+   *   3. Sort by length descending — longer words are typically more specific
+   *      ("restaurant" > "name" > "with").
+   *   4. Capitalise first letter to match the casing OData string comparisons
+   *      typically expect (e.g. 'France' not 'france').
+   *
+   * @param query  Raw user query string.
+   */
   private extractKeyTerm(query: string): string {
     const words = query.toLowerCase().replace(/[^a-z0-9\s]/g, " ")
       .split(/\s+/).filter(w => w.length > 1 && !STOP_WORDS.has(w));
@@ -496,6 +688,18 @@ export default class ChatController extends Controller {
     return t.charAt(0).toUpperCase() + t.slice(1);
   }
 
+  /**
+   * Determines the most likely Northwind entity set from a natural-language
+   * query using keyword scoring — without calling the LLM.
+   *
+   * Each keyword in ENTITY_KEYWORDS is tested against the lowercase query:
+   *   - Multi-word phrase match: +2 (unambiguous signal)
+   *   - Single-word match:       +1
+   * The entity with the highest score wins. Ties go to whichever entity
+   * appears first in ENTITY_KEYWORDS (Products is first, so it is the default).
+   *
+   * @param query  Raw user query string.
+   */
   private detectEntity(query: string): string {
     const q = query.toLowerCase();
     let best = "Products", bestScore = -1;
@@ -508,6 +712,14 @@ export default class ChatController extends Controller {
 
   // ─── Stats helpers ─────────────────────────────────────────────────────────
 
+  /**
+   * Prepends a new entry to the history list and caps the list at 50 entries.
+   * The newest-first ordering matches user expectation and avoids a sort on
+   * every insertion. The 50-entry cap prevents unbounded memory growth during
+   * long demo sessions.
+   *
+   * @param entry  All fields except id and timestamp, which are computed here.
+   */
   private pushHistory(entry: Omit<HistoryEntry, "id" | "timestamp">): void {
     const id   = ++this.historySeq;
     const now  = new Date();
@@ -516,6 +728,16 @@ export default class ChatController extends Controller {
     this.model.setProperty("/history", [{ id, timestamp: time, ...entry }, ...list].slice(0, 50));
   }
 
+  /**
+   * Increments the session statistics counters after each query and recomputes
+   * the Effective Success Rate (ESR = successful queries / total queries).
+   * ESR is the primary quality metric shown in the header actions strip and
+   * in Table III of the NL2OData paper.
+   *
+   * @param llmReady       Whether this query used the AI path.
+   * @param validatorCaught  Whether the validator found schema errors.
+   * @param serverError    Whether the OData fetch returned a non-2xx status.
+   */
   private updateStats(llmReady: boolean, validatorCaught: boolean, serverError: boolean): void {
     const s = this.model.getProperty("/stats") as Record<string, number | string>;
     const total     = (s.total as number)           + 1;
@@ -529,6 +751,13 @@ export default class ChatController extends Controller {
 
   // ─── UI actions ────────────────────────────────────────────────────────────
 
+  /**
+   * Handles click on one of the example query chips in the Results empty state.
+   * Reads the query text from the CustomData key "query" attached to the Button,
+   * writes it into the search field, and fires onSearch immediately.
+   *
+   * @param event  Press event; the source Button carries the query in its CustomData.
+   */
   public onExampleQuery(event: { getSource(): { data(key: string): string } }): void {
     const q = event.getSource().data("query");
     if (!q) return;
@@ -536,6 +765,11 @@ export default class ChatController extends Controller {
     void this.onSearch();
   }
 
+  /**
+   * Copies the last generated OData URL to the system clipboard.
+   * Falls back to a MessageToast with the URL text on browsers that block
+   * clipboard access (e.g. non-HTTPS origins).
+   */
   public onCopyQuery(): void {
     const url = this.model.getProperty("/oDataQuery/url") as string;
     if (!url) return;
@@ -544,6 +778,7 @@ export default class ChatController extends Controller {
       .catch(() => MessageToast.show(url));
   }
 
+  /** Dismisses the error MessageStrip by clearing the /error model path. */
   public onCloseError(): void {
     this.model.setProperty("/error", "");
   }
