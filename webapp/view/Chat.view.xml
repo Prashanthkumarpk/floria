@@ -23,7 +23,7 @@
           <HBox alignItems="Center">
             <core:Icon src="sap-icon://ai" size="1.5rem" color="Default" class="floraAiIcon"/>
             <Title text="Floria" level="H2" class="sapUiSmallMarginBegin"/>
-            <Text text="· Northwind OData Explorer" class="floraHeaderSub sapUiSmallMarginBegin"/>
+            <Text text="· NL2OData Explorer" class="floraHeaderSub sapUiSmallMarginBegin"/>
           </HBox>
         </uxap:heading>
 
@@ -35,6 +35,12 @@
         </uxap:snappedHeading>
 
         <uxap:actions>
+          <!-- Live ESR badge -->
+          <ObjectStatus
+            text="{= ${/stats/total} > 0 ? 'ESR ' + ${/stats/esr} : ''}"
+            state="Success"
+            icon="sap-icon://activity-2"
+            visible="{= ${/stats/total} > 0}"/>
           <ObjectStatus
             id="llmStatus"
             text="{/llm/statusText}"
@@ -59,13 +65,13 @@
               class="floraProgress"/>
           </VBox>
 
-          <!-- Search hero — AI auto-detects the entity -->
+          <!-- Search hero -->
           <VBox class="floraSearchHero">
             <Label text="Ask in plain language" class="floraSearchLabel"/>
             <HBox alignItems="End" class="floraSearchBar">
               <TextArea
                 id="searchInput"
-                placeholder="e.g.  'products cheaper than $10'   ·   'customers from Germany'   ·   'recent orders to France'"
+                placeholder="e.g. 'products cheaper than $10'  ·  'customers from Germany'  ·  'recent orders to France'"
                 growing="true"
                 growingMaxLines="3"
                 rows="2"
@@ -92,7 +98,7 @@
 
         </uxap:expandedContent>
 
-        <!-- ─── SNAPPED SEARCH (compact) ─── -->
+        <!-- ─── SNAPPED SEARCH ─── -->
         <uxap:snappedContent>
           <HBox alignItems="Center" class="floraSnappedSearch">
             <Input
@@ -125,7 +131,6 @@
           <uxap:ObjectPageSubSection title="">
             <uxap:blocks>
 
-              <!-- Error strip -->
               <MessageStrip
                 text="{/error}"
                 type="Error"
@@ -140,21 +145,14 @@
                 <!-- ─ Pipeline header ─ -->
                 <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraPipelineBar">
                   <HBox alignItems="Center" class="floraPipeline">
-
-                    <!-- Step 1: Parse -->
                     <HBox alignItems="Center" class="floraPipelineStep">
-                      <core:Icon src="{= ${/oDataQuery/mode} === 'AI' ? 'sap-icon://ai' : 'sap-icon://search'}"
-                        size="0.875rem" class="floraPipelineIcon"/>
+                      <core:Icon src="{= ${/oDataQuery/mode} === 'AI' ? 'sap-icon://ai' : 'sap-icon://search'}" size="0.875rem" class="floraPipelineIcon"/>
                       <VBox class="sapUiTinyMarginBegin">
-                        <Text text="{= ${/oDataQuery/mode} === 'AI' ? 'AI Parse' : 'Keyword Match'}"
-                          class="floraPipelineLabel"/>
+                        <Text text="{= ${/oDataQuery/mode} === 'AI' ? 'AI Parse' : 'Keyword Match'}" class="floraPipelineLabel"/>
                         <Text text="{= ${/timing/parseMs} + 'ms'}" class="floraPipelineMeta"/>
                       </VBox>
                     </HBox>
-
                     <core:Icon src="sap-icon://navigation-right-arrow" size="0.625rem" class="floraPipelineArrow"/>
-
-                    <!-- Step 2: Validate -->
                     <HBox alignItems="Center" class="floraPipelineStep">
                       <core:Icon
                         src="{= ${/validation/state} === 'Success' ? 'sap-icon://accept' : 'sap-icon://alert'}"
@@ -167,10 +165,7 @@
                           class="{= 'floraPipelineMeta ' + (${/validation/state} === 'Success' ? 'floraMetaGood' : 'floraMetaWarn')}"/>
                       </VBox>
                     </HBox>
-
                     <core:Icon src="sap-icon://navigation-right-arrow" size="0.625rem" class="floraPipelineArrow"/>
-
-                    <!-- Step 3: Fetch -->
                     <HBox alignItems="Center" class="floraPipelineStep">
                       <core:Icon src="sap-icon://cloud-download" size="0.875rem" class="floraPipelineIcon"/>
                       <VBox class="sapUiTinyMarginBegin">
@@ -178,33 +173,33 @@
                         <Text text="{= ${/timing/fetchMs} + 'ms'}" class="floraPipelineMeta"/>
                       </VBox>
                     </HBox>
-
                   </HBox>
-
-                  <!-- Total time + copy -->
                   <HBox alignItems="Center">
-                    <ObjectStatus
-                      text="{= ${/timing/totalMs} + 'ms total'}"
-                      state="Success"
-                      icon="sap-icon://time-entry-request"
-                      class="sapUiTinyMarginEnd"/>
-                    <Button
-                      text="Copy URL"
-                      icon="sap-icon://copy"
-                      type="Ghost"
-                      press=".onCopyQuery"/>
+                    <ObjectStatus text="{= ${/timing/totalMs} + 'ms total'}" state="Success" icon="sap-icon://time-entry-request" class="sapUiTinyMarginEnd"/>
+                    <Button text="Copy URL" icon="sap-icon://copy" type="Ghost" press=".onCopyQuery"/>
                   </HBox>
                 </HBox>
 
-                <!-- ─ "You asked" chip ─ -->
-                <HBox alignItems="Center" class="floraNLChip" visible="{= !!${/oDataQuery/naturalQuery}}">
-                  <core:Icon src="sap-icon://sys-help" size="0.75rem" class="floraNLIcon"/>
-                  <Text text="&quot;{/oDataQuery/naturalQuery}&quot;" class="floraNLText sapUiTinyMarginBegin" wrapping="false"/>
+                <!-- ─ "You asked" + type + confidence row ─ -->
+                <HBox alignItems="Center" wrap="Wrap" class="floraMetaRow" visible="{= !!${/oDataQuery/naturalQuery}}">
+                  <HBox alignItems="Center" class="floraNLChip">
+                    <core:Icon src="sap-icon://sys-help" size="0.75rem" class="floraNLIcon"/>
+                    <Text text="&quot;{/oDataQuery/naturalQuery}&quot;" class="floraNLText sapUiTinyMarginBegin" wrapping="false"/>
+                  </HBox>
+                  <ObjectStatus
+                    text="{/oDataQuery/typeLabel}"
+                    state="Information"
+                    icon="sap-icon://tag"
+                    class="floraTypeBadge sapUiTinyMarginBegin"/>
+                  <ObjectStatus
+                    text="{/oDataQuery/confidence}"
+                    state="{/oDataQuery/confidenceState}"
+                    icon="sap-icon://status-positive"
+                    class="floraConfidenceBadge sapUiTinyMarginBegin"/>
                 </HBox>
 
                 <!-- ─ Query params grid ─ -->
                 <layout:Grid defaultSpan="XL3 L3 M6 S12" class="floraQueryGrid">
-
                   <VBox class="floraParamItem">
                     <Label text="entity" class="floraParamKey"/>
                     <HBox alignItems="Center">
@@ -212,22 +207,18 @@
                       <Text text="{/oDataQuery/entity}" class="floraEntityBadge sapUiTinyMarginBegin"/>
                     </HBox>
                   </VBox>
-
                   <VBox class="floraParamItem" visible="{= !!${/oDataQuery/filter}}">
                     <Label text="$filter" class="floraParamKey"/>
                     <Text text="{/oDataQuery/filter}" class="floraParamVal" wrapping="false"/>
                   </VBox>
-
                   <VBox class="floraParamItem" visible="{= !!${/oDataQuery/orderby}}">
                     <Label text="$orderby" class="floraParamKey"/>
                     <Text text="{/oDataQuery/orderby}" class="floraParamVal" wrapping="false"/>
                   </VBox>
-
                   <VBox class="floraParamItem">
                     <Label text="$top" class="floraParamKey"/>
                     <Text text="{/oDataQuery/top}" class="floraParamVal" wrapping="false"/>
                   </VBox>
-
                 </layout:Grid>
 
                 <!-- ─ OData URL log ─ -->
@@ -245,10 +236,7 @@
                   showNoData="false"
                   visible="{= ${/validation/errors}.length > 0}"
                   class="floraValidationErrors sapUiTinyMarginTop">
-                  <StandardListItem
-                    title="{}"
-                    icon="sap-icon://message-warning"
-                    iconInset="false"/>
+                  <StandardListItem title="{}" icon="sap-icon://message-warning" iconInset="false"/>
                 </List>
 
               </VBox>
@@ -259,32 +247,25 @@
       </uxap:ObjectPageSection>
 
       <!-- ═══ SECTION 2: RESULTS ═══ -->
-      <uxap:ObjectPageSection
-        id="resultsSection"
-        title="Results">
+      <uxap:ObjectPageSection id="resultsSection" title="Results">
         <uxap:subSections>
           <uxap:ObjectPageSubSection title="">
             <uxap:blocks>
 
-              <!-- No results -->
               <MessageStrip
-                text="No records found. Try adjusting your query or selecting a different entity."
+                text="No records found. Try rephrasing or a different query."
                 type="Information"
                 showIcon="true"
                 visible="{/noResults}"
                 class="sapUiSmallMarginBottom"/>
 
               <!-- Empty / start state -->
-              <VBox
-                class="floraEmptyState"
-                visible="{= !${/hasResults} &amp;&amp; !${/noResults} &amp;&amp; !${/loading}}">
+              <VBox class="floraEmptyState" visible="{= !${/hasResults} &amp;&amp; !${/noResults} &amp;&amp; !${/loading}}">
                 <core:Icon src="sap-icon://ai" size="3.5rem" color="Default" class="floraEmptyIcon"/>
                 <Title text="Ask anything about the Northwind data" level="H3" textAlign="Center" class="sapUiSmallMarginTop"/>
-                <Text
-                  textAlign="Center"
+                <Text textAlign="Center"
                   text="Type a question in plain English. The local AI translates it to a validated OData v4 query and fetches live results."
                   class="floraEmptyDesc sapUiSmallMarginBottom"/>
-                <!-- Example chips -->
                 <HBox wrap="Wrap" justifyContent="Center" class="floraExampleRow">
                   <Button text="products under $10" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
                     <customData><core:CustomData key="query" value="products cheaper than $10"/></customData>
@@ -307,7 +288,6 @@
                 </HBox>
               </VBox>
 
-              <!-- Results table (columns populated dynamically by controller) -->
               <Table
                 id="resultsTable"
                 visible="{/hasResults}"
@@ -321,10 +301,7 @@
                 <headerToolbar>
                   <Toolbar>
                     <Title text="{/oDataQuery/entity}" level="H5"/>
-                    <ObjectStatus
-                      text="{/countLabel}"
-                      state="Success"
-                      class="sapUiSmallMarginBegin"/>
+                    <ObjectStatus text="{/countLabel}" state="Success" class="sapUiSmallMarginBegin"/>
                     <ToolbarSpacer/>
                     <BusyIndicator size="0.75rem" visible="{/loading}"/>
                   </Toolbar>
@@ -333,6 +310,191 @@
 
             </uxap:blocks>
           </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+      <!-- ═══ SECTION 3: RESEARCH DASHBOARD ═══ -->
+      <uxap:ObjectPageSection id="dashboardSection" title="Research Dashboard">
+        <uxap:subSections>
+
+          <!-- ── 3a: Session Stats ── -->
+          <uxap:ObjectPageSubSection title="Session Statistics">
+            <uxap:blocks>
+              <HBox wrap="Wrap" class="floraStatsRow">
+
+                <VBox class="floraStatTile">
+                  <Text text="{/stats/total}" class="floraStatValue"/>
+                  <Text text="Total Queries" class="floraStatLabel"/>
+                </VBox>
+
+                <VBox class="floraStatTile floraStatHighlight">
+                  <Text text="{/stats/aiQueries}" class="floraStatValue"/>
+                  <Text text="AI Mode" class="floraStatLabel"/>
+                </VBox>
+
+                <VBox class="floraStatTile">
+                  <Text text="{/stats/directQueries}" class="floraStatValue"/>
+                  <Text text="Direct Mode" class="floraStatLabel"/>
+                </VBox>
+
+                <VBox class="floraStatTile floraStatWarn">
+                  <Text text="{/stats/validatorCatches}" class="floraStatValue"/>
+                  <Text text="Validator Catches" class="floraStatLabel"/>
+                </VBox>
+
+                <VBox class="floraStatTile floraStatError">
+                  <Text text="{/stats/serverErrors}" class="floraStatValue"/>
+                  <Text text="Server Errors" class="floraStatLabel"/>
+                </VBox>
+
+                <VBox class="floraStatTile floraStatGood">
+                  <Text text="{/stats/esr}" class="floraStatValue"/>
+                  <Text text="Exec Success Rate" class="floraStatLabel"/>
+                </VBox>
+
+              </HBox>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+
+          <!-- ── 3b: Query History ── -->
+          <uxap:ObjectPageSubSection title="Query History">
+            <uxap:blocks>
+              <VBox>
+                <Toolbar class="floraHistoryBar">
+                  <Title text="Last 50 queries" level="H6"/>
+                  <ToolbarSpacer/>
+                  <Button text="Clear" icon="sap-icon://delete" type="Ghost" press=".onClearHistory"
+                    enabled="{= ${/history}.length > 0}"/>
+                </Toolbar>
+
+                <VBox class="floraHistoryEmpty" visible="{= ${/history}.length === 0}">
+                  <Text text="No queries yet. Ask something above to start building history." class="floraEmptyDesc"/>
+                </VBox>
+
+                <List
+                  items="{path: '/history', templateShareable: false}"
+                  showNoData="false"
+                  visible="{= ${/history}.length > 0}"
+                  class="floraHistoryList"
+                  itemPress=".onHistoryItemPress"
+                  mode="SingleSelectMaster">
+                  <CustomListItem type="Active">
+                    <HBox alignItems="Center" class="floraHistoryItem">
+                      <!-- Status dot -->
+                      <core:Icon
+                        src="{= ${success} ? 'sap-icon://accept' : 'sap-icon://error'}"
+                        size="0.875rem"
+                        color="{= ${success} ? 'Positive' : 'Negative'}"
+                        class="floraHistoryStatus"/>
+                      <!-- Query text + meta -->
+                      <VBox class="floraHistoryText sapUiSmallMarginBegin" fitContainer="true">
+                        <Text text="{query}" class="floraHistoryQuery" wrapping="false" maxLines="1"/>
+                        <HBox alignItems="Center" class="floraHistoryMeta">
+                          <Text text="{timestamp}" class="floraHistoryTime"/>
+                          <Text text=" · " class="floraHistoryTime"/>
+                          <Text text="{entity}" class="floraHistoryEntity"/>
+                          <Text text=" · " class="floraHistoryTime"/>
+                          <Text text="{typeLabel}" class="floraHistoryType"/>
+                        </HBox>
+                      </VBox>
+                      <!-- Right side: count + timing + mode -->
+                      <HBox alignItems="Center" class="floraHistoryRight">
+                        <ObjectStatus
+                          text="{= ${resultCount} + ' rows'}"
+                          state="{= ${success} ? 'Success' : 'Error'}"
+                          class="sapUiTinyMarginEnd"/>
+                        <ObjectStatus
+                          text="{= ${mode} === 'AI' ? 'AI' : 'Direct'}"
+                          state="{= ${mode} === 'AI' ? 'Success' : 'Information'}"
+                          icon="{= ${mode} === 'AI' ? 'sap-icon://ai' : 'sap-icon://search'}"/>
+                        <Text text="{= ${totalMs} + 'ms'}" class="floraHistoryTime sapUiSmallMarginBegin"/>
+                      </HBox>
+                    </HBox>
+                  </CustomListItem>
+                </List>
+              </VBox>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+
+          <!-- ── 3c: Benchmark Runner ── -->
+          <uxap:ObjectPageSubSection title="Benchmark Runner">
+            <uxap:blocks>
+              <VBox class="floraBenchmarkCard">
+
+                <!-- Header row -->
+                <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraBenchmarkHeader">
+                  <VBox>
+                    <Title text="NL2OData Accuracy Benchmark" level="H5"/>
+                    <Text text="10 queries · 2 per taxonomy type (T1–T5) · live Northwind v4" class="floraBenchmarkSubtitle"/>
+                  </VBox>
+                  <HBox alignItems="Center">
+                    <ObjectStatus
+                      text="{= ${/benchmark/done} ? ${/benchmark/passed} + '/10 · ' + ${/benchmark/accuracy} : (${/benchmark/running} ? ${/benchmark/progress} + '%' : 'Not run')}"
+                      state="{= ${/benchmark/done} ? 'Success' : (${/benchmark/running} ? 'Warning' : 'None')}"
+                      icon="{= ${/benchmark/done} ? 'sap-icon://activity-2' : 'sap-icon://target-group'}"
+                      class="sapUiSmallMarginEnd"/>
+                    <Button
+                      text="{= ${/benchmark/running} ? 'Running…' : 'Run Benchmark'}"
+                      icon="{= ${/benchmark/running} ? 'sap-icon://synchronize' : 'sap-icon://play'}"
+                      type="Emphasized"
+                      press=".onRunBenchmark"
+                      enabled="{= !${/benchmark/running} &amp;&amp; !${/loading}}"/>
+                  </HBox>
+                </HBox>
+
+                <!-- Progress bar while running -->
+                <ProgressIndicator
+                  percentValue="{/benchmark/progress}"
+                  displayValue="{= ${/benchmark/progress} + '%'}"
+                  state="Information"
+                  width="100%"
+                  visible="{/benchmark/running}"
+                  class="floraBenchmarkProgress sapUiTinyMarginTop"/>
+
+                <!-- Results table -->
+                <Table
+                  id="benchmarkTable"
+                  visible="{= ${/benchmark/results}.length > 0}"
+                  items="{path: '/benchmark/results', templateShareable: false}"
+                  alternateRowColors="true"
+                  width="100%"
+                  class="floraBenchmarkTable sapUiTinyMarginTop">
+                  <columns>
+                    <Column width="3rem"><Label text="#"/></Column>
+                    <Column width="30%"><Label text="Query"/></Column>
+                    <Column width="7rem"><Label text="Type"/></Column>
+                    <Column width="10rem"><Label text="Expected"/></Column>
+                    <Column width="10rem"><Label text="Detected"/></Column>
+                    <Column width="5rem" hAlign="Center"><Label text="Match"/></Column>
+                    <Column width="5rem" hAlign="Center"><Label text="Results"/></Column>
+                    <Column width="5rem" hAlign="End"><Label text="ms"/></Column>
+                    <Column width="6rem" hAlign="Center"><Label text="Status"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem>
+                      <cells>
+                        <Text text="{idx}"/>
+                        <Text text="{query}" wrapping="false"/>
+                        <ObjectStatus text="{queryType}" state="Information"/>
+                        <Text text="{expectedEntity}"/>
+                        <Text text="{detectedEntity}"/>
+                        <core:Icon
+                          src="{= ${entityMatch} ? 'sap-icon://accept' : 'sap-icon://decline'}"
+                          color="{= ${entityMatch} ? 'Positive' : 'Negative'}"/>
+                        <core:Icon
+                          src="{= ${hasResults} ? 'sap-icon://accept' : 'sap-icon://decline'}"
+                          color="{= ${hasResults} ? 'Positive' : 'Negative'}"/>
+                        <ObjectNumber number="{totalMs}" unit="ms" emphasized="false"/>
+                        <ObjectStatus text="{status}" state="{statusState}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+
+              </VBox>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+
         </uxap:subSections>
       </uxap:ObjectPageSection>
 
