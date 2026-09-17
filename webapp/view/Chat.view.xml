@@ -1,0 +1,295 @@
+<mvc:View
+  controllerName="research.chat.controller.Chat"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:uxap="sap.uxap"
+  xmlns:layout="sap.ui.layout"
+  displayBlock="true">
+
+  <uxap:ObjectPageLayout
+    id="objectPage"
+    preserveHeaderStateOnScroll="false"
+    alwaysShowContentHeader="false"
+    headerContentPinnable="true"
+    showTitleInHeaderContent="false"
+    class="floraObjectPage">
+
+    <!-- ═══ DYNAMIC HEADER TITLE ═══ -->
+    <uxap:headerTitle>
+      <uxap:ObjectPageDynamicHeaderTitle>
+
+        <uxap:heading>
+          <HBox alignItems="Center">
+            <core:Icon src="sap-icon://ai" size="1.5rem" color="Default" class="floraAiIcon"/>
+            <Title text="Floria" level="H2" class="sapUiSmallMarginBegin"/>
+            <Text text="· Northwind OData Explorer" class="floraHeaderSub sapUiSmallMarginBegin"/>
+          </HBox>
+        </uxap:heading>
+
+        <uxap:snappedHeading>
+          <HBox alignItems="Center">
+            <core:Icon src="sap-icon://ai" size="1.1rem" color="Default" class="floraAiIcon"/>
+            <Title text="Floria" level="H5" class="sapUiTinyMarginBegin"/>
+          </HBox>
+        </uxap:snappedHeading>
+
+        <uxap:actions>
+          <ObjectStatus
+            id="llmStatus"
+            text="{/llm/statusText}"
+            state="{/llm/statusState}"
+            icon="{/llm/statusIcon}"/>
+        </uxap:actions>
+
+        <!-- ─── EXPANDED HEADER CONTENT ─── -->
+        <uxap:expandedContent>
+
+          <!-- AI model download progress -->
+          <VBox class="floraProgressSection" visible="{/llm/loading}">
+            <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+              <BusyIndicator size="0.75rem"/>
+              <Text text="{/llm/loadingText}" class="sapUiTinyMarginBegin"/>
+            </HBox>
+            <ProgressIndicator
+              percentValue="{/llm/progress}"
+              displayValue="{/llm/progressLabel}"
+              state="Information"
+              width="100%"
+              class="floraProgress"/>
+          </VBox>
+
+          <!-- Entity selector -->
+          <VBox class="floraSearchHero">
+            <Label text="Entity" class="floraSearchLabel"/>
+            <SegmentedButton
+              id="entitySelector"
+              selectedKey="{/selectedEntity}"
+              selectionChange=".onEntitySelect"
+              class="floraEntitySelector">
+              <items>
+                <SegmentedButtonItem key="Products"      text="Products"/>
+                <SegmentedButtonItem key="Categories"    text="Categories"/>
+                <SegmentedButtonItem key="Customers"     text="Customers"/>
+                <SegmentedButtonItem key="Orders"        text="Orders"/>
+                <SegmentedButtonItem key="Employees"     text="Employees"/>
+                <SegmentedButtonItem key="Suppliers"     text="Suppliers"/>
+                <SegmentedButtonItem key="Order_Details" text="Order Details"/>
+              </items>
+            </SegmentedButton>
+
+            <Label text="Ask in plain language" class="floraSearchLabel sapUiTinyMarginTop"/>
+            <HBox alignItems="End" class="floraSearchBar">
+              <TextArea
+                id="searchInput"
+                placeholder="e.g.  'products cheaper than $10'   ·   'customers from Germany'   ·   'recent orders to France'"
+                growing="true"
+                growingMaxLines="3"
+                rows="2"
+                value="{/query}"
+                width="100%">
+                <layoutData><FlexItemData growFactor="1"/></layoutData>
+              </TextArea>
+              <VBox class="floraSearchActions sapUiSmallMarginBegin">
+                <Button
+                  id="searchBtn"
+                  text="{= ${/llm/ready} ? 'Ask AI' : 'Search'}"
+                  icon="{= ${/llm/ready} ? 'sap-icon://ai' : 'sap-icon://search'}"
+                  type="Emphasized"
+                  press=".onSearch"
+                  enabled="{= !!${/query} &amp;&amp; !${/loading}}"
+                  width="8rem"/>
+                <ObjectStatus
+                  text="{= ${/llm/ready} ? 'AI Mode' : ${/llm/loading} ? 'Loading AI…' : 'Direct Mode'}"
+                  state="{= ${/llm/ready} ? 'Success' : 'Information'}"
+                  class="floraModeStatus sapUiTinyMarginTop"/>
+              </VBox>
+            </HBox>
+          </VBox>
+
+        </uxap:expandedContent>
+
+        <!-- ─── SNAPPED SEARCH (compact) ─── -->
+        <uxap:snappedContent>
+          <HBox alignItems="Center" class="floraSnappedSearch">
+            <SegmentedButton selectedKey="{/selectedEntity}" class="floraSnappedEntity sapUiTinyMarginEnd">
+              <items>
+                <SegmentedButtonItem key="Products"      text="Products"/>
+                <SegmentedButtonItem key="Categories"    text="Categories"/>
+                <SegmentedButtonItem key="Customers"     text="Customers"/>
+                <SegmentedButtonItem key="Orders"        text="Orders"/>
+                <SegmentedButtonItem key="Employees"     text="Employees"/>
+                <SegmentedButtonItem key="Suppliers"     text="Suppliers"/>
+                <SegmentedButtonItem key="Order_Details" text="Order Details"/>
+              </items>
+            </SegmentedButton>
+            <Input
+              placeholder="Ask in plain language…"
+              value="{/query}"
+              submit=".onSearch"
+              width="22rem">
+              <layoutData><FlexItemData growFactor="1"/></layoutData>
+            </Input>
+            <Button
+              icon="sap-icon://search"
+              type="Emphasized"
+              press=".onSearch"
+              enabled="{= !!${/query} &amp;&amp; !${/loading}}"
+              class="sapUiTinyMarginBegin"/>
+          </HBox>
+        </uxap:snappedContent>
+
+      </uxap:ObjectPageDynamicHeaderTitle>
+    </uxap:headerTitle>
+
+    <uxap:sections>
+
+      <!-- ═══ SECTION 1: GENERATED ODATA QUERY ═══ -->
+      <uxap:ObjectPageSection
+        id="querySection"
+        title="Generated OData v4 Query"
+        visible="{= ${/hasResults} || ${/loading} || ${/noResults}}">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection title="">
+            <uxap:blocks>
+
+              <!-- error -->
+              <MessageStrip
+                text="{/error}"
+                type="Error"
+                showIcon="true"
+                visible="{= !!${/error}}"
+                showCloseButton="true"
+                close=".onCloseError"
+                class="sapUiSmallMarginBottom"/>
+
+              <VBox class="floraQueryCard">
+
+                <!-- Validation status -->
+                <HBox
+                  alignItems="Center"
+                  class="floraValidationBar"
+                  visible="{= ${/validation/state} !== 'None'}">
+                  <core:Icon
+                    src="{= ${/validation/state} === 'Success' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                    color="{= ${/validation/state} === 'Success' ? 'Positive' : 'Negative'}"
+                    size="1rem"/>
+                  <Text text="{/validation/text}" class="floraValidationText sapUiSmallMarginBegin"/>
+                  <ToolbarSpacer/>
+                  <Button
+                    text="Copy URL"
+                    icon="sap-icon://copy"
+                    type="Ghost"
+                    press=".onCopyQuery"
+                    class="sapUiTinyMarginEnd"/>
+                </HBox>
+
+                <!-- Validation error details -->
+                <List
+                  items="{path: '/validation/errors', templateShareable: false}"
+                  showNoData="false"
+                  visible="{= ${/validation/errors}.length > 0}"
+                  class="floraValidationErrors">
+                  <StandardListItem
+                    title="{}"
+                    icon="sap-icon://message-warning"
+                    iconInset="false"/>
+                </List>
+
+                <!-- Query params grid -->
+                <layout:Grid
+                  defaultSpan="XL3 L3 M6 S12"
+                  class="floraQueryGrid">
+
+                  <VBox class="floraParamItem">
+                    <Label text="Entity" class="floraParamKey"/>
+                    <HBox alignItems="Center">
+                      <core:Icon src="sap-icon://database" size="0.75rem" class="floraEntityIcon"/>
+                      <Text text="{/oDataQuery/entity}" class="floraEntityBadge sapUiTinyMarginBegin"/>
+                    </HBox>
+                  </VBox>
+
+                  <VBox class="floraParamItem" visible="{= !!${/oDataQuery/filter}}">
+                    <Label text="$filter" class="floraParamKey"/>
+                    <Text text="{/oDataQuery/filter}" class="floraParamVal" wrapping="false"/>
+                  </VBox>
+
+                  <VBox class="floraParamItem" visible="{= !!${/oDataQuery/orderby}}">
+                    <Label text="$orderby" class="floraParamKey"/>
+                    <Text text="{/oDataQuery/orderby}" class="floraParamVal" wrapping="false"/>
+                  </VBox>
+
+                  <VBox class="floraParamItem">
+                    <Label text="$top" class="floraParamKey"/>
+                    <Text text="{/oDataQuery/top}" class="floraParamVal" wrapping="false"/>
+                  </VBox>
+
+                </layout:Grid>
+              </VBox>
+
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+      <!-- ═══ SECTION 2: RESULTS ═══ -->
+      <uxap:ObjectPageSection
+        id="resultsSection"
+        title="Results">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection title="">
+            <uxap:blocks>
+
+              <!-- No results -->
+              <MessageStrip
+                text="No records found. Try adjusting your query or selecting a different entity."
+                type="Information"
+                showIcon="true"
+                visible="{/noResults}"
+                class="sapUiSmallMarginBottom"/>
+
+              <!-- Empty / start state -->
+              <VBox
+                class="floraEmptyState"
+                visible="{= !${/hasResults} &amp;&amp; !${/noResults} &amp;&amp; !${/loading}}">
+                <core:Icon src="sap-icon://database" size="4rem" color="Default" class="floraEmptyIcon"/>
+                <Title text="Explore the Northwind database" level="H3" textAlign="Center" class="sapUiSmallMarginTop"/>
+                <Text
+                  textAlign="Center"
+                  text="Select an entity above and describe what you want — the local AI generates a validated OData v4 query against the live Northwind service."
+                  class="floraEmptyDesc"/>
+              </VBox>
+
+              <!-- Results table (columns populated dynamically by controller) -->
+              <Table
+                id="resultsTable"
+                visible="{/hasResults}"
+                growing="true"
+                growingThreshold="15"
+                busyIndicatorDelay="0"
+                busy="{/loading}"
+                mode="None"
+                alternateRowColors="true"
+                width="100%">
+                <headerToolbar>
+                  <Toolbar>
+                    <Title text="{/oDataQuery/entity}" level="H5"/>
+                    <ObjectStatus
+                      text="{/countLabel}"
+                      state="Success"
+                      class="sapUiSmallMarginBegin"/>
+                    <ToolbarSpacer/>
+                    <BusyIndicator size="0.75rem" visible="{/loading}"/>
+                  </Toolbar>
+                </headerToolbar>
+              </Table>
+
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+    </uxap:sections>
+
+  </uxap:ObjectPageLayout>
+</mvc:View>

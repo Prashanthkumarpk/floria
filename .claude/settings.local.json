@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /Users/prasanthkumar/projects/floria/ && echo \"---\" && ls /Users/prasanthkumar/projects/ 2>/dev/null | head -20)",
+      "Read(//Users/prasanthkumar/projects/**)",
+      "Bash(rm /Users/prasanthkumar/projects/floria/webapp/Component.js)",
+      "Bash(rm /Users/prasanthkumar/projects/floria/webapp/controller/App.controller.js)",
+      "Bash(rm /Users/prasanthkumar/projects/floria/webapp/controller/HomePage.controller.js)",
+      "Bash(rm /Users/prasanthkumar/projects/floria/webapp/model/models.js)",
+      "Bash(mkdir -p /Users/prasanthkumar/projects/floria/webapp/util)",
+      "Bash(npm install *)",
+      "Bash(npm approve-scripts *)",
+      "Bash(node --input-type=module --check)",
+      "Bash(npm run *)",
+      "Bash(kill %1)",
+      "Bash(wait)"
+    ]
+  }
+}

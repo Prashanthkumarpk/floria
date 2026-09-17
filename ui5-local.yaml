@@ -1,0 +1,50 @@
+specVersion: "4.0"
+metadata:
+  name: floria
+type: application
+framework:
+  name: SAPUI5
+  version: 1.152.0
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.f
+    - name: sap.ui.comp
+    - name: sap.ui.generic.app
+    - name: sap.ui.table
+    - name: sap.ushell
+    - name: themelib_sap_bluecrystal
+    - name: themelib_sap_horizon
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertErrors: false
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: fiori-tools-preview
+      afterMiddleware: fiori-tools-appreload
+      configuration:
+        component: floria
+        ui5Theme: sap_horizon
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        transformModulesToUI5:
+          overridesToOverride: true
+        excludePatterns:
+          - /Component-preload.js
+builder:
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: true
+        transformModulesToUI5:
+          overridesToOverride: true

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictPropertyInitialization": false,
+    "allowJs": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@openui5/types"
+    ]
+  },
+  "include": ["webapp/**/*.ts"]
+}

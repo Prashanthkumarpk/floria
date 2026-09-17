@@ -1,0 +1,102 @@
+{
+  "_version": "1.60.0",
+  "sap.app": {
+    "id": "research.chat",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "Research Paper AI",
+    "description": "Natural-language research paper search powered by local WebLLM",
+    "dataSources": {
+      "mainService": {
+        "uri": "http://localhost:4004/odata/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0",
+          "localUri": "localService/metadata.xml"
+        }
+      }
+    },
+    "sourceTemplate": {
+      "id": "@sap/ux-app-migrator:freestyle",
+      "version": "1.32.1",
+      "toolsId": "619a24e7-a8d9-4e13-a9c1-c9a0180c8d0e"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.f": {},
+        "sap.ui.layout": {},
+        "sap.uxap": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "research.chat.i18n.i18n",
+          "supportedLocales": [""],
+          "fallbackLocale": ""
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "type": "View",
+        "viewType": "XML",
+        "path": "research.chat.view",
+        "async": true
+      },
+      "routes": [
+        {
+          "name": "RouteChat",
+          "pattern": "",
+          "target": [
+            "TargetChat"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetChat": {
+          "id": "Chat",
+          "name": "Chat"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "research.chat.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}
