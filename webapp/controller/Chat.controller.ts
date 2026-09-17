@@ -84,14 +84,28 @@ const ENTITY_KEYWORDS: Record<string, string[]> = {
                   "quantities", "discount", "discounts"],
 };
 
-// Direct-mode text-search filters per entity
-const DIRECT_FILTERS: Record<string, (q: string) => string> = {
-  Products:      q => `contains(ProductName,'${q.replace(/'/g, "''")}')`,
-  Categories:    q => `contains(CategoryName,'${q.replace(/'/g, "''")}')`,
-  Customers:     q => `contains(CompanyName,'${q.replace(/'/g, "''")}') or contains(ContactName,'${q.replace(/'/g, "''")}')`,
-  Orders:        q => `contains(ShipCountry,'${q.replace(/'/g, "''")}') or contains(ShipCity,'${q.replace(/'/g, "''")}')`,
-  Employees:     q => `contains(LastName,'${q.replace(/'/g, "''")}') or contains(FirstName,'${q.replace(/'/g, "''")}')`,
-  Suppliers:     q => `contains(CompanyName,'${q.replace(/'/g, "''")}')`,
+// Stop words stripped before building a direct-mode text filter
+const STOP_WORDS = new Set([
+  "show", "me", "give", "find", "list", "get", "fetch", "search", "display",
+  "all", "the", "a", "an", "some", "any",
+  "to", "from", "in", "for", "of", "with", "by", "and", "or", "not",
+  "is", "are", "was", "were", "be", "been",
+  "recent", "latest", "oldest", "top", "last", "first", "most", "least",
+  "new", "old", "current", "today",
+  // entity names themselves should not become filter terms
+  "product", "products", "category", "categories", "customer", "customers",
+  "order", "orders", "employee", "employees", "supplier", "suppliers",
+  "order_detail", "order_details",
+]);
+
+// Direct-mode text-search filters per entity — receive the extracted key term
+const DIRECT_FILTERS: Record<string, (term: string) => string> = {
+  Products:      t => t ? `contains(ProductName,'${t}')` : "",
+  Categories:    t => t ? `contains(CategoryName,'${t}')` : "",
+  Customers:     t => t ? `contains(CompanyName,'${t}') or contains(ContactName,'${t}') or contains(Country,'${t}') or contains(City,'${t}')` : "",
+  Orders:        t => t ? `contains(ShipCountry,'${t}') or contains(ShipCity,'${t}') or contains(CustomerID,'${t}')` : "",
+  Employees:     t => t ? `contains(LastName,'${t}') or contains(FirstName,'${t}') or contains(Country,'${t}') or contains(City,'${t}')` : "",
+  Suppliers:     t => t ? `contains(CompanyName,'${t}') or contains(Country,'${t}') or contains(City,'${t}')` : "",
   Order_Details: () => ``,
 };
 
@@ -114,7 +128,11 @@ export default class ChatController extends Controller {
       results: [] as Record<string, unknown>[],
       resultEntity: "",
       countLabel: "",
-      oDataQuery: { url: "", entity: "", filter: "", orderby: "", top: "" },
+      oDataQuery: {
+        url: "", entity: "", filter: "", orderby: "", top: "",
+        rawPlan: "", naturalQuery: "", mode: ""
+      },
+      timing: { parseMs: 0, fetchMs: 0, totalMs: 0 },
       validation: { state: "None", text: "", errors: [] as string[] },
       llm: {
         ready: false,
@@ -181,25 +199,31 @@ export default class ChatController extends Controller {
     this.model.setProperty("/results", []);
     this.model.setProperty("/validation/state", "None");
     this.model.setProperty("/validation/errors", []);
+    this.model.setProperty("/timing/parseMs", 0);
+    this.model.setProperty("/timing/fetchMs", 0);
+    this.model.setProperty("/timing/totalMs", 0);
 
     const llmReady = this.model.getProperty("/llm/ready") as boolean;
+    const t0 = performance.now();
 
     try {
       // ── Step 1: Generate query plan ──
       let plan: QueryPlan;
+      const t1 = performance.now();
       if (llmReady) {
-        // LLM determines entity + filter + orderby from natural language
         plan = await this.llmService.generateQueryPlan(text);
       } else {
-        // Direct mode: score keywords to detect entity, then apply text-search filter
         const entity = this.detectEntity(text);
+        const term   = this.extractKeyTerm(text);
         plan = {
           entity,
-          filter: (DIRECT_FILTERS[entity] ?? DIRECT_FILTERS.Products)(text),
+          filter: (DIRECT_FILTERS[entity] ?? DIRECT_FILTERS.Products)(term),
           orderby: "",
           top: 20
         };
       }
+      const parseMs = Math.round(performance.now() - t1);
+      this.model.setProperty("/timing/parseMs", parseMs);
 
       // ── Step 2: Validate ──
       const vr = this.queryValidator.validate(plan);
@@ -207,16 +231,19 @@ export default class ChatController extends Controller {
       this.model.setProperty("/validation/text",  vr.statusText);
       this.model.setProperty("/validation/errors", vr.fieldErrors);
 
-      // Build URL regardless of validation (let server return the real OData error if needed)
       const url = this.queryBuilder.build(plan, this.ODATA_BASE);
 
-      this.model.setProperty("/oDataQuery/url",     url);
-      this.model.setProperty("/oDataQuery/entity",  plan.entity);
-      this.model.setProperty("/oDataQuery/filter",  plan.filter  ?? "");
-      this.model.setProperty("/oDataQuery/orderby", plan.orderby ?? "");
-      this.model.setProperty("/oDataQuery/top",     String(plan.top ?? 20));
+      this.model.setProperty("/oDataQuery/url",          url);
+      this.model.setProperty("/oDataQuery/entity",       plan.entity);
+      this.model.setProperty("/oDataQuery/filter",       plan.filter  ?? "");
+      this.model.setProperty("/oDataQuery/orderby",      plan.orderby ?? "");
+      this.model.setProperty("/oDataQuery/top",          String(plan.top ?? 20));
+      this.model.setProperty("/oDataQuery/rawPlan",      JSON.stringify(plan, null, 2));
+      this.model.setProperty("/oDataQuery/naturalQuery", text);
+      this.model.setProperty("/oDataQuery/mode",         llmReady ? "AI" : "Direct");
 
       // ── Step 3: Execute ──
+      const t2 = performance.now();
       const res = await fetch(url, { headers: { Accept: "application/json" } });
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: { message?: string } };
@@ -224,6 +251,11 @@ export default class ChatController extends Controller {
       }
 
       const data = await res.json() as { value: Record<string, unknown>[]; "@odata.count"?: number };
+      const fetchMs = Math.round(performance.now() - t2);
+      const totalMs = Math.round(performance.now() - t0);
+      this.model.setProperty("/timing/fetchMs", fetchMs);
+      this.model.setProperty("/timing/totalMs", totalMs);
+
       const results = data.value ?? [];
       const total   = data["@odata.count"] ?? results.length;
 
@@ -233,7 +265,7 @@ export default class ChatController extends Controller {
         this.model.setProperty("/noResults", true);
       } else {
         this.model.setProperty("/results",    results);
-        this.model.setProperty("/countLabel", `${total.toLocaleString()} ${plan.entity} — showing ${results.length}`);
+        this.model.setProperty("/countLabel", `${total.toLocaleString()} record${total !== 1 ? "s" : ""} · showing ${results.length}`);
         this.model.setProperty("/resultEntity", plan.entity);
         this.model.setProperty("/hasResults",   true);
         this.refreshResultTable(plan.entity);
@@ -271,7 +303,23 @@ export default class ChatController extends Controller {
     table.bindItems({ path: "/results", template, templateShareable: false });
   }
 
-  // ─── Entity detection (direct mode) ───────────────────────────────────────
+  // ─── Direct-mode helpers ───────────────────────────────────────────────────
+
+  // Extract the most meaningful single term from a natural-language query.
+  // Used to build a text-search OData filter when the LLM is not available.
+  private extractKeyTerm(query: string): string {
+    const words = query
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(w => w.length > 1 && !STOP_WORDS.has(w));
+
+    // Prefer longer words (more specific), then take the last one (often the subject)
+    words.sort((a, b) => b.length - a.length);
+    const term = words[0] ?? "";
+    // Capitalise first letter to match Northwind casing (e.g. "france" → "France")
+    return term.charAt(0).toUpperCase() + term.slice(1);
+  }
 
   private detectEntity(query: string): string {
     const q = query.toLowerCase();
@@ -293,6 +341,13 @@ export default class ChatController extends Controller {
   }
 
   // ─── Utility ───────────────────────────────────────────────────────────────
+
+  public onExampleQuery(event: { getSource(): { data(key: string): string } }): void {
+    const q = event.getSource().data("query");
+    if (!q) return;
+    this.model.setProperty("/query", q);
+    void this.onSearch();
+  }
 
   public onCopyQuery(): void {
     const url = this.model.getProperty("/oDataQuery/url") as string;

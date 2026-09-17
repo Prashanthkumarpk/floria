@@ -148,3 +148,118 @@
   font-size: 0.9375rem;
   text-align: center;
 }
+
+/* ─── Example query chips ─────────────────────────────────────────────────── */
+.floraExampleRow {
+  gap: 0.5rem;
+  max-width: 48rem;
+}
+
+.floraExampleChip.sapMBtn {
+  border: 1px solid var(--sapButton_BorderColor, #bcc3ca);
+  border-radius: 1rem;
+  font-size: 0.8125rem;
+}
+
+.floraExampleChip.sapMBtn:hover {
+  border-color: var(--sapHighlightColor, #0064d9);
+  background: var(--sapButton_Hover_Background, #e8f0fc);
+}
+
+/* ─── Pipeline bar ────────────────────────────────────────────────────────── */
+.floraPipelineBar {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--sapGroup_ContentBorderColor, #e0e0e0);
+  margin-bottom: 0.625rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.floraPipeline {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.floraPipelineStep {
+  gap: 0;
+}
+
+.floraPipelineIcon {
+  color: var(--sapContent_LabelColor, #6a6d70) !important;
+  flex-shrink: 0;
+}
+
+.floraPipelineLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sapTextColor, #1d2d3e);
+  line-height: 1.2;
+}
+
+.floraPipelineMeta {
+  font-size: 0.6875rem;
+  color: var(--sapContent_LabelColor, #6a6d70);
+  line-height: 1.2;
+}
+
+.floraMetaGood {
+  color: var(--sapPositiveColor, #188918) !important;
+}
+
+.floraMetaWarn {
+  color: var(--sapCriticalColor, #e9730c) !important;
+}
+
+.floraPipelineArrow {
+  color: var(--sapContent_NonInteractiveIconColor, #c0c0c0) !important;
+  flex-shrink: 0;
+}
+
+/* ─── "You asked" chip ────────────────────────────────────────────────────── */
+.floraNLChip {
+  background: var(--sapInfobar_Background, #e8f0fc);
+  border: 1px solid var(--sapHighlightColor, #0064d9);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  margin-bottom: 0.375rem;
+  max-width: fit-content;
+}
+
+.floraNLIcon {
+  color: var(--sapHighlightColor, #0064d9) !important;
+  flex-shrink: 0;
+}
+
+.floraNLText {
+  font-size: 0.8125rem;
+  color: var(--sapHighlightColor, #0064d9);
+  font-style: italic;
+  max-width: 40rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── OData URL log ───────────────────────────────────────────────────────── */
+.floraUrlBlock {
+  background: var(--sapBackgroundColor, #f7f7f7);
+  border: 1px solid var(--sapGroup_ContentBorderColor, #e0e0e0);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.floraUrlHeader {
+  margin-bottom: 0.25rem;
+}
+
+.floraUrlIcon {
+  color: var(--sapContent_LabelColor, #6a6d70) !important;
+}
+
+.floraUrlText {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  color: var(--sapTextColor, #1d2d3e);
+  word-break: break-all;
+  line-height: 1.5;
+}

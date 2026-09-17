@@ -117,12 +117,14 @@ export default class QueryValidator {
     return result;
   }
 
-  // Extract PascalCase/CamelCase identifiers from OData filter that look like field names
+  // Extract PascalCase/CamelCase identifiers from OData filter that look like field names.
+  // Strip quoted string literals first so values like 'France' are never mistaken for fields.
   private extractFieldRefs(filter: string): string[] {
+    const stripped = filter.replace(/'(?:[^']|'')*'/g, "''");
     const found: string[] = [];
     const tokenRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
     let m: RegExpExecArray | null;
-    while ((m = tokenRe.exec(filter)) !== null) {
+    while ((m = tokenRe.exec(stripped)) !== null) {
       const token = m[1];
       if (!ODATA_KEYWORDS.has(token.toLowerCase()) && /^[A-Z]/.test(token)) {
         found.push(token);

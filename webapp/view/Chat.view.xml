@@ -125,7 +125,7 @@
           <uxap:ObjectPageSubSection title="">
             <uxap:blocks>
 
-              <!-- error -->
+              <!-- Error strip -->
               <MessageStrip
                 text="{/error}"
                 type="Error"
@@ -137,44 +137,76 @@
 
               <VBox class="floraQueryCard">
 
-                <!-- Validation status -->
-                <HBox
-                  alignItems="Center"
-                  class="floraValidationBar"
-                  visible="{= ${/validation/state} !== 'None'}">
-                  <core:Icon
-                    src="{= ${/validation/state} === 'Success' ? 'sap-icon://accept' : 'sap-icon://error'}"
-                    color="{= ${/validation/state} === 'Success' ? 'Positive' : 'Negative'}"
-                    size="1rem"/>
-                  <Text text="{/validation/text}" class="floraValidationText sapUiSmallMarginBegin"/>
-                  <ToolbarSpacer/>
-                  <Button
-                    text="Copy URL"
-                    icon="sap-icon://copy"
-                    type="Ghost"
-                    press=".onCopyQuery"
-                    class="sapUiTinyMarginEnd"/>
+                <!-- ─ Pipeline header ─ -->
+                <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraPipelineBar">
+                  <HBox alignItems="Center" class="floraPipeline">
+
+                    <!-- Step 1: Parse -->
+                    <HBox alignItems="Center" class="floraPipelineStep">
+                      <core:Icon src="{= ${/oDataQuery/mode} === 'AI' ? 'sap-icon://ai' : 'sap-icon://search'}"
+                        size="0.875rem" class="floraPipelineIcon"/>
+                      <VBox class="sapUiTinyMarginBegin">
+                        <Text text="{= ${/oDataQuery/mode} === 'AI' ? 'AI Parse' : 'Keyword Match'}"
+                          class="floraPipelineLabel"/>
+                        <Text text="{= ${/timing/parseMs} + 'ms'}" class="floraPipelineMeta"/>
+                      </VBox>
+                    </HBox>
+
+                    <core:Icon src="sap-icon://navigation-right-arrow" size="0.625rem" class="floraPipelineArrow"/>
+
+                    <!-- Step 2: Validate -->
+                    <HBox alignItems="Center" class="floraPipelineStep">
+                      <core:Icon
+                        src="{= ${/validation/state} === 'Success' ? 'sap-icon://accept' : 'sap-icon://alert'}"
+                        size="0.875rem"
+                        color="{= ${/validation/state} === 'Success' ? 'Positive' : 'Critical'}"
+                        class="floraPipelineIcon"/>
+                      <VBox class="sapUiTinyMarginBegin">
+                        <Text text="Schema Check" class="floraPipelineLabel"/>
+                        <Text text="{= ${/validation/state} === 'Success' ? 'Passed' : 'Warnings'}"
+                          class="{= 'floraPipelineMeta ' + (${/validation/state} === 'Success' ? 'floraMetaGood' : 'floraMetaWarn')}"/>
+                      </VBox>
+                    </HBox>
+
+                    <core:Icon src="sap-icon://navigation-right-arrow" size="0.625rem" class="floraPipelineArrow"/>
+
+                    <!-- Step 3: Fetch -->
+                    <HBox alignItems="Center" class="floraPipelineStep">
+                      <core:Icon src="sap-icon://cloud-download" size="0.875rem" class="floraPipelineIcon"/>
+                      <VBox class="sapUiTinyMarginBegin">
+                        <Text text="OData Fetch" class="floraPipelineLabel"/>
+                        <Text text="{= ${/timing/fetchMs} + 'ms'}" class="floraPipelineMeta"/>
+                      </VBox>
+                    </HBox>
+
+                  </HBox>
+
+                  <!-- Total time + copy -->
+                  <HBox alignItems="Center">
+                    <ObjectStatus
+                      text="{= ${/timing/totalMs} + 'ms total'}"
+                      state="Success"
+                      icon="sap-icon://time-entry-request"
+                      class="sapUiTinyMarginEnd"/>
+                    <Button
+                      text="Copy URL"
+                      icon="sap-icon://copy"
+                      type="Ghost"
+                      press=".onCopyQuery"/>
+                  </HBox>
                 </HBox>
 
-                <!-- Validation error details -->
-                <List
-                  items="{path: '/validation/errors', templateShareable: false}"
-                  showNoData="false"
-                  visible="{= ${/validation/errors}.length > 0}"
-                  class="floraValidationErrors">
-                  <StandardListItem
-                    title="{}"
-                    icon="sap-icon://message-warning"
-                    iconInset="false"/>
-                </List>
+                <!-- ─ "You asked" chip ─ -->
+                <HBox alignItems="Center" class="floraNLChip" visible="{= !!${/oDataQuery/naturalQuery}}">
+                  <core:Icon src="sap-icon://sys-help" size="0.75rem" class="floraNLIcon"/>
+                  <Text text="&quot;{/oDataQuery/naturalQuery}&quot;" class="floraNLText sapUiTinyMarginBegin" wrapping="false"/>
+                </HBox>
 
-                <!-- Query params grid -->
-                <layout:Grid
-                  defaultSpan="XL3 L3 M6 S12"
-                  class="floraQueryGrid">
+                <!-- ─ Query params grid ─ -->
+                <layout:Grid defaultSpan="XL3 L3 M6 S12" class="floraQueryGrid">
 
                   <VBox class="floraParamItem">
-                    <Label text="Entity" class="floraParamKey"/>
+                    <Label text="entity" class="floraParamKey"/>
                     <HBox alignItems="Center">
                       <core:Icon src="sap-icon://database" size="0.75rem" class="floraEntityIcon"/>
                       <Text text="{/oDataQuery/entity}" class="floraEntityBadge sapUiTinyMarginBegin"/>
@@ -197,6 +229,28 @@
                   </VBox>
 
                 </layout:Grid>
+
+                <!-- ─ OData URL log ─ -->
+                <VBox class="floraUrlBlock" visible="{= !!${/oDataQuery/url}}">
+                  <HBox alignItems="Center" class="floraUrlHeader">
+                    <core:Icon src="sap-icon://chain-link" size="0.75rem" class="floraUrlIcon"/>
+                    <Label text="OData Request URL" class="floraParamKey sapUiTinyMarginBegin"/>
+                  </HBox>
+                  <Text text="{/oDataQuery/url}" class="floraUrlText" wrapping="true"/>
+                </VBox>
+
+                <!-- ─ Validation errors ─ -->
+                <List
+                  items="{path: '/validation/errors', templateShareable: false}"
+                  showNoData="false"
+                  visible="{= ${/validation/errors}.length > 0}"
+                  class="floraValidationErrors sapUiTinyMarginTop">
+                  <StandardListItem
+                    title="{}"
+                    icon="sap-icon://message-warning"
+                    iconInset="false"/>
+                </List>
+
               </VBox>
 
             </uxap:blocks>
@@ -224,12 +278,33 @@
               <VBox
                 class="floraEmptyState"
                 visible="{= !${/hasResults} &amp;&amp; !${/noResults} &amp;&amp; !${/loading}}">
-                <core:Icon src="sap-icon://database" size="4rem" color="Default" class="floraEmptyIcon"/>
-                <Title text="Explore the Northwind database" level="H3" textAlign="Center" class="sapUiSmallMarginTop"/>
+                <core:Icon src="sap-icon://ai" size="3.5rem" color="Default" class="floraEmptyIcon"/>
+                <Title text="Ask anything about the Northwind data" level="H3" textAlign="Center" class="sapUiSmallMarginTop"/>
                 <Text
                   textAlign="Center"
-                  text="Describe what you want in plain English — the AI automatically detects the entity, generates a validated OData v4 query, and fetches live data from Northwind."
-                  class="floraEmptyDesc"/>
+                  text="Type a question in plain English. The local AI translates it to a validated OData v4 query and fetches live results."
+                  class="floraEmptyDesc sapUiSmallMarginBottom"/>
+                <!-- Example chips -->
+                <HBox wrap="Wrap" justifyContent="Center" class="floraExampleRow">
+                  <Button text="products under $10" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
+                    <customData><core:CustomData key="query" value="products cheaper than $10"/></customData>
+                  </Button>
+                  <Button text="customers from Germany" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
+                    <customData><core:CustomData key="query" value="customers from Germany"/></customData>
+                  </Button>
+                  <Button text="recent orders to France" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
+                    <customData><core:CustomData key="query" value="recent orders to France"/></customData>
+                  </Button>
+                  <Button text="low stock products" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
+                    <customData><core:CustomData key="query" value="low stock products"/></customData>
+                  </Button>
+                  <Button text="employees from USA" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
+                    <customData><core:CustomData key="query" value="employees from USA"/></customData>
+                  </Button>
+                  <Button text="UK suppliers" type="Ghost" press=".onExampleQuery" class="floraExampleChip">
+                    <customData><core:CustomData key="query" value="suppliers from UK"/></customData>
+                  </Button>
+                </HBox>
               </VBox>
 
               <!-- Results table (columns populated dynamically by controller) -->
