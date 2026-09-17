@@ -46,7 +46,11 @@ export default class WebLLMService {
 
       const script = document.createElement("script");
       script.type = "module";
-      script.src = "libs/web-llm/loader.js";
+      // Use UI5's module URL resolver so path is correct from any launch page
+      // (index.html, test/flpSandbox.html, etc.)
+      const toUrl = (sap as unknown as { ui: { require: { toUrl(p: string): string } } })
+        .ui.require.toUrl;
+      script.src = toUrl("research/chat/libs/web-llm/loader.js");
 
       const checkInterval = setInterval(() => {
         if (window.mlcLoaded && window.mlc) {

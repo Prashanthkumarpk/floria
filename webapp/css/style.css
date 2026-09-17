@@ -40,11 +40,6 @@
   margin-bottom: 0.25rem;
 }
 
-/* ─── Entity selector ─────────────────────────────────────────────────────── */
-.floraEntitySelector {
-  margin-bottom: 0.875rem;
-}
-
 /* ─── Search bar ──────────────────────────────────────────────────────────── */
 .floraSearchBar {
   gap: 0;
@@ -65,10 +60,6 @@
   gap: 0.375rem;
   padding: 0.125rem 0;
   flex-wrap: wrap;
-}
-
-.floraSnappedEntity {
-  flex-shrink: 0;
 }
 
 /* ─── OData query card ────────────────────────────────────────────────────── */

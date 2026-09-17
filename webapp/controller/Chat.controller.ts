@@ -68,15 +68,31 @@ const ENTITY_COLS: Record<string, ColDef[]> = {
   ],
 };
 
-// Direct-mode filters when LLM is not available
+// Entity keyword scores — used by direct-mode entity detection
+const ENTITY_KEYWORDS: Record<string, string[]> = {
+  Products:      ["product", "products", "item", "items", "price", "prices", "stock", "inventory",
+                  "cheap", "expensive", "discontinued", "unit", "pack", "sku", "catalog"],
+  Categories:    ["category", "categories", "group", "groups", "type", "types", "kind", "section"],
+  Customers:     ["customer", "customers", "client", "clients", "buyer", "buyers",
+                  "company", "companies", "contact", "contacts"],
+  Orders:        ["order", "orders", "purchase", "purchases", "shipment", "ship", "shipped",
+                  "delivery", "deliveries", "freight", "recent order", "latest order"],
+  Employees:     ["employee", "employees", "staff", "worker", "workers", "person", "people",
+                  "hire", "hired", "manager", "managers", "report"],
+  Suppliers:     ["supplier", "suppliers", "vendor", "vendors", "manufacturer", "manufacturers", "source"],
+  Order_Details: ["order detail", "order details", "line item", "line items", "quantity",
+                  "quantities", "discount", "discounts"],
+};
+
+// Direct-mode text-search filters per entity
 const DIRECT_FILTERS: Record<string, (q: string) => string> = {
-  Products:     q => `contains(ProductName,'${q.replace(/'/g, "''")}')`,
-  Categories:   q => `contains(CategoryName,'${q.replace(/'/g, "''")}')`,
-  Customers:    q => `contains(CompanyName,'${q.replace(/'/g, "''")}') or contains(ContactName,'${q.replace(/'/g, "''")}')`,
-  Orders:       q => `contains(ShipCountry,'${q.replace(/'/g, "''")}') or contains(ShipCity,'${q.replace(/'/g, "''")}')`,
-  Employees:    q => `contains(LastName,'${q.replace(/'/g, "''")}') or contains(FirstName,'${q.replace(/'/g, "''")}')`,
-  Suppliers:    q => `contains(CompanyName,'${q.replace(/'/g, "''")}')`,
-  Order_Details:q => ``,
+  Products:      q => `contains(ProductName,'${q.replace(/'/g, "''")}')`,
+  Categories:    q => `contains(CategoryName,'${q.replace(/'/g, "''")}')`,
+  Customers:     q => `contains(CompanyName,'${q.replace(/'/g, "''")}') or contains(ContactName,'${q.replace(/'/g, "''")}')`,
+  Orders:        q => `contains(ShipCountry,'${q.replace(/'/g, "''")}') or contains(ShipCity,'${q.replace(/'/g, "''")}')`,
+  Employees:     q => `contains(LastName,'${q.replace(/'/g, "''")}') or contains(FirstName,'${q.replace(/'/g, "''")}')`,
+  Suppliers:     q => `contains(CompanyName,'${q.replace(/'/g, "''")}')`,
+  Order_Details: () => ``,
 };
 
 /**
@@ -92,7 +108,6 @@ export default class ChatController extends Controller {
   public onInit(): void {
     this.model = new JSONModel({
       query: "",
-      selectedEntity: "Products",
       hasResults: false,
       noResults: false,
       loading: false,
@@ -167,18 +182,17 @@ export default class ChatController extends Controller {
     this.model.setProperty("/validation/state", "None");
     this.model.setProperty("/validation/errors", []);
 
-    const llmReady        = this.model.getProperty("/llm/ready") as boolean;
-    const selectedEntity  = this.model.getProperty("/selectedEntity") as string;
+    const llmReady = this.model.getProperty("/llm/ready") as boolean;
 
     try {
       // ── Step 1: Generate query plan ──
       let plan: QueryPlan;
       if (llmReady) {
+        // LLM determines entity + filter + orderby from natural language
         plan = await this.llmService.generateQueryPlan(text);
-        // If user pre-selected an entity, respect it
-        if (selectedEntity && selectedEntity !== "All") plan.entity = selectedEntity;
       } else {
-        const entity = selectedEntity !== "All" ? selectedEntity : "Products";
+        // Direct mode: score keywords to detect entity, then apply text-search filter
+        const entity = this.detectEntity(text);
         plan = {
           entity,
           filter: (DIRECT_FILTERS[entity] ?? DIRECT_FILTERS.Products)(text),
@@ -257,10 +271,25 @@ export default class ChatController extends Controller {
     table.bindItems({ path: "/results", template, templateShareable: false });
   }
 
-  // ─── Entity selector ───────────────────────────────────────────────────────
+  // ─── Entity detection (direct mode) ───────────────────────────────────────
 
-  public onEntitySelect(): void {
-    // triggers binding refresh for the selected entity badge in the view
+  private detectEntity(query: string): string {
+    const q = query.toLowerCase();
+    let best = "Products";
+    let bestScore = -1;
+
+    for (const [entity, words] of Object.entries(ENTITY_KEYWORDS)) {
+      // Multi-word phrases score 2; single words score 1
+      const score = words.reduce((acc, word) => {
+        if (!q.includes(word)) return acc;
+        return acc + (word.includes(" ") ? 2 : 1);
+      }, 0);
+      if (score > bestScore) {
+        bestScore = score;
+        best = entity;
+      }
+    }
+    return best;
   }
 
   // ─── Utility ───────────────────────────────────────────────────────────────

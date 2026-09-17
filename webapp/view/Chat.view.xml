@@ -59,26 +59,9 @@
               class="floraProgress"/>
           </VBox>
 
-          <!-- Entity selector -->
+          <!-- Search hero — AI auto-detects the entity -->
           <VBox class="floraSearchHero">
-            <Label text="Entity" class="floraSearchLabel"/>
-            <SegmentedButton
-              id="entitySelector"
-              selectedKey="{/selectedEntity}"
-              selectionChange=".onEntitySelect"
-              class="floraEntitySelector">
-              <items>
-                <SegmentedButtonItem key="Products"      text="Products"/>
-                <SegmentedButtonItem key="Categories"    text="Categories"/>
-                <SegmentedButtonItem key="Customers"     text="Customers"/>
-                <SegmentedButtonItem key="Orders"        text="Orders"/>
-                <SegmentedButtonItem key="Employees"     text="Employees"/>
-                <SegmentedButtonItem key="Suppliers"     text="Suppliers"/>
-                <SegmentedButtonItem key="Order_Details" text="Order Details"/>
-              </items>
-            </SegmentedButton>
-
-            <Label text="Ask in plain language" class="floraSearchLabel sapUiTinyMarginTop"/>
+            <Label text="Ask in plain language" class="floraSearchLabel"/>
             <HBox alignItems="End" class="floraSearchBar">
               <TextArea
                 id="searchInput"
@@ -112,17 +95,6 @@
         <!-- ─── SNAPPED SEARCH (compact) ─── -->
         <uxap:snappedContent>
           <HBox alignItems="Center" class="floraSnappedSearch">
-            <SegmentedButton selectedKey="{/selectedEntity}" class="floraSnappedEntity sapUiTinyMarginEnd">
-              <items>
-                <SegmentedButtonItem key="Products"      text="Products"/>
-                <SegmentedButtonItem key="Categories"    text="Categories"/>
-                <SegmentedButtonItem key="Customers"     text="Customers"/>
-                <SegmentedButtonItem key="Orders"        text="Orders"/>
-                <SegmentedButtonItem key="Employees"     text="Employees"/>
-                <SegmentedButtonItem key="Suppliers"     text="Suppliers"/>
-                <SegmentedButtonItem key="Order_Details" text="Order Details"/>
-              </items>
-            </SegmentedButton>
             <Input
               placeholder="Ask in plain language…"
               value="{/query}"
@@ -256,7 +228,7 @@
                 <Title text="Explore the Northwind database" level="H3" textAlign="Center" class="sapUiSmallMarginTop"/>
                 <Text
                   textAlign="Center"
-                  text="Select an entity above and describe what you want — the local AI generates a validated OData v4 query against the live Northwind service."
+                  text="Describe what you want in plain English — the AI automatically detects the entity, generates a validated OData v4 query, and fetches live data from Northwind."
                   class="floraEmptyDesc"/>
               </VBox>
 
