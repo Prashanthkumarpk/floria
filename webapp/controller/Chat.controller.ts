@@ -167,7 +167,8 @@ const ENTITY_COLS: Record<string, ColDef[]> = {
 const ENTITY_KEYWORDS: Record<string, string[]> = {
   Products:      ["product","products","item","items","price","prices","stock","inventory",
                   "cheap","expensive","discontinued","unit","pack","sku","catalog"],
-  Categories:    ["category","categories","group","groups","type","types","kind","section"],
+  Categories:    ["category","categories","group","groups","type","types","kind","section",
+                  "product group","product groups","product category","product categories"],
   Customers:     ["customer","customers","client","clients","buyer","buyers",
                   "company","companies","contact","contacts"],
   Orders:        ["order","orders","purchase","purchases","shipment","ship","shipped",
@@ -390,7 +391,18 @@ export default class ChatController extends Controller {
         total: BENCHMARK_QUERIES.length,
         passed: 0,
         accuracy: "—",
-        results: [] as BenchmarkResult[]
+        results: [] as BenchmarkResult[],
+        queryCount: "100",
+        customQueries: [] as Array<{ query: string; expectedEntity: string; type: string }>,
+        currentQueryText: "",
+        typeStats: {
+          T1: { total: 0, passed: 0, pct: "—" },
+          T2: { total: 0, passed: 0, pct: "—" },
+          T3: { total: 0, passed: 0, pct: "—" },
+          T4: { total: 0, passed: 0, pct: "—" },
+          T5: { total: 0, passed: 0, pct: "—" },
+        },
+        newQuery: { query: "", entity: "Products", type: "T1" }
       },
       llm: {
         ready: false, loading: false, progress: 0,
@@ -596,21 +608,33 @@ export default class ChatController extends Controller {
   public async onRunBenchmark(): Promise<void> {
     if (this.model.getProperty("/benchmark/running") as boolean) return;
 
-    this.model.setProperty("/benchmark/running",  true);
-    this.model.setProperty("/benchmark/done",     false);
-    this.model.setProperty("/benchmark/progress", 0);
-    this.model.setProperty("/benchmark/passed",   0);
-    this.model.setProperty("/benchmark/accuracy", "—");
-    this.model.setProperty("/benchmark/results",  []);
+    const queries = this.getQueriesToRun();
+
+    this.model.setProperty("/benchmark/running",          true);
+    this.model.setProperty("/benchmark/done",             false);
+    this.model.setProperty("/benchmark/progress",         0);
+    this.model.setProperty("/benchmark/passed",           0);
+    this.model.setProperty("/benchmark/accuracy",         "—");
+    this.model.setProperty("/benchmark/results",          []);
+    this.model.setProperty("/benchmark/total",            queries.length);
+    this.model.setProperty("/benchmark/currentQueryText", "");
+    this.model.setProperty("/benchmark/typeStats", {
+      T1: { total: 0, passed: 0, pct: "—" },
+      T2: { total: 0, passed: 0, pct: "—" },
+      T3: { total: 0, passed: 0, pct: "—" },
+      T4: { total: 0, passed: 0, pct: "—" },
+      T5: { total: 0, passed: 0, pct: "—" },
+    });
 
     const llmReady = this.model.getProperty("/llm/ready") as boolean;
     let passed = 0;
 
-    for (let i = 0; i < BENCHMARK_QUERIES.length; i++) {
-      const bq = BENCHMARK_QUERIES[i];
-      this.model.setProperty("/query", bq.query);
-      const t0 = performance.now();
+    for (let i = 0; i < queries.length; i++) {
+      const bq = queries[i];
+      this.model.setProperty("/query",                      bq.query);
+      this.model.setProperty("/benchmark/currentQueryText", bq.query);
 
+      const t0 = performance.now();
       let detectedEntity = "";
       let hasResults     = false;
       let validationPass = false;
@@ -638,11 +662,21 @@ export default class ChatController extends Controller {
           const data = await res.json() as { value: unknown[] };
           hasResults = (data.value ?? []).length > 0;
         }
-      } catch { /* count as failed; continue to next benchmark query */ }
+      } catch { /* count as failed; continue */ }
 
       const totalMs  = Math.round(performance.now() - t0);
       const isPassed = entityMatch && hasResults;
       if (isPassed) passed++;
+
+      // Per-type accuracy update
+      const ts = this.model.getProperty("/benchmark/typeStats") as Record<string, { total: number; passed: number; pct: string }>;
+      const qt = bq.type;
+      const tTotal  = (ts[qt]?.total  ?? 0) + 1;
+      const tPassed = (ts[qt]?.passed ?? 0) + (isPassed ? 1 : 0);
+      this.model.setProperty(`/benchmark/typeStats/${qt}`, {
+        total: tTotal, passed: tPassed,
+        pct: `${Math.round((tPassed / tTotal) * 100)}%`
+      });
 
       const entry: BenchmarkResult = {
         idx: i + 1, query: bq.query, expectedEntity: bq.expectedEntity,
@@ -652,17 +686,66 @@ export default class ChatController extends Controller {
         statusState: isPassed ? "Success" : "Error"
       };
 
-      // Append immutably so the List binding detects the array reference change
       const current = this.model.getProperty("/benchmark/results") as BenchmarkResult[];
-      this.model.setProperty("/benchmark/results",  [...current, entry]);
-      this.model.setProperty("/benchmark/progress", Math.round(((i + 1) / BENCHMARK_QUERIES.length) * 100));
-      this.model.setProperty("/benchmark/passed",   passed);
-      this.model.setProperty("/benchmark/accuracy", `${Math.round((passed / (i + 1)) * 100)}%`);
+      this.model.setProperty("/benchmark/results",          [...current, entry]);
+      this.model.setProperty("/benchmark/progress",         Math.round(((i + 1) / queries.length) * 100));
+      this.model.setProperty("/benchmark/passed",           passed);
+      this.model.setProperty("/benchmark/accuracy",         `${Math.round((passed / (i + 1)) * 100)}%`);
     }
 
-    this.model.setProperty("/benchmark/running", false);
-    this.model.setProperty("/benchmark/done",    true);
-    MessageToast.show(`Benchmark complete — ${passed}/${BENCHMARK_QUERIES.length} passed (${Math.round((passed / BENCHMARK_QUERIES.length) * 100)}%)`);
+    this.model.setProperty("/benchmark/running",          false);
+    this.model.setProperty("/benchmark/done",             true);
+    this.model.setProperty("/benchmark/currentQueryText", "");
+    MessageToast.show(`Benchmark complete — ${passed}/${queries.length} passed (${Math.round((passed / queries.length) * 100)}%)`);
+  }
+
+  /** Returns the proportional query subset based on selected count, with custom queries appended. */
+  private getQueriesToRun(): Array<{ query: string; expectedEntity: string; type: string }> {
+    const count = parseInt(this.model.getProperty("/benchmark/queryCount") as string, 10) || 100;
+    const custom = this.model.getProperty("/benchmark/customQueries") as Array<{ query: string; expectedEntity: string; type: string }>;
+
+    if (count >= 100) return [...BENCHMARK_QUERIES, ...custom];
+
+    const byType: Record<string, typeof BENCHMARK_QUERIES> = { T1: [], T2: [], T3: [], T4: [], T5: [] };
+    BENCHMARK_QUERIES.forEach(q => byType[q.type]?.push(q));
+    const perType = Math.max(1, Math.floor(count / 5));
+    const selected = (["T1", "T2", "T3", "T4", "T5"] as const).flatMap(t => (byType[t] ?? []).slice(0, perType));
+
+    return [...selected, ...custom];
+  }
+
+  /** Opens the Add Custom Query dialog. */
+  public onOpenAddQuery(): void {
+    this.model.setProperty("/benchmark/newQuery", { query: "", entity: "Products", type: "T1" });
+    const dialog = this.byId("addQueryDialog");
+    if (dialog) (dialog as unknown as { open(): void }).open();
+  }
+
+  /** Confirms adding a custom query to the benchmark queue. */
+  public onConfirmAddQuery(): void {
+    const nq = this.model.getProperty("/benchmark/newQuery") as { query: string; entity: string; type: string };
+    if (!nq.query.trim()) { MessageToast.show("Please enter a query"); return; }
+    const custom = this.model.getProperty("/benchmark/customQueries") as Array<{ query: string; expectedEntity: string; type: string }>;
+    this.model.setProperty("/benchmark/customQueries", [
+      ...custom, { query: nq.query.trim(), expectedEntity: nq.entity, type: nq.type }
+    ]);
+    const dialog = this.byId("addQueryDialog");
+    if (dialog) (dialog as unknown as { close(): void }).close();
+    MessageToast.show(`Custom query added (${custom.length + 1} total)`);
+  }
+
+  /** Closes the Add Custom Query dialog without saving. */
+  public onCancelAddQuery(): void {
+    const dialog = this.byId("addQueryDialog");
+    if (dialog) (dialog as unknown as { close(): void }).close();
+  }
+
+  /** Removes a custom query from the queue by its list binding index. */
+  public onRemoveCustomQuery(event: { getSource(): { getBindingContext(): { getPath(): string } } }): void {
+    const path = event.getSource().getBindingContext().getPath();
+    const idx  = parseInt(path.split("/").pop() ?? "0", 10);
+    const custom = (this.model.getProperty("/benchmark/customQueries") as Array<unknown>).filter((_, i) => i !== idx);
+    this.model.setProperty("/benchmark/customQueries", custom);
   }
 
   /**

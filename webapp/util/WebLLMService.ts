@@ -217,38 +217,68 @@ export default class WebLLMService {
 
   /**
    * Corrects known generation errors from the 0.5B model before the plan reaches
-   * the validator or query builder. Two error categories are handled:
+   * the validator or query builder.
    *
-   * T3 — OData v2 substringof syntax:
-   *   The model was pre-trained on far more OData v2 than v4 content. It
-   *   occasionally generates `substringof('term', Field) eq true` instead of
-   *   the v4 form `contains(Field,'term')`. Both argument orders are corrected.
-   *
-   * T5 — Collapsed multi-value OR:
-   *   Instead of `Country eq 'A' or Country eq 'B'`, the model sometimes writes
-   *   `Country eq 'A or B'`. The regex splits the single quoted string back into
-   *   two properly separated equality predicates.
+   * Fix 1 — OData v2 substringof → v4 contains.
+   * Fix 2 — Collapsed multi-value OR: Field eq 'A or B' → Field eq 'A' or Field eq 'B'.
+   * Fix 3 — Entity alias normalisation: the model occasionally hallucinates entity
+   *   names like "Catalog", "Customer" (singular), or "OrderDetails" (no underscore).
+   * Fix 4 — Orders entity: standalone `Country` field → `ShipCountry` (Orders has no
+   *   bare `Country` column; the destination field is always ShipCountry).
+   * Fix 5 — Customers entity: model sometimes writes `CustomerCountry`, `CountryName`,
+   *   or `ShipCountry` instead of the correct `Country` field.
+   * Fix 6 — startswith capitalisation: Northwind string data is title-cased, so
+   *   `startswith(LastName,'d')` returns nothing; capitalise the first search char.
    */
   private fixKnownMistakes(plan: QueryPlan): QueryPlan {
+    // Fix 3: entity alias normalisation
+    const ENTITY_ALIASES: Record<string, string> = {
+      Catalog: "Products",     Product: "Products",
+      Customer: "Customers",
+      Employee: "Employees",
+      Supplier: "Suppliers",
+      Order: "Orders",
+      Category: "Categories",
+      OrderDetails: "Order_Details",  OrderDetail: "Order_Details",
+    };
+    if (ENTITY_ALIASES[plan.entity]) {
+      plan = { ...plan, entity: ENTITY_ALIASES[plan.entity] };
+    }
+
     if (!plan.filter) return plan;
     let f = plan.filter;
 
-    // substringof('term', Field) eq true  →  contains(Field,'term')
+    // Fix 1a: substringof('term', Field) eq true  →  contains(Field,'term')
     f = f.replace(
       /substringof\(\s*'([^']+)'\s*,\s*([A-Za-z_]\w*)\s*\)\s*(?:eq\s*true)?/gi,
       "contains($2,'$1')"
     );
-
-    // substringof(Field, 'term') eq true  →  contains(Field,'term')  (reversed args)
+    // Fix 1b: reversed arg order
     f = f.replace(
       /substringof\(\s*([A-Za-z_]\w*)\s*,\s*'([^']+)'\s*\)\s*(?:eq\s*true)?/gi,
       "contains($1,'$2')"
     );
 
-    // Field eq 'A or B'  →  Field eq 'A' or Field eq 'B'
+    // Fix 2: Field eq 'A or B'  →  Field eq 'A' or Field eq 'B'
     f = f.replace(
       /(\w+)\s+eq\s+'([^']+)\s+or\s+([^']+)'/gi,
       "$1 eq '$2' or $1 eq '$3'"
+    );
+
+    // Fix 4: Orders – bare Country → ShipCountry (negative lookbehind skips Ship prefix)
+    if (plan.entity === "Orders") {
+      f = f.replace(/(?<![A-Za-z])Country(?![A-Za-z])/g, "ShipCountry");
+    }
+
+    // Fix 5: Customers – wrong Country synonyms → Country
+    if (plan.entity === "Customers") {
+      f = f.replace(/\b(CustomerCountry|CountryName|ShipCountry)\b/g, "Country");
+    }
+
+    // Fix 6: capitalise first char of startswith search term (Northwind is title-cased)
+    f = f.replace(
+      /startswith\(([A-Za-z_]\w*)\s*,\s*'([a-z])/g,
+      (_, field, firstChar) => `startswith(${field},'${firstChar.toUpperCase()}`
     );
 
     return { ...plan, filter: f.trim() };
@@ -288,7 +318,7 @@ OUTPUT FORMAT:
 OData v4 FILTER RULES:
 - String equality:   Country eq 'France'
 - String contains:   contains(ProductName,'chai')
-- String startswith: startswith(ProductName,'A')
+- String startswith: startswith(LastName,'D')
 - Number compare:    UnitPrice lt 15  |  Freight gt 100  |  UnitsInStock le 10
 - Boolean:           Discontinued eq true  |  Discontinued eq false
 - AND condition:     (UnitPrice lt 15) and (UnitsInStock gt 0)
@@ -298,7 +328,10 @@ CRITICAL RULES — NEVER BREAK THESE:
 1. For string contains, ALWAYS use contains(Field,'term') — NEVER use substringof
 2. For OR with two values, ALWAYS repeat the field name: Field eq 'A' or Field eq 'B'
    NEVER write: Field eq 'A or B'  or  Field eq 'A','B'
-3. For "list all" / "show all" queries with no filter condition, use filter:""
+3. For "list all" / "show all" / "get all" / "display all" queries with no filter, use filter:""
+4. For Orders location queries, use ShipCountry or ShipCity — NEVER bare Country or City
+5. For Customers location queries, use Country or City — NEVER ShipCountry
+6. For startswith, ALWAYS capitalise the first letter of the search term
 
 EXAMPLES (follow these patterns exactly):
 
@@ -307,6 +340,15 @@ User: list all categories
 
 User: show all employees
 {"entity":"Employees","filter":"","orderby":"LastName asc","top":20}
+
+User: list all customers
+{"entity":"Customers","filter":"","orderby":"CompanyName asc","top":20}
+
+User: show all products
+{"entity":"Products","filter":"","orderby":"ProductName asc","top":20}
+
+User: show all orders
+{"entity":"Orders","filter":"","orderby":"OrderDate desc","top":20}
 
 User: products cheaper than $15
 {"entity":"Products","filter":"UnitPrice lt 15","orderby":"UnitPrice asc","top":20}
@@ -320,11 +362,23 @@ User: products with chai in the name
 User: customers with restaurant in name
 {"entity":"Customers","filter":"contains(CompanyName,'restaurant')","orderby":"CompanyName asc","top":20}
 
+User: employees with last name starting with D
+{"entity":"Employees","filter":"startswith(LastName,'D')","orderby":"LastName asc","top":20}
+
 User: discontinued products
 {"entity":"Products","filter":"Discontinued eq true","orderby":"ProductName asc","top":20}
 
+User: customers from Germany
+{"entity":"Customers","filter":"Country eq 'Germany'","orderby":"CompanyName asc","top":20}
+
 User: employees from USA
 {"entity":"Employees","filter":"Country eq 'USA'","orderby":"LastName asc","top":20}
+
+User: orders shipped to France
+{"entity":"Orders","filter":"ShipCountry eq 'France'","orderby":"OrderDate desc","top":20}
+
+User: orders going to Germany
+{"entity":"Orders","filter":"ShipCountry eq 'Germany'","orderby":"OrderDate desc","top":20}
 
 User: customers from Germany or France
 {"entity":"Customers","filter":"Country eq 'Germany' or Country eq 'France'","orderby":"CompanyName asc","top":20}
@@ -335,13 +389,13 @@ User: orders to France or Brazil
 User: most expensive products
 {"entity":"Products","filter":"","orderby":"UnitPrice desc","top":10}
 
-User: recent orders to France
-{"entity":"Orders","filter":"ShipCountry eq 'France'","orderby":"OrderDate desc","top":20}
-
 User: suppliers from UK
 {"entity":"Suppliers","filter":"Country eq 'UK'","orderby":"CompanyName asc","top":20}
 
 User: low stock products
 {"entity":"Products","filter":"UnitsInStock lt 10","orderby":"UnitsInStock asc","top":20}
+
+User: order details with quantity greater than 50
+{"entity":"Order_Details","filter":"Quantity gt 50","orderby":"Quantity desc","top":20}
 
 Output ONLY the JSON object.`;

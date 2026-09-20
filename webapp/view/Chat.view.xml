@@ -421,11 +421,13 @@
             <uxap:blocks>
               <VBox class="floraBenchmarkCard">
 
-                <!-- Header row -->
+                <!-- ── Title + primary actions ── -->
                 <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraBenchmarkHeader">
                   <VBox>
                     <Title text="NL2OData Accuracy Benchmark" level="H5"/>
-                    <Text text="100 queries · 20 per taxonomy type (T1–T5) · live Northwind v4" class="floraBenchmarkSubtitle"/>
+                    <Text
+                      text="{= '100-query suite · 20 per taxonomy type (T1–T5) · ' + ${/benchmark/customQueries}.length + ' custom'}"
+                      class="floraBenchmarkSubtitle"/>
                   </VBox>
                   <HBox alignItems="Center">
                     <ObjectStatus
@@ -434,11 +436,12 @@
                       icon="{= ${/benchmark/done} ? 'sap-icon://activity-2' : 'sap-icon://target-group'}"
                       class="sapUiSmallMarginEnd"/>
                     <Button
-                      text="Download Results"
+                      text="Download"
                       icon="sap-icon://download"
                       type="Default"
                       press=".onDownloadBenchmark"
                       enabled="{= ${/benchmark/results}.length > 0 &amp;&amp; !${/benchmark/running}}"
+                      tooltip="Download results as CSV (opens in Excel)"
                       class="sapUiSmallMarginEnd"/>
                     <Button
                       text="{= ${/benchmark/running} ? 'Running…' : 'Run Benchmark'}"
@@ -449,16 +452,99 @@
                   </HBox>
                 </HBox>
 
-                <!-- Progress bar while running -->
-                <ProgressIndicator
-                  percentValue="{/benchmark/progress}"
-                  displayValue="{= ${/benchmark/progress} + '%'}"
-                  state="Information"
-                  width="100%"
-                  visible="{/benchmark/running}"
-                  class="floraBenchmarkProgress sapUiTinyMarginTop"/>
+                <!-- ── Controls: query count + custom query entry ── -->
+                <HBox alignItems="Center" class="floraBenchmarkControls">
+                  <Text text="Run:" class="floraBenchmarkSubtitle sapUiSmallMarginEnd"/>
+                  <SegmentedButton selectedKey="{/benchmark/queryCount}">
+                    <items>
+                      <SegmentedButtonItem key="10"  text="10"/>
+                      <SegmentedButtonItem key="25"  text="25"/>
+                      <SegmentedButtonItem key="50"  text="50"/>
+                      <SegmentedButtonItem key="100" text="100"/>
+                    </items>
+                  </SegmentedButton>
+                  <Text text="queries" class="floraBenchmarkSubtitle sapUiSmallMarginBegin sapUiSmallMarginEnd"/>
+                  <Button
+                    text="+ Add Custom Query"
+                    icon="sap-icon://add"
+                    type="Transparent"
+                    press=".onOpenAddQuery"
+                    class="floraBenchmarkAddBtn"/>
+                </HBox>
 
-                <!-- Results table -->
+                <!-- ── Custom queries queue ── -->
+                <VBox visible="{= ${/benchmark/customQueries}.length > 0}"
+                      class="floraBenchmarkCustomQueue sapUiTinyMarginTop">
+                  <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                    <core:Icon src="sap-icon://customize" size="0.75rem" class="floraBenchmarkSubtitleIcon"/>
+                    <Text text="{= ${/benchmark/customQueries}.length + ' custom ' + (${/benchmark/customQueries}.length === 1 ? 'query' : 'queries') + ' queued (appended to selected count)'}"
+                          class="sapUiTinyMarginBegin floraBenchmarkSubtitle"/>
+                  </HBox>
+                  <List items="{/benchmark/customQueries}" showNoData="false" class="floraBenchmarkCustomList">
+                    <CustomListItem>
+                      <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraCustomQueryRow">
+                        <HBox alignItems="Center">
+                          <ObjectStatus text="{type}" state="Information" class="sapUiSmallMarginEnd"/>
+                          <Text text="{query}" wrapping="false" class="floraCustomQueryText"/>
+                          <Text text=" → " class="floraBenchmarkSubtitle"/>
+                          <Text text="{expectedEntity}" class="floraEntityBadge"/>
+                        </HBox>
+                        <Button icon="sap-icon://decline" type="Transparent"
+                                press=".onRemoveCustomQuery" tooltip="Remove"/>
+                      </HBox>
+                    </CustomListItem>
+                  </List>
+                </VBox>
+
+                <!-- ── Live progress (visible while running) ── -->
+                <VBox visible="{/benchmark/running}" class="sapUiTinyMarginTop">
+                  <HBox alignItems="Center" justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                    <Text text="{= 'Running: ' + ${/benchmark/currentQueryText}}"
+                          wrapping="false" class="floraBenchmarkCurrentQuery"/>
+                    <ObjectStatus
+                      text="{= ${/benchmark/accuracy} + ' accurate'}"
+                      state="Information"/>
+                  </HBox>
+                  <ProgressIndicator
+                    percentValue="{/benchmark/progress}"
+                    displayValue="{= ${/benchmark/progress} + '%'}"
+                    state="Information"
+                    width="100%"
+                    class="floraBenchmarkProgress"/>
+                </VBox>
+
+                <!-- ── Per-type accuracy grid (visible once first results appear) ── -->
+                <HBox visible="{= ${/benchmark/results}.length > 0}"
+                      justifyContent="SpaceBetween"
+                      class="floraBenchmarkTypeGrid sapUiTinyMarginTop">
+                  <VBox class="floraBenchmarkTypeTile">
+                    <ObjectStatus text="T1 · Read" state="Information" class="floraBenchmarkTypeLabel"/>
+                    <Title text="{= ${/benchmark/typeStats/T1/passed} + '/' + ${/benchmark/typeStats/T1/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
+                    <Text text="{/benchmark/typeStats/T1/pct}" class="floraBenchmarkTypePct"/>
+                  </VBox>
+                  <VBox class="floraBenchmarkTypeTile">
+                    <ObjectStatus text="T2 · Numeric" state="Information" class="floraBenchmarkTypeLabel"/>
+                    <Title text="{= ${/benchmark/typeStats/T2/passed} + '/' + ${/benchmark/typeStats/T2/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
+                    <Text text="{/benchmark/typeStats/T2/pct}" class="floraBenchmarkTypePct"/>
+                  </VBox>
+                  <VBox class="floraBenchmarkTypeTile">
+                    <ObjectStatus text="T3 · String" state="Information" class="floraBenchmarkTypeLabel"/>
+                    <Title text="{= ${/benchmark/typeStats/T3/passed} + '/' + ${/benchmark/typeStats/T3/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
+                    <Text text="{/benchmark/typeStats/T3/pct}" class="floraBenchmarkTypePct"/>
+                  </VBox>
+                  <VBox class="floraBenchmarkTypeTile">
+                    <ObjectStatus text="T4 · Equality" state="Information" class="floraBenchmarkTypeLabel"/>
+                    <Title text="{= ${/benchmark/typeStats/T4/passed} + '/' + ${/benchmark/typeStats/T4/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
+                    <Text text="{/benchmark/typeStats/T4/pct}" class="floraBenchmarkTypePct"/>
+                  </VBox>
+                  <VBox class="floraBenchmarkTypeTile">
+                    <ObjectStatus text="T5 · OR" state="Information" class="floraBenchmarkTypeLabel"/>
+                    <Title text="{= ${/benchmark/typeStats/T5/passed} + '/' + ${/benchmark/typeStats/T5/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
+                    <Text text="{/benchmark/typeStats/T5/pct}" class="floraBenchmarkTypePct"/>
+                  </VBox>
+                </HBox>
+
+                <!-- ── Results table ── -->
                 <Table
                   id="benchmarkTable"
                   visible="{= ${/benchmark/results}.length > 0}"
@@ -508,4 +594,47 @@
     </uxap:sections>
 
   </uxap:ObjectPageLayout>
+
+  <!-- ── Add Custom Query dialog ── -->
+  <mvc:dependents>
+    <Dialog id="addQueryDialog" title="Add Custom Benchmark Query" contentWidth="520px" resizable="true">
+      <content>
+        <VBox class="floraAddQueryForm">
+          <Label text="Natural Language Query" required="true"/>
+          <TextArea
+            value="{/benchmark/newQuery/query}"
+            placeholder="e.g. products cheaper than $20  ·  orders going to Italy"
+            growing="true" growingMaxLines="3" rows="2" width="100%"
+            class="sapUiTinyMarginTop sapUiSmallMarginBottom"/>
+          <Label text="Expected Entity" required="true"/>
+          <Select selectedKey="{/benchmark/newQuery/entity}" width="100%" class="sapUiTinyMarginTop sapUiSmallMarginBottom">
+            <items>
+              <core:Item key="Products"      text="Products"/>
+              <core:Item key="Categories"    text="Categories"/>
+              <core:Item key="Customers"     text="Customers"/>
+              <core:Item key="Orders"        text="Orders"/>
+              <core:Item key="Employees"     text="Employees"/>
+              <core:Item key="Suppliers"     text="Suppliers"/>
+              <core:Item key="Order_Details" text="Order_Details"/>
+            </items>
+          </Select>
+          <Label text="Query Type" required="true"/>
+          <Select selectedKey="{/benchmark/newQuery/type}" width="100%" class="sapUiTinyMarginTop">
+            <items>
+              <core:Item key="T1" text="T1 — Entity Read (no filter)"/>
+              <core:Item key="T2" text="T2 — Numeric Range"/>
+              <core:Item key="T3" text="T3 — String Match (contains / startswith)"/>
+              <core:Item key="T4" text="T4 — Categorical Equality (eq)"/>
+              <core:Item key="T5" text="T5 — Multi-value OR"/>
+            </items>
+          </Select>
+        </VBox>
+      </content>
+      <buttons>
+        <Button text="Add to Benchmark" type="Emphasized" press=".onConfirmAddQuery"/>
+        <Button text="Cancel" press=".onCancelAddQuery"/>
+      </buttons>
+    </Dialog>
+  </mvc:dependents>
+
 </mvc:View>
