@@ -214,22 +214,120 @@ const DIRECT_FILTERS: Record<string, (t: string) => string> = {
 };
 
 /**
- * The 10 benchmark queries used to evaluate the pipeline.
- * Two queries per taxonomy type T1–T5, matching the evaluation table in the
- * NL2OData paper. Pass criteria: entity is correctly detected AND results are
- * non-empty (proxy for OData filter correctness).
+ * 100-query benchmark suite — 20 queries per taxonomy type T1–T5, spanning all
+ * 7 Northwind entities. Pass criteria: entity correctly detected AND results
+ * array is non-empty (proxy for OData filter correctness).
  */
 const BENCHMARK_QUERIES: Array<{ query: string; expectedEntity: string; type: string }> = [
-  { query: "list all categories",              expectedEntity: "Categories", type: "T1" },
-  { query: "show all employees",               expectedEntity: "Employees",  type: "T1" },
-  { query: "products cheaper than $15",        expectedEntity: "Products",   type: "T2" },
-  { query: "orders with freight over 100",     expectedEntity: "Orders",     type: "T2" },
-  { query: "products with chai in the name",   expectedEntity: "Products",   type: "T3" },
-  { query: "customers with restaurant in name",expectedEntity: "Customers",  type: "T3" },
-  { query: "discontinued products",            expectedEntity: "Products",   type: "T4" },
-  { query: "employees from USA",               expectedEntity: "Employees",  type: "T4" },
-  { query: "customers from Germany or France", expectedEntity: "Customers",  type: "T5" },
-  { query: "orders to France or Brazil",       expectedEntity: "Orders",     type: "T5" },
+  // ── T1: Entity Read (no filter) ──────────────────────────────────────────────
+  { query: "list all categories",                         expectedEntity: "Categories",   type: "T1" },
+  { query: "show all employees",                          expectedEntity: "Employees",    type: "T1" },
+  { query: "show all products",                           expectedEntity: "Products",     type: "T1" },
+  { query: "list all customers",                          expectedEntity: "Customers",    type: "T1" },
+  { query: "show all orders",                             expectedEntity: "Orders",       type: "T1" },
+  { query: "list all suppliers",                          expectedEntity: "Suppliers",    type: "T1" },
+  { query: "show all order details",                      expectedEntity: "Order_Details",type: "T1" },
+  { query: "display all product categories",              expectedEntity: "Categories",   type: "T1" },
+  { query: "get all staff",                               expectedEntity: "Employees",    type: "T1" },
+  { query: "what products do we have",                    expectedEntity: "Products",     type: "T1" },
+  { query: "show me all clients",                         expectedEntity: "Customers",    type: "T1" },
+  { query: "list all shipments",                          expectedEntity: "Orders",       type: "T1" },
+  { query: "show all vendors",                            expectedEntity: "Suppliers",    type: "T1" },
+  { query: "list all line items",                         expectedEntity: "Order_Details",type: "T1" },
+  { query: "get all product groups",                      expectedEntity: "Categories",   type: "T1" },
+  { query: "fetch all workers",                           expectedEntity: "Employees",    type: "T1" },
+  { query: "display all items in catalog",                expectedEntity: "Products",     type: "T1" },
+  { query: "show all buyers",                             expectedEntity: "Customers",    type: "T1" },
+  { query: "list all purchases",                          expectedEntity: "Orders",       type: "T1" },
+  { query: "show me all manufacturers",                   expectedEntity: "Suppliers",    type: "T1" },
+
+  // ── T2: Numeric Range ────────────────────────────────────────────────────────
+  { query: "products cheaper than $15",                   expectedEntity: "Products",     type: "T2" },
+  { query: "orders with freight over 100",                expectedEntity: "Orders",       type: "T2" },
+  { query: "products with unit price above 50",           expectedEntity: "Products",     type: "T2" },
+  { query: "items with less than 5 units in stock",       expectedEntity: "Products",     type: "T2" },
+  { query: "products priced under 20 dollars",            expectedEntity: "Products",     type: "T2" },
+  { query: "orders with freight less than 20",            expectedEntity: "Orders",       type: "T2" },
+  { query: "products with more than 100 units in stock",  expectedEntity: "Products",     type: "T2" },
+  { query: "order details with quantity greater than 50", expectedEntity: "Order_Details",type: "T2" },
+  { query: "products costing more than 100",              expectedEntity: "Products",     type: "T2" },
+  { query: "order details with discount over 0.2",        expectedEntity: "Order_Details",type: "T2" },
+  { query: "orders with high freight above 200",          expectedEntity: "Orders",       type: "T2" },
+  { query: "products with stock below 10",                expectedEntity: "Products",     type: "T2" },
+  { query: "order line items with unit price above 30",   expectedEntity: "Order_Details",type: "T2" },
+  { query: "order line items with quantity over 100",     expectedEntity: "Order_Details",type: "T2" },
+  { query: "products with stock between 20 and 50",       expectedEntity: "Products",     type: "T2" },
+  { query: "orders with freight between 50 and 150",      expectedEntity: "Orders",       type: "T2" },
+  { query: "order details with zero discount",            expectedEntity: "Order_Details",type: "T2" },
+  { query: "order line items with unit price under 10",   expectedEntity: "Order_Details",type: "T2" },
+  { query: "products in stock less than 20 units",        expectedEntity: "Products",     type: "T2" },
+  { query: "products with price above 75",                expectedEntity: "Products",     type: "T2" },
+
+  // ── T3: String Match ─────────────────────────────────────────────────────────
+  { query: "products with chai in the name",              expectedEntity: "Products",     type: "T3" },
+  { query: "customers with restaurant in name",           expectedEntity: "Customers",    type: "T3" },
+  { query: "suppliers starting with exotic",              expectedEntity: "Suppliers",    type: "T3" },
+  { query: "employees with last name starting with D",    expectedEntity: "Employees",    type: "T3" },
+  { query: "customers whose company starts with B",       expectedEntity: "Customers",    type: "T3" },
+  { query: "products containing sauce",                   expectedEntity: "Products",     type: "T3" },
+  { query: "products with tofu in the name",              expectedEntity: "Products",     type: "T3" },
+  { query: "customers with Trading in their company name",expectedEntity: "Customers",    type: "T3" },
+  { query: "employees with name starting with A",         expectedEntity: "Employees",    type: "T3" },
+  { query: "products containing syrup",                   expectedEntity: "Products",     type: "T3" },
+  { query: "customers with Import in their name",         expectedEntity: "Customers",    type: "T3" },
+  { query: "orders shipped to cities starting with L",    expectedEntity: "Orders",       type: "T3" },
+  { query: "products starting with Chef",                 expectedEntity: "Products",     type: "T3" },
+  { query: "customers with Gourmet in their name",        expectedEntity: "Customers",    type: "T3" },
+  { query: "orders shipped to Berlin",                    expectedEntity: "Orders",       type: "T3" },
+  { query: "products containing pasta",                   expectedEntity: "Products",     type: "T3" },
+  { query: "suppliers with Tokyo in their city",          expectedEntity: "Suppliers",    type: "T3" },
+  { query: "products with anchov in the name",            expectedEntity: "Products",     type: "T3" },
+  { query: "products with caviar in the name",            expectedEntity: "Products",     type: "T3" },
+  { query: "customers in cities starting with M",         expectedEntity: "Customers",    type: "T3" },
+
+  // ── T4: Categorical Equality ─────────────────────────────────────────────────
+  { query: "discontinued products",                       expectedEntity: "Products",     type: "T4" },
+  { query: "employees from USA",                          expectedEntity: "Employees",    type: "T4" },
+  { query: "customers from Germany",                      expectedEntity: "Customers",    type: "T4" },
+  { query: "suppliers from USA",                          expectedEntity: "Suppliers",    type: "T4" },
+  { query: "employees based in UK",                       expectedEntity: "Employees",    type: "T4" },
+  { query: "customers located in London",                 expectedEntity: "Customers",    type: "T4" },
+  { query: "orders shipped to France",                    expectedEntity: "Orders",       type: "T4" },
+  { query: "customers from Mexico",                       expectedEntity: "Customers",    type: "T4" },
+  { query: "employees in Seattle",                        expectedEntity: "Employees",    type: "T4" },
+  { query: "suppliers from Japan",                        expectedEntity: "Suppliers",    type: "T4" },
+  { query: "customers from Brazil",                       expectedEntity: "Customers",    type: "T4" },
+  { query: "orders going to Germany",                     expectedEntity: "Orders",       type: "T4" },
+  { query: "employees from London",                       expectedEntity: "Employees",    type: "T4" },
+  { query: "customers from Spain",                        expectedEntity: "Customers",    type: "T4" },
+  { query: "suppliers based in France",                   expectedEntity: "Suppliers",    type: "T4" },
+  { query: "orders shipped to Argentina",                 expectedEntity: "Orders",       type: "T4" },
+  { query: "customers from Sweden",                       expectedEntity: "Customers",    type: "T4" },
+  { query: "employees in Tacoma",                         expectedEntity: "Employees",    type: "T4" },
+  { query: "orders delivered to USA",                     expectedEntity: "Orders",       type: "T4" },
+  { query: "active products",                             expectedEntity: "Products",     type: "T4" },
+
+  // ── T5: Multi-value OR ───────────────────────────────────────────────────────
+  { query: "customers from Germany or France",            expectedEntity: "Customers",    type: "T5" },
+  { query: "orders to France or Brazil",                  expectedEntity: "Orders",       type: "T5" },
+  { query: "employees from USA or UK",                    expectedEntity: "Employees",    type: "T5" },
+  { query: "customers from Mexico or Argentina",          expectedEntity: "Customers",    type: "T5" },
+  { query: "products containing chai or tofu",            expectedEntity: "Products",     type: "T5" },
+  { query: "suppliers from Germany or France",            expectedEntity: "Suppliers",    type: "T5" },
+  { query: "customers from Sweden or Denmark",            expectedEntity: "Customers",    type: "T5" },
+  { query: "orders shipped to Germany or Austria",        expectedEntity: "Orders",       type: "T5" },
+  { query: "employees from Seattle or Tacoma",            expectedEntity: "Employees",    type: "T5" },
+  { query: "customers from Spain or Portugal",            expectedEntity: "Customers",    type: "T5" },
+  { query: "products with sauce or syrup in name",        expectedEntity: "Products",     type: "T5" },
+  { query: "orders to Italy or Switzerland",              expectedEntity: "Orders",       type: "T5" },
+  { query: "customers from USA or Canada",                expectedEntity: "Customers",    type: "T5" },
+  { query: "suppliers from UK or USA",                    expectedEntity: "Suppliers",    type: "T5" },
+  { query: "employees from UK or Germany",                expectedEntity: "Employees",    type: "T5" },
+  { query: "orders to Austria or Belgium",                expectedEntity: "Orders",       type: "T5" },
+  { query: "customers from Australia or New Zealand",     expectedEntity: "Customers",    type: "T5" },
+  { query: "suppliers from Spain or Italy",               expectedEntity: "Suppliers",    type: "T5" },
+  { query: "products with chai or anchovy in name",       expectedEntity: "Products",     type: "T5" },
+  { query: "customers from Norway or Finland",            expectedEntity: "Customers",    type: "T5" },
 ];
 
 /** Human-readable label map for query taxonomy type codes. */
@@ -781,5 +879,56 @@ export default class ChatController extends Controller {
   /** Dismisses the error MessageStrip by clearing the /error model path. */
   public onCloseError(): void {
     this.model.setProperty("/error", "");
+  }
+
+  /**
+   * Downloads the completed benchmark results as a CSV file that Excel can open.
+   * Each row represents one benchmark query with all pass/fail criteria columns.
+   * Bound to the "Download Results" button in the Benchmark Runner section.
+   */
+  public onDownloadBenchmark(): void {
+    const results = this.model.getProperty("/benchmark/results") as BenchmarkResult[];
+    if (!results || results.length === 0) {
+      MessageToast.show("No results to download — run the benchmark first");
+      return;
+    }
+
+    const headers = [
+      "#", "Query", "Type", "Expected Entity", "Detected Entity",
+      "Entity Match", "Has Results", "Validation Passed", "Time (ms)", "Status"
+    ];
+
+    const escape = (v: unknown) => {
+      const s = String(v ?? "");
+      return s.includes(",") || s.includes('"') || s.includes("\n")
+        ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+
+    const rows = results.map(r => [
+      r.idx,
+      escape(r.query),
+      r.queryType,
+      r.expectedEntity,
+      r.detectedEntity || "",
+      r.entityMatch ? "Yes" : "No",
+      r.hasResults ? "Yes" : "No",
+      r.validationPassed ? "Yes" : "No",
+      r.totalMs,
+      r.passed ? "Pass" : "Fail"
+    ].join(","));
+
+    const csv = [headers.join(","), ...rows].join("\r\n");
+    const bom  = "﻿"; // UTF-8 BOM so Excel detects encoding correctly
+    const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `floria_benchmark_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    MessageToast.show(`Downloaded ${results.length} benchmark results`);
   }
 }

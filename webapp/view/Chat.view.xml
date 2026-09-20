@@ -425,13 +425,20 @@
                 <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraBenchmarkHeader">
                   <VBox>
                     <Title text="NL2OData Accuracy Benchmark" level="H5"/>
-                    <Text text="10 queries · 2 per taxonomy type (T1–T5) · live Northwind v4" class="floraBenchmarkSubtitle"/>
+                    <Text text="100 queries · 20 per taxonomy type (T1–T5) · live Northwind v4" class="floraBenchmarkSubtitle"/>
                   </VBox>
                   <HBox alignItems="Center">
                     <ObjectStatus
-                      text="{= ${/benchmark/done} ? ${/benchmark/passed} + '/10 · ' + ${/benchmark/accuracy} : (${/benchmark/running} ? ${/benchmark/progress} + '%' : 'Not run')}"
+                      text="{= ${/benchmark/done} ? ${/benchmark/passed} + '/' + ${/benchmark/total} + ' · ' + ${/benchmark/accuracy} : (${/benchmark/running} ? ${/benchmark/progress} + '%' : 'Not run')}"
                       state="{= ${/benchmark/done} ? 'Success' : (${/benchmark/running} ? 'Warning' : 'None')}"
                       icon="{= ${/benchmark/done} ? 'sap-icon://activity-2' : 'sap-icon://target-group'}"
+                      class="sapUiSmallMarginEnd"/>
+                    <Button
+                      text="Download Results"
+                      icon="sap-icon://download"
+                      type="Default"
+                      press=".onDownloadBenchmark"
+                      enabled="{= ${/benchmark/results}.length > 0 &amp;&amp; !${/benchmark/running}}"
                       class="sapUiSmallMarginEnd"/>
                     <Button
                       text="{= ${/benchmark/running} ? 'Running…' : 'Run Benchmark'}"
