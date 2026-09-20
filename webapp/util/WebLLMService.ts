@@ -59,16 +59,28 @@ export type ProgressCallback = (report: InitProgressReport) => void;
 // Opaque type for the MLC engine — we only use it through the chat.completions API.
 type MLCEngine = Record<string, unknown>;
 
+export interface ModelInfo {
+  id: string;
+  label: string;
+  vendor: string;
+  sizeLabel: string;
+  params: string;
+}
+
+export const MODEL_REGISTRY: ModelInfo[] = [
+  { id: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",       label: "Qwen2.5-0.5B",       vendor: "Alibaba",   sizeLabel: "~300 MB", params: "0.5B"  },
+  { id: "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",  label: "Qwen2.5-Coder-1.5B", vendor: "Alibaba",   sizeLabel: "~900 MB", params: "1.5B"  },
+  { id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",        label: "Llama-3.2-3B",       vendor: "Meta",      sizeLabel: "~2.0 GB", params: "3B"    },
+  { id: "gemma-2-2b-it-q4f16_1-MLC",                label: "Gemma-2-2B",          vendor: "Google",    sizeLabel: "~1.5 GB", params: "2B"    },
+  { id: "Phi-3.5-mini-instruct-q4f16_1-MLC",        label: "Phi-3.5-mini",        vendor: "Microsoft", sizeLabel: "~2.2 GB", params: "3.8B"  },
+];
+
 /**
  * @namespace research.chat.util
  */
 export default class WebLLMService {
 
-  // Qwen2.5-0.5B is the smallest model in the Qwen2.5 family.
-  // At ~300 MB (Q4F16) it fits comfortably within the VRAM of integrated GPU
-  // hardware (Intel Iris Xe, Apple M-series) while achieving 83% semantic
-  // correctness on the NL2OData benchmark — within 9 points of GPT-4o.
-  private static readonly MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
+  private currentModelId = MODEL_REGISTRY[0].id;
 
   private engine: MLCEngine | null = null;
   private initPromise: Promise<void> | null = null;
@@ -106,7 +118,7 @@ export default class WebLLMService {
       await this.loadWebLLM();
       if (!window.mlc?.CreateMLCEngine) throw new Error("WebLLM failed to load.");
       this.engine = await (window.mlc.CreateMLCEngine as Function)(
-        WebLLMService.MODEL_ID,
+        this.currentModelId,
         { initProgressCallback: progressCallback }
       ) as MLCEngine;
       this.isReady = true;
@@ -117,6 +129,22 @@ export default class WebLLMService {
 
   /** Returns true once the engine has finished loading and is ready for inference. */
   public getIsReady(): boolean { return this.isReady; }
+
+  public getCurrentModelId(): string { return this.currentModelId; }
+
+  public async switchModel(modelId: string, progressCallback?: ProgressCallback): Promise<void> {
+    this.engine      = null;
+    this.isReady     = false;
+    this.initPromise = null;
+    this.currentModelId = modelId;
+    return this.initialize(progressCallback);
+  }
+
+  public async precacheModel(modelId: string, progressCallback?: ProgressCallback): Promise<void> {
+    await this.loadWebLLM();
+    if (!window.mlc?.CreateMLCEngine) throw new Error("WebLLM not loaded.");
+    await (window.mlc.CreateMLCEngine as Function)(modelId, { initProgressCallback: progressCallback });
+  }
 
   /**
    * Sends the user's natural-language question to the local LLM and parses the

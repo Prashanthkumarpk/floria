@@ -65,6 +65,31 @@
               class="floraProgress"/>
           </VBox>
 
+          <!-- AI Model selector -->
+          <HBox alignItems="Center" class="floraModelSelector sapUiSmallMarginBottom">
+            <Label text="AI Model" class="floraModelSelectorLabel"/>
+            <Select
+              id="modelSelect"
+              selectedKey="{/llm/selectedModelId}"
+              change=".onModelChange"
+              enabled="{= !${/llm/loading} &amp;&amp; !${/loading}}"
+              class="sapUiSmallMarginBegin">
+              <items>
+                <core:ListItem key="Qwen2.5-0.5B-Instruct-q4f16_1-MLC"      text="Qwen2.5-0.5B · Alibaba · ~300 MB · 0.5B"/>
+                <core:ListItem key="Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC" text="Qwen2.5-Coder-1.5B · Alibaba · ~900 MB · 1.5B"/>
+                <core:ListItem key="Llama-3.2-3B-Instruct-q4f16_1-MLC"       text="Llama-3.2-3B · Meta · ~2.0 GB · 3B"/>
+                <core:ListItem key="gemma-2-2b-it-q4f16_1-MLC"               text="Gemma-2-2B · Google · ~1.5 GB · 2B"/>
+                <core:ListItem key="Phi-3.5-mini-instruct-q4f16_1-MLC"       text="Phi-3.5-mini · Microsoft · ~2.2 GB · 3.8B"/>
+              </items>
+            </Select>
+            <ObjectStatus
+              text="{/llm/selectedModelSize}"
+              state="Information"
+              icon="sap-icon://database"
+              class="sapUiSmallMarginBegin"
+              visible="{/llm/ready}"/>
+          </HBox>
+
           <!-- Search hero -->
           <VBox class="floraSearchHero">
             <Label text="Ask in plain language" class="floraSearchLabel"/>
@@ -149,7 +174,7 @@
                       <core:Icon src="{= ${/oDataQuery/mode} === 'AI' ? 'sap-icon://ai' : 'sap-icon://search'}" size="0.875rem" class="floraPipelineIcon"/>
                       <VBox class="sapUiTinyMarginBegin">
                         <Text text="{= ${/oDataQuery/mode} === 'AI' ? 'AI Parse' : 'Keyword Match'}" class="floraPipelineLabel"/>
-                        <Text text="{= ${/timing/parseMs} + 'ms'}" class="floraPipelineMeta"/>
+                        <Text text="{= (${/oDataQuery/mode} === 'AI' &amp;&amp; ${/oDataQuery/modelLabel}) ? ${/oDataQuery/modelLabel} + ' · ' + ${/timing/parseMs} + 'ms' : ${/timing/parseMs} + 'ms'}" class="floraPipelineMeta"/>
                       </VBox>
                     </HBox>
                     <core:Icon src="sap-icon://navigation-right-arrow" size="0.625rem" class="floraPipelineArrow"/>
@@ -416,7 +441,59 @@
             </uxap:blocks>
           </uxap:ObjectPageSubSection>
 
-          <!-- ── 3c: Benchmark Runner ── -->
+          <!-- ── 3c: Model Cache ── -->
+          <uxap:ObjectPageSubSection title="Model Cache">
+            <uxap:blocks>
+              <VBox class="floraBenchmarkCard">
+                <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraBenchmarkHeader">
+                  <VBox>
+                    <Title text="Pre-cached Models" level="H5"/>
+                    <Text text="Download all models once for instant switching (~7 GB total)" class="floraBenchmarkSubtitle sapUiTinyMarginTop"/>
+                  </VBox>
+                  <Button
+                    text="{= ${/precaching} ? 'Downloading…' : 'Pre-cache All'}"
+                    icon="{= ${/precaching} ? 'sap-icon://synchronize' : 'sap-icon://download'}"
+                    type="Default"
+                    press=".onPrecacheAll"
+                    enabled="{= !${/precaching} &amp;&amp; !${/llm/loading}}"/>
+                </HBox>
+
+                <List
+                  items="{path: '/models', templateShareable: false}"
+                  showNoData="false"
+                  class="floraCacheList">
+                  <CustomListItem>
+                    <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraCacheRow">
+                      <VBox class="floraCacheInfo">
+                        <HBox alignItems="Center">
+                          <core:Icon src="sap-icon://ai" size="0.875rem" class="floraCacheModelIcon"/>
+                          <Text text="{label}" class="floraCacheLabel sapUiTinyMarginBegin"/>
+                        </HBox>
+                        <Text text="{= ${vendor} + '  ·  ' + ${params} + '  ·  ' + ${sizeLabel}}" class="floraCacheMeta"/>
+                      </VBox>
+                      <HBox alignItems="Center" class="floraCacheStatusCell">
+                        <ProgressIndicator
+                          percentValue="{cacheProgress}"
+                          displayValue="{cacheProgressPct}"
+                          state="Information"
+                          width="7rem"
+                          class="floraCacheProgress"
+                          visible="{isDownloading}"/>
+                        <ObjectStatus
+                          text="{cacheStatus}"
+                          state="{cacheState}"
+                          icon="{cacheIcon}"
+                          class="sapUiSmallMarginBegin"/>
+                      </HBox>
+                    </HBox>
+                  </CustomListItem>
+                </List>
+
+              </VBox>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+
+          <!-- ── 3d: Benchmark Runner ── -->
           <uxap:ObjectPageSubSection title="Benchmark Runner">
             <uxap:blocks>
               <VBox class="floraBenchmarkCard">
@@ -428,6 +505,10 @@
                     <Text
                       text="{= '100-query suite · 20 per taxonomy type (T1–T5) · ' + ${/benchmark/customQueries}.length + ' custom'}"
                       class="floraBenchmarkSubtitle"/>
+                    <HBox alignItems="Center" class="sapUiTinyMarginTop" visible="{= !!${/benchmark/modelLabel}}">
+                      <core:Icon src="sap-icon://ai" size="0.75rem" class="floraBenchmarkSubtitleIcon"/>
+                      <Text text="{= 'Last run: ' + ${/benchmark/modelLabel}}" class="floraBenchmarkSubtitle sapUiTinyMarginBegin"/>
+                    </HBox>
                   </VBox>
                   <HBox alignItems="Center">
                     <ObjectStatus

@@ -50,7 +50,7 @@ import ColumnListItem from "sap/m/ColumnListItem";
 import Text from "sap/m/Text";
 import Label from "sap/m/Label";
 import ObjectNumber from "sap/m/ObjectNumber";
-import WebLLMService, { QueryPlan } from "../util/WebLLMService";
+import WebLLMService, { QueryPlan, MODEL_REGISTRY } from "../util/WebLLMService";
 import ODataQueryBuilder from "../util/ODataQueryBuilder";
 import QueryValidator, { ValidationResult } from "../util/QueryValidator";
 
@@ -98,6 +98,8 @@ interface BenchmarkResult {
   passed: boolean;
   status: string;
   statusState: string;
+  modelId: string;
+  modelLabel: string;
 }
 
 // ─── Static data ───────────────────────────────────────────────────────────────
@@ -352,6 +354,21 @@ export default class ChatController extends Controller {
   /** Auto-incrementing ID for history entries — monotone so React-style keys are stable. */
   private historySeq = 0;
 
+  private readonly CACHE_STORE_KEY = "floria_cached_models";
+
+  private getCachedModelIds(): Set<string> {
+    try {
+      const s = localStorage.getItem(this.CACHE_STORE_KEY);
+      return new Set(s ? (JSON.parse(s) as string[]) : []);
+    } catch { return new Set(); }
+  }
+
+  private markModelCached(modelId: string): void {
+    const s = this.getCachedModelIds();
+    s.add(modelId);
+    localStorage.setItem(this.CACHE_STORE_KEY, JSON.stringify([...s]));
+  }
+
   /** OData proxy base. The proxy (srv/server.mjs) adds CORS headers for browser fetch. */
   private readonly ODATA_BASE = "http://localhost:4004/odata";
 
@@ -374,6 +391,7 @@ export default class ChatController extends Controller {
       oDataQuery: {
         url: "", entity: "", filter: "", orderby: "", top: "",
         rawPlan: "", naturalQuery: "", mode: "",
+        modelLabel: "",
         queryType: "", typeLabel: "",
         confidence: "", confidenceState: "None"
       },
@@ -395,6 +413,7 @@ export default class ChatController extends Controller {
         queryCount: "100",
         customQueries: [] as Array<{ query: string; expectedEntity: string; type: string }>,
         currentQueryText: "",
+        modelLabel: "",
         typeStats: {
           T1: { total: 0, passed: 0, pct: "—" },
           T2: { total: 0, passed: 0, pct: "—" },
@@ -408,9 +427,30 @@ export default class ChatController extends Controller {
         ready: false, loading: false, progress: 0,
         progressLabel: "", loadingText: "",
         statusText: "Direct Search", statusState: "Information",
-        statusIcon: "sap-icon://search"
+        statusIcon: "sap-icon://search",
+        selectedModelId:     MODEL_REGISTRY[0].id,
+        selectedModelLabel:  MODEL_REGISTRY[0].label,
+        selectedModelVendor: MODEL_REGISTRY[0].vendor,
+        selectedModelSize:   MODEL_REGISTRY[0].sizeLabel,
       },
-      error: ""
+      error: "",
+      precaching: false,
+      models: MODEL_REGISTRY.map(m => {
+        const cached = this.getCachedModelIds().has(m.id);
+        return {
+          id:             m.id,
+          label:          m.label,
+          vendor:         m.vendor,
+          sizeLabel:      m.sizeLabel,
+          params:         m.params,
+          cacheStatus:    cached ? "Cached" : "Not cached",
+          cacheState:     cached ? "Success" : "None",
+          cacheIcon:      cached ? "sap-icon://accept" : "sap-icon://download",
+          cacheProgress:  cached ? 100 : 0,
+          cacheProgressPct: cached ? "100%" : "",
+          isDownloading:  false,
+        };
+      }),
     });
     this.getView()?.setModel(this.model);
 
@@ -433,29 +473,99 @@ export default class ChatController extends Controller {
    * shown to the user because direct-mode still produces useful results.
    */
   private async initLLM(): Promise<void> {
-    this.model.setProperty("/llm/loading", true);
-    this.model.setProperty("/llm/loadingText", "Downloading Qwen2.5-0.5B (~300 MB, cached after first run)…");
-    this.model.setProperty("/llm/statusText", "Loading AI…");
-    this.model.setProperty("/llm/statusState", "Warning");
-    this.model.setProperty("/llm/statusIcon", "sap-icon://synchronize");
+    const mid   = this.model.getProperty("/llm/selectedModelId") as string;
+    const mInfo = MODEL_REGISTRY.find(m => m.id === mid) ?? MODEL_REGISTRY[0];
+
+    this.model.setProperty("/llm/loading",      true);
+    this.model.setProperty("/llm/ready",        false);
+    this.model.setProperty("/llm/loadingText",  `Downloading ${mInfo.label} (${mInfo.sizeLabel}, cached after first run)…`);
+    this.model.setProperty("/llm/statusText",   "Loading AI…");
+    this.model.setProperty("/llm/statusState",  "Warning");
+    this.model.setProperty("/llm/statusIcon",   "sap-icon://synchronize");
     try {
-      await this.llmService.initialize((r) => {
+      await this.llmService.switchModel(mid, (r) => {
         const pct = Math.round(r.progress * 100);
-        this.model.setProperty("/llm/progress", pct);
+        this.model.setProperty("/llm/progress",      pct);
         this.model.setProperty("/llm/progressLabel", `${pct}%`);
-        this.model.setProperty("/llm/loadingText", r.text || "Initializing…");
+        this.model.setProperty("/llm/loadingText",   r.text || "Initializing…");
       });
-      this.model.setProperty("/llm/loading", false);
-      this.model.setProperty("/llm/ready", true);
-      this.model.setProperty("/llm/statusText", "AI Mode Active");
-      this.model.setProperty("/llm/statusState", "Success");
-      this.model.setProperty("/llm/statusIcon", "sap-icon://ai");
+      this.model.setProperty("/llm/loading",      false);
+      this.model.setProperty("/llm/ready",        true);
+      this.model.setProperty("/llm/statusText",   `${mInfo.label} Ready`);
+      this.model.setProperty("/llm/statusState",  "Success");
+      this.model.setProperty("/llm/statusIcon",   "sap-icon://ai");
+      this.markModelCached(mid);
+      const models = this.model.getProperty("/models") as Array<Record<string, unknown>>;
+      const idx = models.findIndex(m => m.id === mid);
+      if (idx !== -1) {
+        this.model.setProperty(`/models/${idx}/cacheStatus`,   "Cached");
+        this.model.setProperty(`/models/${idx}/cacheState`,    "Success");
+        this.model.setProperty(`/models/${idx}/cacheIcon`,     "sap-icon://accept");
+        this.model.setProperty(`/models/${idx}/cacheProgress`, 100);
+        this.model.setProperty(`/models/${idx}/cacheProgressPct`, "100%");
+      }
     } catch {
-      this.model.setProperty("/llm/loading", false);
-      this.model.setProperty("/llm/statusText", "Direct Search");
-      this.model.setProperty("/llm/statusState", "Information");
-      this.model.setProperty("/llm/statusIcon", "sap-icon://search");
+      this.model.setProperty("/llm/loading",      false);
+      this.model.setProperty("/llm/statusText",   "Direct Search");
+      this.model.setProperty("/llm/statusState",  "Information");
+      this.model.setProperty("/llm/statusIcon",   "sap-icon://search");
     }
+  }
+
+  public onModelChange(event: { getSource(): { getSelectedKey(): string } }): void {
+    const mid   = event.getSource().getSelectedKey();
+    const mInfo = MODEL_REGISTRY.find(m => m.id === mid);
+    if (!mInfo) return;
+    this.model.setProperty("/llm/selectedModelId",     mInfo.id);
+    this.model.setProperty("/llm/selectedModelLabel",  mInfo.label);
+    this.model.setProperty("/llm/selectedModelVendor", mInfo.vendor);
+    this.model.setProperty("/llm/selectedModelSize",   mInfo.sizeLabel);
+    this.model.setProperty("/llm/ready",               false);
+    if (WebLLMService.isWebGPUAvailable()) void this.initLLM();
+  }
+
+  public async onPrecacheAll(): Promise<void> {
+    if (this.model.getProperty("/precaching") as boolean) return;
+    this.model.setProperty("/precaching", true);
+
+    const models = this.model.getProperty("/models") as Array<Record<string, unknown>>;
+    const activeMid = this.model.getProperty("/llm/selectedModelId") as string;
+
+    for (let i = 0; i < models.length; i++) {
+      const m = models[i];
+      if ((m.cacheStatus as string) === "Cached") continue;
+
+      this.model.setProperty(`/models/${i}/isDownloading`,  true);
+      this.model.setProperty(`/models/${i}/cacheStatus`,    "Downloading…");
+      this.model.setProperty(`/models/${i}/cacheState`,     "Warning");
+      this.model.setProperty(`/models/${i}/cacheProgress`,  0);
+
+      try {
+        if ((m.id as string) === activeMid) {
+          // Active model already loaded — just mark cached
+        } else {
+          await this.llmService.precacheModel(m.id as string, (r) => {
+            const pct = Math.round(r.progress * 100);
+            this.model.setProperty(`/models/${i}/cacheProgress`,    pct);
+            this.model.setProperty(`/models/${i}/cacheProgressPct`, `${pct}%`);
+          });
+        }
+        this.markModelCached(m.id as string);
+        this.model.setProperty(`/models/${i}/cacheStatus`,       "Cached");
+        this.model.setProperty(`/models/${i}/cacheState`,        "Success");
+        this.model.setProperty(`/models/${i}/cacheIcon`,         "sap-icon://accept");
+        this.model.setProperty(`/models/${i}/cacheProgress`,     100);
+        this.model.setProperty(`/models/${i}/cacheProgressPct`,  "100%");
+      } catch {
+        this.model.setProperty(`/models/${i}/cacheStatus`,  "Error");
+        this.model.setProperty(`/models/${i}/cacheState`,   "Error");
+        this.model.setProperty(`/models/${i}/cacheIcon`,    "sap-icon://error");
+      }
+      this.model.setProperty(`/models/${i}/isDownloading`, false);
+    }
+
+    this.model.setProperty("/precaching", false);
+    MessageToast.show("All models pre-cached — switching is now instant");
   }
 
   // ─── Search ────────────────────────────────────────────────────────────────
@@ -529,6 +639,7 @@ export default class ChatController extends Controller {
       this.model.setProperty("/oDataQuery/rawPlan",       JSON.stringify(plan, null, 2));
       this.model.setProperty("/oDataQuery/naturalQuery",  text);
       this.model.setProperty("/oDataQuery/mode",          llmReady ? "AI" : "Direct");
+      this.model.setProperty("/oDataQuery/modelLabel",     this.model.getProperty("/llm/selectedModelLabel") as string);
       this.model.setProperty("/oDataQuery/queryType",     queryType);
       this.model.setProperty("/oDataQuery/typeLabel",     TYPE_LABELS[queryType] ?? queryType);
       this.model.setProperty("/oDataQuery/confidence",    confidence.label);
@@ -627,6 +738,9 @@ export default class ChatController extends Controller {
     });
 
     const llmReady = this.model.getProperty("/llm/ready") as boolean;
+    const benchModelId    = this.model.getProperty("/llm/selectedModelId")    as string;
+    const benchModelLabel = this.model.getProperty("/llm/selectedModelLabel") as string;
+    this.model.setProperty("/benchmark/modelLabel", benchModelLabel);
     let passed = 0;
 
     for (let i = 0; i < queries.length; i++) {
@@ -683,7 +797,9 @@ export default class ChatController extends Controller {
         queryType: bq.type, detectedEntity, entityMatch, hasResults,
         validationPassed: validationPass, totalMs, passed: isPassed,
         status: isPassed ? "Passed" : "Failed",
-        statusState: isPassed ? "Success" : "Error"
+        statusState: isPassed ? "Success" : "Error",
+        modelId:    benchModelId,
+        modelLabel: benchModelLabel,
       };
 
       const current = this.model.getProperty("/benchmark/results") as BenchmarkResult[];
@@ -977,7 +1093,7 @@ export default class ChatController extends Controller {
     }
 
     const headers = [
-      "#", "Query", "Type", "Expected Entity", "Detected Entity",
+      "#", "Model", "Query", "Type", "Expected Entity", "Detected Entity",
       "Entity Match", "Has Results", "Validation Passed", "Time (ms)", "Status"
     ];
 
@@ -989,6 +1105,7 @@ export default class ChatController extends Controller {
 
     const rows = results.map(r => [
       r.idx,
+      escape(r.modelLabel || ""),
       escape(r.query),
       r.queryType,
       r.expectedEntity,
@@ -1006,7 +1123,8 @@ export default class ChatController extends Controller {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
     a.href     = url;
-    a.download = `floria_benchmark_${new Date().toISOString().slice(0, 10)}.csv`;
+    const csvModel = ((this.model.getProperty("/benchmark/modelLabel") as string) || "unknown").replace(/[^a-zA-Z0-9]/g, "_");
+    a.download = `floria_benchmark_${csvModel}_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
