@@ -243,7 +243,7 @@ A query is counted as **successful** if the model selects the correct entity AND
 ```mermaid
 xychart-beta
     title "Effective Success Rate (ESR) — 100-query benchmark"
-    x-axis ["Qwen 0.5B", "Qwen-Coder 1.5B", "Gemma 2B", "Llama 3B", "Phi 3.5B"]
+    x-axis ["Qwen 0.5B · 82%", "Qwen-Coder 1.5B · 92%", "Gemma 2B · 88%", "Llama 3B · 89%", "Phi 3.5B · 88%"]
     y-axis "ESR (%)" 0 --> 100
     bar  [82, 92, 88, 89, 88]
 ```
