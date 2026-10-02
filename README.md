@@ -257,6 +257,42 @@ xychart-beta
 
 ---
 
+## OData Service — Northwind v4
+
+The benchmark and live application run against the **Northwind OData v4** public service, the canonical SAP/Microsoft reference dataset for OData demonstrations.
+
+```
+https://services.odata.org/V4/Northwind/Northwind.svc/
+```
+
+Seven entity sets are exposed, covering the full range of query structures in the benchmark:
+
+| Entity | Key filterable fields |
+|---|---|
+| `Products` | `ProductName`, `UnitPrice`, `UnitsInStock`, `Discontinued`, `CategoryID` |
+| `Categories` | `CategoryName` |
+| `Customers` | `CompanyName`, `Country`, `City` |
+| `Orders` | `ShipCountry`, `ShipCity`, `Freight`, `OrderDate` |
+| `Employees` | `FirstName`, `LastName`, `Country`, `City` |
+| `Suppliers` | `CompanyName`, `Country`, `City` |
+| `Order_Details` | `OrderID`, `ProductID`, `Quantity`, `Discount` |
+
+**Why a local CORS proxy is required.** Browsers enforce the Same-Origin Policy: a script served from `localhost:8081` cannot fetch from `services.odata.org` unless that server sends `Access-Control-Allow-Origin` headers — which Northwind does not. The Express proxy at `srv/server.mjs` (port 4004) forwards every request from `/odata/` to the Northwind service and injects the required CORS headers on the way back. The proxy **must be started before the Fiori dev server**.
+
+```
+Browser (localhost:8081)
+        │  fetch /odata/Products?$filter=...
+        ▼
+CORS Proxy (localhost:4004)          ← adds Access-Control-Allow-Origin
+        │  forwards to
+        ▼
+services.odata.org/V4/Northwind/Northwind.svc/Products?$filter=...
+```
+
+All string field values in Northwind are **title-cased** (`'Germany'`, not `'germany'`). This is one of the six post-processor correction categories — models that lowercase their string literals produce queries that match nothing.
+
+---
+
 ## Technology Stack
 
 | Layer | Technology | Why |
@@ -264,7 +300,7 @@ xychart-beta
 | UI framework | OpenUI5 1.130.2 | SAP standard; Fiori design system, rich data binding |
 | Language | TypeScript | Type safety on OData field names; catches schema mismatches at compile time |
 | AI inference | WebLLM / MLC-LLM (`@mlc-ai/web-llm`) | Runs LLM in browser via WebGPU — no server, no API key |
-| OData target | Northwind v4 | Public, stable, well-known for SAP demos |
+| OData target | Northwind v4 (`services.odata.org`) | Public, stable, well-known for SAP demos |
 | CORS proxy | Express.js (`srv/server.mjs`, port 4004) | Northwind does not set CORS headers |
 | Build / dev | `@sap/ui5-tooling`, `fiori run` (port 8081) | Standard SAP Fiori toolchain |
 
