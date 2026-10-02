@@ -230,7 +230,7 @@ A query is counted as **successful** if the model selects the correct entity AND
 
 ### Per-Type Accuracy
 
-| Model | T1 · Entity Read | T2 · Numeric | T3 · String Match | T4 · Equality | T5 · Disjunction | ESR |
+| Model | T1 · Entity Read | T2 · Numeric | T3 · String Match | T4 · Equality | T5 · Disjunction | ESR (Effective Success Rate) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | Qwen-0.5B | 85% | 90% | 55% | 90% | 90% | **82%** |
 | Qwen-Coder-1.5B | 90% | 100% | 80% | 100% | 90% | **92%** |
@@ -238,16 +238,16 @@ A query is counted as **successful** if the model selects the correct entity AND
 | Llama-3B | 95% | 95% | 65% | 95% | 95% | **89%** |
 | Phi-3.5B | 80% | 100% | 80% | 100% | 80% | **88%** |
 
-### Overall ESR by Model
+### Overall Effective Success Rate (ESR) by Model
 
-```
-  Qwen-Coder 1.5B  █████████████████████████████████████   92%
-        Llama 3B   ████████████████████████████████████    89%
-        Gemma 2B   ███████████████████████████████████     88%
-        Phi 3.5B   ███████████████████████████████████     88%
-        Qwen 0.5B  █████████████████████████████████       82%
-                   └────────────────────────────────────┘
-                   0%                                 100%
+ESR = (total queries − server errors) ÷ total queries. Higher is better.
+
+```mermaid
+xychart-beta
+    title "Effective Success Rate (ESR) — 100-query Benchmark"
+    x-axis ["Qwen-0.5B (82%)", "Qwen-Coder-1.5B (92%)", "Gemma-2B (88%)", "Llama-3B (89%)", "Phi-3.5B (88%)"]
+    y-axis "ESR %" 75 --> 100
+    bar [82, 92, 88, 89, 88]
 ```
 
 **Key observations:**
