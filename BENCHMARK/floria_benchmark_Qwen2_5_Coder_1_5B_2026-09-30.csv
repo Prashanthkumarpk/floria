@@ -1,0 +1,101 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status
+1,Qwen2.5-Coder-1.5B,list all categories,T1,Categories,Categories,Yes,Yes,Yes,7642,Pass
+2,Qwen2.5-Coder-1.5B,show all employees,T1,Employees,Employees,Yes,Yes,Yes,8060,Pass
+3,Qwen2.5-Coder-1.5B,show all products,T1,Products,Products,Yes,Yes,Yes,6766,Pass
+4,Qwen2.5-Coder-1.5B,list all customers,T1,Customers,Customers,Yes,Yes,Yes,6547,Pass
+5,Qwen2.5-Coder-1.5B,show all orders,T1,Orders,Orders,Yes,Yes,Yes,6643,Pass
+6,Qwen2.5-Coder-1.5B,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,6745,Pass
+7,Qwen2.5-Coder-1.5B,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,6635,Pass
+8,Qwen2.5-Coder-1.5B,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,8099,Pass
+9,Qwen2.5-Coder-1.5B,get all staff,T1,Employees,Employees,Yes,Yes,Yes,7440,Pass
+10,Qwen2.5-Coder-1.5B,what products do we have,T1,Products,Products,Yes,Yes,Yes,6873,Pass
+11,Qwen2.5-Coder-1.5B,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,6751,Pass
+12,Qwen2.5-Coder-1.5B,list all shipments,T1,Orders,Orders,Yes,No,No,7056,Fail
+13,Qwen2.5-Coder-1.5B,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,6630,Pass
+14,Qwen2.5-Coder-1.5B,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,6659,Pass
+15,Qwen2.5-Coder-1.5B,get all product groups,T1,Categories,Products,No,Yes,Yes,7777,Fail
+16,Qwen2.5-Coder-1.5B,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,1537694,Pass
+17,Qwen2.5-Coder-1.5B,display all items in catalog,T1,Products,Products,Yes,Yes,Yes,6668,Pass
+18,Qwen2.5-Coder-1.5B,show all buyers,T1,Customers,Customers,Yes,Yes,Yes,6748,Pass
+19,Qwen2.5-Coder-1.5B,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,6634,Pass
+20,Qwen2.5-Coder-1.5B,show me all manufacturers,T1,Suppliers,Suppliers,Yes,Yes,Yes,7805,Pass
+21,Qwen2.5-Coder-1.5B,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,8363,Pass
+22,Qwen2.5-Coder-1.5B,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,6963,Pass
+23,Qwen2.5-Coder-1.5B,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,7023,Pass
+24,Qwen2.5-Coder-1.5B,items with less than 5 units in stock,T2,Products,Products,Yes,Yes,Yes,7387,Pass
+25,Qwen2.5-Coder-1.5B,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,7395,Pass
+26,Qwen2.5-Coder-1.5B,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,278660,Pass
+27,Qwen2.5-Coder-1.5B,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,9270,Pass
+28,Qwen2.5-Coder-1.5B,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,1514945,Pass
+29,Qwen2.5-Coder-1.5B,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,7312,Pass
+30,Qwen2.5-Coder-1.5B,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,6942,Pass
+31,Qwen2.5-Coder-1.5B,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,7734,Pass
+32,Qwen2.5-Coder-1.5B,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,7317,Pass
+33,Qwen2.5-Coder-1.5B,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,6916,Pass
+34,Qwen2.5-Coder-1.5B,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,7362,Pass
+35,Qwen2.5-Coder-1.5B,products with stock between 20 and 50,T2,Products,Products,Yes,Yes,Yes,7713,Pass
+36,Qwen2.5-Coder-1.5B,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,7324,Pass
+37,Qwen2.5-Coder-1.5B,order details with zero discount,T2,Order_Details,Order_Details,Yes,Yes,Yes,7114,Pass
+38,Qwen2.5-Coder-1.5B,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,1144041,Pass
+39,Qwen2.5-Coder-1.5B,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,7747,Pass
+40,Qwen2.5-Coder-1.5B,products with price above 75,T2,Products,Products,Yes,Yes,Yes,7075,Pass
+41,Qwen2.5-Coder-1.5B,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,6859,Pass
+42,Qwen2.5-Coder-1.5B,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,6861,Pass
+43,Qwen2.5-Coder-1.5B,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,7220,Pass
+44,Qwen2.5-Coder-1.5B,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,8379,Pass
+45,Qwen2.5-Coder-1.5B,customers whose company starts with B,T3,Customers,Customers,Yes,Yes,Yes,8378,Pass
+46,Qwen2.5-Coder-1.5B,products containing sauce,T3,Products,Products,Yes,Yes,Yes,296839,Pass
+47,Qwen2.5-Coder-1.5B,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,7207,Pass
+48,Qwen2.5-Coder-1.5B,customers with Trading in their company name,T3,Customers,Customers,Yes,Yes,Yes,6833,Pass
+49,Qwen2.5-Coder-1.5B,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,7264,Pass
+50,Qwen2.5-Coder-1.5B,products containing syrup,T3,Products,Products,Yes,Yes,Yes,7358,Pass
+51,Qwen2.5-Coder-1.5B,customers with Import in their name,T3,Customers,Customers,Yes,Yes,Yes,1821459,Pass
+52,Qwen2.5-Coder-1.5B,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,6900,Fail
+53,Qwen2.5-Coder-1.5B,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,6867,Pass
+54,Qwen2.5-Coder-1.5B,customers with Gourmet in their name,T3,Customers,Customers,Yes,Yes,Yes,7451,Pass
+55,Qwen2.5-Coder-1.5B,orders shipped to Berlin,T3,Orders,Orders,Yes,Yes,Yes,562868,Pass
+56,Qwen2.5-Coder-1.5B,products containing pasta,T3,Products,Products,Yes,No,Yes,6830,Fail
+57,Qwen2.5-Coder-1.5B,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,Yes,Yes,7095,Pass
+58,Qwen2.5-Coder-1.5B,products with anchov in the name,T3,Products,Products,Yes,No,Yes,930181,Fail
+59,Qwen2.5-Coder-1.5B,products with caviar in the name,T3,Products,Products,Yes,No,Yes,6961,Fail
+60,Qwen2.5-Coder-1.5B,customers in cities starting with M,T3,Customers,Customers,Yes,Yes,Yes,7086,Pass
+61,Qwen2.5-Coder-1.5B,discontinued products,T4,Products,Products,Yes,Yes,Yes,6883,Pass
+62,Qwen2.5-Coder-1.5B,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,7401,Pass
+63,Qwen2.5-Coder-1.5B,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,7516,Pass
+64,Qwen2.5-Coder-1.5B,suppliers from USA,T4,Suppliers,Suppliers,Yes,Yes,Yes,6864,Pass
+65,Qwen2.5-Coder-1.5B,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,7636,Pass
+66,Qwen2.5-Coder-1.5B,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,7751,Pass
+67,Qwen2.5-Coder-1.5B,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,7750,Pass
+68,Qwen2.5-Coder-1.5B,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,7127,Pass
+69,Qwen2.5-Coder-1.5B,employees in Seattle,T4,Employees,Employees,Yes,Yes,Yes,7355,Pass
+70,Qwen2.5-Coder-1.5B,suppliers from Japan,T4,Suppliers,Suppliers,Yes,Yes,Yes,7039,Pass
+71,Qwen2.5-Coder-1.5B,customers from Brazil,T4,Customers,Customers,Yes,Yes,Yes,7165,Pass
+72,Qwen2.5-Coder-1.5B,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,7462,Pass
+73,Qwen2.5-Coder-1.5B,employees from London,T4,Employees,Employees,Yes,Yes,Yes,9075,Pass
+74,Qwen2.5-Coder-1.5B,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,14660,Pass
+75,Qwen2.5-Coder-1.5B,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,7169,Pass
+76,Qwen2.5-Coder-1.5B,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,8445,Pass
+77,Qwen2.5-Coder-1.5B,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,6945,Pass
+78,Qwen2.5-Coder-1.5B,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,7241,Pass
+79,Qwen2.5-Coder-1.5B,orders delivered to USA,T4,Orders,Orders,Yes,Yes,Yes,7106,Pass
+80,Qwen2.5-Coder-1.5B,active products,T4,Products,Products,Yes,Yes,Yes,7146,Pass
+81,Qwen2.5-Coder-1.5B,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,7081,Pass
+82,Qwen2.5-Coder-1.5B,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,8523,Pass
+83,Qwen2.5-Coder-1.5B,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,8096,Pass
+84,Qwen2.5-Coder-1.5B,customers from Mexico or Argentina,T5,Customers,Customers,Yes,Yes,Yes,7115,Pass
+85,Qwen2.5-Coder-1.5B,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,7702,Pass
+86,Qwen2.5-Coder-1.5B,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,8946,Pass
+87,Qwen2.5-Coder-1.5B,customers from Sweden or Denmark,T5,Customers,Customers,Yes,Yes,Yes,8506,Pass
+88,Qwen2.5-Coder-1.5B,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,8283,Pass
+89,Qwen2.5-Coder-1.5B,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,No,Yes,8621,Fail
+90,Qwen2.5-Coder-1.5B,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,9348,Pass
+91,Qwen2.5-Coder-1.5B,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,9282,Pass
+92,Qwen2.5-Coder-1.5B,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,9567,Pass
+93,Qwen2.5-Coder-1.5B,customers from USA or Canada,T5,Customers,Customers,Yes,Yes,Yes,11405,Pass
+94,Qwen2.5-Coder-1.5B,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,8783,Pass
+95,Qwen2.5-Coder-1.5B,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,9592,Pass
+96,Qwen2.5-Coder-1.5B,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,8994,Pass
+97,Qwen2.5-Coder-1.5B,customers from Australia or New Zealand,T5,Customers,Customers,Yes,No,Yes,9161,Fail
+98,Qwen2.5-Coder-1.5B,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,Yes,Yes,8793,Pass
+99,Qwen2.5-Coder-1.5B,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,9237,Pass
+100,Qwen2.5-Coder-1.5B,customers from Norway or Finland,T5,Customers,Customers,Yes,Yes,Yes,9518,Pass

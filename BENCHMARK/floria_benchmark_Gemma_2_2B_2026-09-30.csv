@@ -1,0 +1,101 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status
+1,Gemma-2-2B,list all categories,T1,Categories,Categories,Yes,Yes,Yes,9193,Pass
+2,Gemma-2-2B,show all employees,T1,Employees,Employees,Yes,Yes,Yes,8999,Pass
+3,Gemma-2-2B,show all products,T1,Products,Products,Yes,Yes,Yes,8156,Pass
+4,Gemma-2-2B,list all customers,T1,Customers,Customers,Yes,Yes,Yes,10552,Pass
+5,Gemma-2-2B,show all orders,T1,Orders,Orders,Yes,Yes,Yes,8082,Pass
+6,Gemma-2-2B,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,8139,Pass
+7,Gemma-2-2B,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,8338,Pass
+8,Gemma-2-2B,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,8959,Pass
+9,Gemma-2-2B,get all staff,T1,Employees,Employees,Yes,Yes,Yes,9346,Pass
+10,Gemma-2-2B,what products do we have,T1,Products,Products,Yes,Yes,Yes,8295,Pass
+11,Gemma-2-2B,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,8062,Pass
+12,Gemma-2-2B,list all shipments,T1,Orders,Orders,Yes,Yes,Yes,8128,Pass
+13,Gemma-2-2B,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,8552,Pass
+14,Gemma-2-2B,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,8595,Pass
+15,Gemma-2-2B,get all product groups,T1,Categories,Products,No,No,No,8800,Fail
+16,Gemma-2-2B,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,10039,Pass
+17,Gemma-2-2B,display all items in catalog,T1,Products,Products,Yes,Yes,Yes,9278,Pass
+18,Gemma-2-2B,show all buyers,T1,Customers,Customers,Yes,Yes,Yes,9997,Pass
+19,Gemma-2-2B,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,10358,Pass
+20,Gemma-2-2B,show me all manufacturers,T1,Suppliers,Suppliers,Yes,Yes,Yes,10852,Pass
+21,Gemma-2-2B,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,10775,Pass
+22,Gemma-2-2B,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,11421,Pass
+23,Gemma-2-2B,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,10821,Pass
+24,Gemma-2-2B,items with less than 5 units in stock,T2,Products,Products,Yes,Yes,Yes,10894,Pass
+25,Gemma-2-2B,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,11031,Pass
+26,Gemma-2-2B,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,11038,Pass
+27,Gemma-2-2B,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,11204,Pass
+28,Gemma-2-2B,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,11303,Pass
+29,Gemma-2-2B,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,10936,Pass
+30,Gemma-2-2B,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,11189,Pass
+31,Gemma-2-2B,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,11140,Pass
+32,Gemma-2-2B,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,11211,Pass
+33,Gemma-2-2B,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,11600,Pass
+34,Gemma-2-2B,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,11412,Pass
+35,Gemma-2-2B,products with stock between 20 and 50,T2,Products,Products,Yes,No,Yes,11323,Fail
+36,Gemma-2-2B,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,11590,Pass
+37,Gemma-2-2B,order details with zero discount,T2,Order_Details,Order_Details,Yes,No,Yes,11639,Fail
+38,Gemma-2-2B,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,11395,Pass
+39,Gemma-2-2B,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,11155,Pass
+40,Gemma-2-2B,products with price above 75,T2,Products,Products,Yes,Yes,Yes,11243,Pass
+41,Gemma-2-2B,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,11211,Pass
+42,Gemma-2-2B,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,11758,Pass
+43,Gemma-2-2B,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,11109,Pass
+44,Gemma-2-2B,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,11634,Pass
+45,Gemma-2-2B,customers whose company starts with B,T3,Customers,Customers,Yes,Yes,Yes,11358,Pass
+46,Gemma-2-2B,products containing sauce,T3,Products,Products,Yes,Yes,Yes,11719,Pass
+47,Gemma-2-2B,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,11289,Pass
+48,Gemma-2-2B,customers with Trading in their company name,T3,Customers,Customers,Yes,No,Yes,11156,Fail
+49,Gemma-2-2B,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,11973,Pass
+50,Gemma-2-2B,products containing syrup,T3,Products,Products,Yes,Yes,Yes,11240,Pass
+51,Gemma-2-2B,customers with Import in their name,T3,Customers,Customers,Yes,Yes,Yes,11360,Pass
+52,Gemma-2-2B,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,11665,Fail
+53,Gemma-2-2B,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,11707,Pass
+54,Gemma-2-2B,customers with Gourmet in their name,T3,Customers,Customers,Yes,Yes,Yes,11319,Pass
+55,Gemma-2-2B,orders shipped to Berlin,T3,Orders,Orders,Yes,Yes,Yes,11497,Pass
+56,Gemma-2-2B,products containing pasta,T3,Products,Products,Yes,No,Yes,11332,Fail
+57,Gemma-2-2B,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,No,Yes,11534,Fail
+58,Gemma-2-2B,products with anchov in the name,T3,Products,Products,Yes,No,Yes,11586,Fail
+59,Gemma-2-2B,products with caviar in the name,T3,Products,Products,Yes,No,Yes,11336,Fail
+60,Gemma-2-2B,customers in cities starting with M,T3,Customers,Customers,Yes,No,Yes,11534,Fail
+61,Gemma-2-2B,discontinued products,T4,Products,Products,Yes,Yes,Yes,11354,Pass
+62,Gemma-2-2B,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,13397,Pass
+63,Gemma-2-2B,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,10658,Pass
+64,Gemma-2-2B,suppliers from USA,T4,Suppliers,Suppliers,Yes,Yes,Yes,11731,Pass
+65,Gemma-2-2B,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,12385,Pass
+66,Gemma-2-2B,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,11173,Pass
+67,Gemma-2-2B,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,12244,Pass
+68,Gemma-2-2B,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,11144,Pass
+69,Gemma-2-2B,employees in Seattle,T4,Employees,Employees,Yes,Yes,Yes,11675,Pass
+70,Gemma-2-2B,suppliers from Japan,T4,Suppliers,Suppliers,Yes,No,Yes,11548,Fail
+71,Gemma-2-2B,customers from Brazil,T4,Customers,Customers,Yes,Yes,Yes,11342,Pass
+72,Gemma-2-2B,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,11563,Pass
+73,Gemma-2-2B,employees from London,T4,Employees,Employees,Yes,Yes,Yes,11992,Pass
+74,Gemma-2-2B,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,11528,Pass
+75,Gemma-2-2B,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,11469,Pass
+76,Gemma-2-2B,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,11721,Pass
+77,Gemma-2-2B,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,10876,Pass
+78,Gemma-2-2B,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,11251,Pass
+79,Gemma-2-2B,orders delivered to USA,T4,Orders,Orders,Yes,Yes,Yes,11195,Pass
+80,Gemma-2-2B,active products,T4,Products,Products,Yes,Yes,Yes,10919,Pass
+81,Gemma-2-2B,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,13881,Pass
+82,Gemma-2-2B,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,10874,Pass
+83,Gemma-2-2B,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,12309,Pass
+84,Gemma-2-2B,customers from Mexico or Argentina,T5,Customers,Customers,Yes,Yes,Yes,11268,Pass
+85,Gemma-2-2B,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,11738,Pass
+86,Gemma-2-2B,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,11492,Pass
+87,Gemma-2-2B,customers from Sweden or Denmark,T5,Customers,Customers,Yes,Yes,Yes,11453,Pass
+88,Gemma-2-2B,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,11664,Pass
+89,Gemma-2-2B,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,Yes,Yes,12069,Pass
+90,Gemma-2-2B,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,11231,Pass
+91,Gemma-2-2B,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,17818,Pass
+92,Gemma-2-2B,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,10061,Pass
+93,Gemma-2-2B,customers from USA or Canada,T5,Customers,Customers,Yes,Yes,Yes,12146,Pass
+94,Gemma-2-2B,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,11238,Pass
+95,Gemma-2-2B,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,12223,Pass
+96,Gemma-2-2B,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,11615,Pass
+97,Gemma-2-2B,customers from Australia or New Zealand,T5,Customers,Customers,Yes,No,Yes,11651,Fail
+98,Gemma-2-2B,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,Yes,Yes,11626,Pass
+99,Gemma-2-2B,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,11818,Pass
+100,Gemma-2-2B,customers from Norway or Finland,T5,Customers,Customers,Yes,Yes,Yes,11536,Pass

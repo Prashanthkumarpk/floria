@@ -1,0 +1,101 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status
+1,Llama-3.2-3B,list all categories,T1,Categories,Categories,Yes,Yes,Yes,10968,Pass
+2,Llama-3.2-3B,show all employees,T1,Employees,Employees,Yes,Yes,Yes,10757,Pass
+3,Llama-3.2-3B,show all products,T1,Products,Products,Yes,Yes,Yes,470262,Pass
+4,Llama-3.2-3B,list all customers,T1,Customers,Customers,Yes,Yes,Yes,9915,Pass
+5,Llama-3.2-3B,show all orders,T1,Orders,Orders,Yes,Yes,Yes,11489,Pass
+6,Llama-3.2-3B,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,15366,Pass
+7,Llama-3.2-3B,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,9796,Pass
+8,Llama-3.2-3B,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,10542,Pass
+9,Llama-3.2-3B,get all staff,T1,Employees,Employees,Yes,Yes,Yes,11060,Pass
+10,Llama-3.2-3B,what products do we have,T1,Products,Products,Yes,Yes,Yes,9893,Pass
+11,Llama-3.2-3B,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,9932,Pass
+12,Llama-3.2-3B,list all shipments,T1,Orders,Orders,Yes,Yes,Yes,9944,Pass
+13,Llama-3.2-3B,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,11031,Pass
+14,Llama-3.2-3B,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,9933,Pass
+15,Llama-3.2-3B,get all product groups,T1,Categories,Categories,Yes,Yes,Yes,11843,Pass
+16,Llama-3.2-3B,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,12358,Pass
+17,Llama-3.2-3B,display all items in catalog,T1,Products,Products,Yes,Yes,Yes,12983,Pass
+18,Llama-3.2-3B,show all buyers,T1,Customers,Customers,Yes,Yes,Yes,14262,Pass
+19,Llama-3.2-3B,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,13794,Pass
+20,Llama-3.2-3B,show me all manufacturers,T1,Suppliers,Manufacturers,No,No,No,12383,Fail
+21,Llama-3.2-3B,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,15125,Pass
+22,Llama-3.2-3B,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,13436,Pass
+23,Llama-3.2-3B,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,13771,Pass
+24,Llama-3.2-3B,items with less than 5 units in stock,T2,Products,Products,Yes,Yes,Yes,13510,Pass
+25,Llama-3.2-3B,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,14270,Pass
+26,Llama-3.2-3B,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,13633,Pass
+27,Llama-3.2-3B,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,13557,Pass
+28,Llama-3.2-3B,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,13518,Pass
+29,Llama-3.2-3B,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,13521,Pass
+30,Llama-3.2-3B,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,15591,Pass
+31,Llama-3.2-3B,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,13442,Pass
+32,Llama-3.2-3B,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,13731,Pass
+33,Llama-3.2-3B,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,13571,Pass
+34,Llama-3.2-3B,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,14868,Pass
+35,Llama-3.2-3B,products with stock between 20 and 50,T2,Products,Products,Yes,No,Yes,13451,Fail
+36,Llama-3.2-3B,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,14994,Pass
+37,Llama-3.2-3B,order details with zero discount,T2,Order_Details,Order_Details,Yes,Yes,Yes,14535,Pass
+38,Llama-3.2-3B,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,14475,Pass
+39,Llama-3.2-3B,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,15470,Pass
+40,Llama-3.2-3B,products with price above 75,T2,Products,Products,Yes,Yes,Yes,14314,Pass
+41,Llama-3.2-3B,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,14999,Pass
+42,Llama-3.2-3B,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,13532,Pass
+43,Llama-3.2-3B,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,15166,Pass
+44,Llama-3.2-3B,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,15534,Pass
+45,Llama-3.2-3B,customers whose company starts with B,T3,Customers,Customers,Yes,No,Yes,13506,Fail
+46,Llama-3.2-3B,products containing sauce,T3,Products,Products,Yes,Yes,Yes,15106,Pass
+47,Llama-3.2-3B,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,15405,Pass
+48,Llama-3.2-3B,customers with Trading in their company name,T3,Customers,Customers,Yes,Yes,Yes,14360,Pass
+49,Llama-3.2-3B,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,14604,Pass
+50,Llama-3.2-3B,products containing syrup,T3,Products,Products,Yes,Yes,Yes,15693,Pass
+51,Llama-3.2-3B,customers with Import in their name,T3,Customers,Customers,Yes,Yes,Yes,14142,Pass
+52,Llama-3.2-3B,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,13898,Fail
+53,Llama-3.2-3B,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,14096,Pass
+54,Llama-3.2-3B,customers with Gourmet in their name,T3,Customers,Customers,Yes,Yes,Yes,13950,Pass
+55,Llama-3.2-3B,orders shipped to Berlin,T3,Orders,Orders,Yes,No,Yes,13989,Fail
+56,Llama-3.2-3B,products containing pasta,T3,Products,Products,Yes,No,Yes,14175,Fail
+57,Llama-3.2-3B,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,Yes,Yes,14053,Pass
+58,Llama-3.2-3B,products with anchov in the name,T3,Products,Products,Yes,No,Yes,14028,Fail
+59,Llama-3.2-3B,products with caviar in the name,T3,Products,Products,Yes,No,Yes,16154,Fail
+60,Llama-3.2-3B,customers in cities starting with M,T3,Customers,Customers,Yes,No,Yes,16021,Fail
+61,Llama-3.2-3B,discontinued products,T4,Products,Products,Yes,Yes,Yes,13145,Pass
+62,Llama-3.2-3B,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,14695,Pass
+63,Llama-3.2-3B,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,13844,Pass
+64,Llama-3.2-3B,suppliers from USA,T4,Suppliers,Suppliers,Yes,Yes,Yes,14302,Pass
+65,Llama-3.2-3B,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,14875,Pass
+66,Llama-3.2-3B,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,14331,Pass
+67,Llama-3.2-3B,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,15541,Pass
+68,Llama-3.2-3B,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,15931,Pass
+69,Llama-3.2-3B,employees in Seattle,T4,Employees,Employees,Yes,Yes,Yes,15267,Pass
+70,Llama-3.2-3B,suppliers from Japan,T4,Suppliers,Suppliers,Yes,Yes,Yes,15607,Pass
+71,Llama-3.2-3B,customers from Brazil,T4,Customers,Customers,Yes,Yes,Yes,15414,Pass
+72,Llama-3.2-3B,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,14407,Pass
+73,Llama-3.2-3B,employees from London,T4,Employees,Employees,Yes,Yes,Yes,15992,Pass
+74,Llama-3.2-3B,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,13710,Pass
+75,Llama-3.2-3B,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,14051,Pass
+76,Llama-3.2-3B,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,14621,Pass
+77,Llama-3.2-3B,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,14326,Pass
+78,Llama-3.2-3B,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,13875,Pass
+79,Llama-3.2-3B,orders delivered to USA,T4,Orders,Orders,Yes,No,Yes,13999,Fail
+80,Llama-3.2-3B,active products,T4,Products,Products,Yes,Yes,Yes,13969,Pass
+81,Llama-3.2-3B,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,14439,Pass
+82,Llama-3.2-3B,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,14393,Pass
+83,Llama-3.2-3B,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,15435,Pass
+84,Llama-3.2-3B,customers from Mexico or Argentina,T5,Customers,Customers,Yes,Yes,Yes,14086,Pass
+85,Llama-3.2-3B,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,14349,Pass
+86,Llama-3.2-3B,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,14596,Pass
+87,Llama-3.2-3B,customers from Sweden or Denmark,T5,Customers,Customers,Yes,Yes,Yes,14351,Pass
+88,Llama-3.2-3B,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,14458,Pass
+89,Llama-3.2-3B,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,Yes,Yes,14671,Pass
+90,Llama-3.2-3B,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,14272,Pass
+91,Llama-3.2-3B,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,14482,Pass
+92,Llama-3.2-3B,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,14433,Pass
+93,Llama-3.2-3B,customers from USA or Canada,T5,Customers,Customers,Yes,Yes,Yes,14093,Pass
+94,Llama-3.2-3B,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,14595,Pass
+95,Llama-3.2-3B,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,15788,Pass
+96,Llama-3.2-3B,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,15181,Pass
+97,Llama-3.2-3B,customers from Australia or New Zealand,T5,Customers,Customers,Yes,No,Yes,14462,Fail
+98,Llama-3.2-3B,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,Yes,Yes,14782,Pass
+99,Llama-3.2-3B,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,14653,Pass
+100,Llama-3.2-3B,customers from Norway or Finland,T5,Customers,Customers,Yes,Yes,Yes,14980,Pass

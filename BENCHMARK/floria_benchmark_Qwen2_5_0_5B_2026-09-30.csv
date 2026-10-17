@@ -1,0 +1,101 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status
+1,Qwen2.5-0.5B,list all categories,T1,Categories,Categories,Yes,Yes,Yes,3823,Pass
+2,Qwen2.5-0.5B,show all employees,T1,Employees,Employees,Yes,Yes,Yes,2236,Pass
+3,Qwen2.5-0.5B,show all products,T1,Products,Products,Yes,Yes,Yes,1937,Pass
+4,Qwen2.5-0.5B,list all customers,T1,Customers,Customers,Yes,Yes,Yes,1959,Pass
+5,Qwen2.5-0.5B,show all orders,T1,Orders,Orders,Yes,Yes,Yes,1951,Pass
+6,Qwen2.5-0.5B,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,53979,Pass
+7,Qwen2.5-0.5B,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,1969,Pass
+8,Qwen2.5-0.5B,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,4410,Pass
+9,Qwen2.5-0.5B,get all staff,T1,Employees,Employees,Yes,Yes,Yes,3078,Pass
+10,Qwen2.5-0.5B,what products do we have,T1,Products,Products,Yes,Yes,Yes,1901,Pass
+11,Qwen2.5-0.5B,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,1835,Pass
+12,Qwen2.5-0.5B,list all shipments,T1,Orders,Orders,Yes,Yes,Yes,1973,Pass
+13,Qwen2.5-0.5B,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,2256,Pass
+14,Qwen2.5-0.5B,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,2219,Pass
+15,Qwen2.5-0.5B,get all product groups,T1,Categories,Products,No,No,No,1919,Fail
+16,Qwen2.5-0.5B,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,3465,Pass
+17,Qwen2.5-0.5B,display all items in catalog,T1,Products,Products,Yes,No,No,291716,Fail
+18,Qwen2.5-0.5B,show all buyers,T1,Customers,Customers,Yes,No,No,1829,Fail
+19,Qwen2.5-0.5B,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,1923,Pass
+20,Qwen2.5-0.5B,show me all manufacturers,T1,Suppliers,Suppliers,Yes,Yes,Yes,1890,Pass
+21,Qwen2.5-0.5B,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,1985,Pass
+22,Qwen2.5-0.5B,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,2100,Pass
+23,Qwen2.5-0.5B,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,2038,Pass
+24,Qwen2.5-0.5B,items with less than 5 units in stock,T2,Products,Order_Details,No,No,No,1941,Fail
+25,Qwen2.5-0.5B,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,2037,Pass
+26,Qwen2.5-0.5B,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,2437,Pass
+27,Qwen2.5-0.5B,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,2209,Pass
+28,Qwen2.5-0.5B,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,2749,Pass
+29,Qwen2.5-0.5B,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,2885,Pass
+30,Qwen2.5-0.5B,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,2271,Pass
+31,Qwen2.5-0.5B,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,2285,Pass
+32,Qwen2.5-0.5B,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,2089,Pass
+33,Qwen2.5-0.5B,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,378901,Pass
+34,Qwen2.5-0.5B,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,2028,Pass
+35,Qwen2.5-0.5B,products with stock between 20 and 50,T2,Products,Products,Yes,Yes,Yes,2219,Pass
+36,Qwen2.5-0.5B,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,2371,Pass
+37,Qwen2.5-0.5B,order details with zero discount,T2,Order_Details,,No,No,No,1507,Fail
+38,Qwen2.5-0.5B,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,2067,Pass
+39,Qwen2.5-0.5B,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,2022,Pass
+40,Qwen2.5-0.5B,products with price above 75,T2,Products,Products,Yes,Yes,Yes,2148,Pass
+41,Qwen2.5-0.5B,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,2039,Pass
+42,Qwen2.5-0.5B,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,2034,Pass
+43,Qwen2.5-0.5B,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,2151,Pass
+44,Qwen2.5-0.5B,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,2447,Pass
+45,Qwen2.5-0.5B,customers whose company starts with B,T3,Customers,Customers,Yes,Yes,Yes,2057,Pass
+46,Qwen2.5-0.5B,products containing sauce,T3,Products,Products,Yes,Yes,Yes,2067,Pass
+47,Qwen2.5-0.5B,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,3236,Pass
+48,Qwen2.5-0.5B,customers with Trading in their company name,T3,Customers,Customers,Yes,No,No,1928,Fail
+49,Qwen2.5-0.5B,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,2039,Pass
+50,Qwen2.5-0.5B,products containing syrup,T3,Products,Products,Yes,Yes,Yes,2055,Pass
+51,Qwen2.5-0.5B,customers with Import in their name,T3,Customers,Customers,Yes,No,No,2030,Fail
+52,Qwen2.5-0.5B,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,2774,Fail
+53,Qwen2.5-0.5B,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,2031,Pass
+54,Qwen2.5-0.5B,customers with Gourmet in their name,T3,Customers,Customers,Yes,No,No,2065,Fail
+55,Qwen2.5-0.5B,orders shipped to Berlin,T3,Orders,Orders,Yes,Yes,Yes,2109,Pass
+56,Qwen2.5-0.5B,products containing pasta,T3,Products,Products,Yes,No,Yes,2132,Fail
+57,Qwen2.5-0.5B,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,No,No,2070,Fail
+58,Qwen2.5-0.5B,products with anchov in the name,T3,Products,Products,Yes,No,Yes,2115,Fail
+59,Qwen2.5-0.5B,products with caviar in the name,T3,Products,Products,Yes,No,Yes,2069,Fail
+60,Qwen2.5-0.5B,customers in cities starting with M,T3,Customers,Customers,Yes,No,Yes,2036,Fail
+61,Qwen2.5-0.5B,discontinued products,T4,Products,Products,Yes,Yes,Yes,1911,Pass
+62,Qwen2.5-0.5B,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,2351,Pass
+63,Qwen2.5-0.5B,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,2043,Pass
+64,Qwen2.5-0.5B,suppliers from USA,T4,Suppliers,Suppliers,Yes,Yes,Yes,2244,Pass
+65,Qwen2.5-0.5B,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,5278,Pass
+66,Qwen2.5-0.5B,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,1962,Pass
+67,Qwen2.5-0.5B,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,2093,Pass
+68,Qwen2.5-0.5B,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,2031,Pass
+69,Qwen2.5-0.5B,employees in Seattle,T4,Employees,Employees,Yes,No,No,2062,Fail
+70,Qwen2.5-0.5B,suppliers from Japan,T4,Suppliers,Suppliers,Yes,Yes,Yes,2076,Pass
+71,Qwen2.5-0.5B,customers from Brazil,T4,Customers,Customers,Yes,No,No,2658,Fail
+72,Qwen2.5-0.5B,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,2039,Pass
+73,Qwen2.5-0.5B,employees from London,T4,Employees,Employees,Yes,Yes,Yes,2470,Pass
+74,Qwen2.5-0.5B,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,2017,Pass
+75,Qwen2.5-0.5B,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,2041,Pass
+76,Qwen2.5-0.5B,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,2150,Pass
+77,Qwen2.5-0.5B,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,2790,Pass
+78,Qwen2.5-0.5B,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,1990,Pass
+79,Qwen2.5-0.5B,orders delivered to USA,T4,Orders,Orders,Yes,Yes,Yes,2551,Pass
+80,Qwen2.5-0.5B,active products,T4,Products,Products,Yes,Yes,Yes,2042,Pass
+81,Qwen2.5-0.5B,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,2139,Pass
+82,Qwen2.5-0.5B,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,2247,Pass
+83,Qwen2.5-0.5B,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,2862,Pass
+84,Qwen2.5-0.5B,customers from Mexico or Argentina,T5,Customers,Customers,Yes,Yes,Yes,2037,Pass
+85,Qwen2.5-0.5B,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,2450,Pass
+86,Qwen2.5-0.5B,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,2166,Pass
+87,Qwen2.5-0.5B,customers from Sweden or Denmark,T5,Customers,Customers,Yes,Yes,Yes,2221,Pass
+88,Qwen2.5-0.5B,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,2245,Pass
+89,Qwen2.5-0.5B,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,Yes,Yes,2096,Pass
+90,Qwen2.5-0.5B,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,2192,Pass
+91,Qwen2.5-0.5B,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,2346,Pass
+92,Qwen2.5-0.5B,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,2127,Pass
+93,Qwen2.5-0.5B,customers from USA or Canada,T5,Customers,Customers,Yes,No,No,2148,Fail
+94,Qwen2.5-0.5B,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,2241,Pass
+95,Qwen2.5-0.5B,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,2249,Pass
+96,Qwen2.5-0.5B,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,2241,Pass
+97,Qwen2.5-0.5B,customers from Australia or New Zealand,T5,Customers,Customers,Yes,No,Yes,2141,Fail
+98,Qwen2.5-0.5B,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,Yes,Yes,2245,Pass
+99,Qwen2.5-0.5B,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,2246,Pass
+100,Qwen2.5-0.5B,customers from Norway or Finland,T5,Customers,Customers,Yes,Yes,Yes,3018,Pass

@@ -1,0 +1,101 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status
+1,Phi-3.5-mini,list all categories,T1,Categories,Categories,Yes,Yes,Yes,14717,Pass
+2,Phi-3.5-mini,show all employees,T1,Employees,Employees,Yes,Yes,Yes,182229,Pass
+3,Phi-3.5-mini,show all products,T1,Products,Products,Yes,Yes,Yes,116197,Pass
+4,Phi-3.5-mini,list all customers,T1,Customers,Customers,Yes,Yes,Yes,81264,Pass
+5,Phi-3.5-mini,show all orders,T1,Orders,Orders,Yes,Yes,Yes,14099,Pass
+6,Phi-3.5-mini,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,163076,Pass
+7,Phi-3.5-mini,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,14121,Pass
+8,Phi-3.5-mini,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,14480,Pass
+9,Phi-3.5-mini,get all staff,T1,Employees,Employees,Yes,Yes,Yes,19979,Pass
+10,Phi-3.5-mini,what products do we have,T1,Products,Products,Yes,Yes,Yes,13867,Pass
+11,Phi-3.5-mini,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,14138,Pass
+12,Phi-3.5-mini,list all shipments,T1,Orders,Orders,Yes,No,No,20670,Fail
+13,Phi-3.5-mini,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,24989,Pass
+14,Phi-3.5-mini,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,19860,Pass
+15,Phi-3.5-mini,get all product groups,T1,Categories,Products,No,Yes,Yes,21142,Fail
+16,Phi-3.5-mini,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,32418,Pass
+17,Phi-3.5-mini,display all items in catalog,T1,Products,Products,Yes,Yes,Yes,21928,Pass
+18,Phi-3.5-mini,show all buyers,T1,Customers,,No,No,No,26660,Fail
+19,Phi-3.5-mini,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,29066,Pass
+20,Phi-3.5-mini,show me all manufacturers,T1,Suppliers,,No,No,No,27435,Fail
+21,Phi-3.5-mini,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,21263,Pass
+22,Phi-3.5-mini,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,20508,Pass
+23,Phi-3.5-mini,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,20529,Pass
+24,Phi-3.5-mini,items with less than 5 units in stock,T2,Products,Products,Yes,Yes,Yes,20824,Pass
+25,Phi-3.5-mini,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,20544,Pass
+26,Phi-3.5-mini,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,20576,Pass
+27,Phi-3.5-mini,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,21587,Pass
+28,Phi-3.5-mini,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,21139,Pass
+29,Phi-3.5-mini,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,20938,Pass
+30,Phi-3.5-mini,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,22050,Pass
+31,Phi-3.5-mini,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,22068,Pass
+32,Phi-3.5-mini,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,22017,Pass
+33,Phi-3.5-mini,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,22644,Pass
+34,Phi-3.5-mini,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,22457,Pass
+35,Phi-3.5-mini,products with stock between 20 and 50,T2,Products,Products,Yes,Yes,Yes,24451,Pass
+36,Phi-3.5-mini,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,24333,Pass
+37,Phi-3.5-mini,order details with zero discount,T2,Order_Details,Order_Details,Yes,Yes,Yes,20868,Pass
+38,Phi-3.5-mini,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,21471,Pass
+39,Phi-3.5-mini,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,21474,Pass
+40,Phi-3.5-mini,products with price above 75,T2,Products,Products,Yes,Yes,Yes,20862,Pass
+41,Phi-3.5-mini,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,21074,Pass
+42,Phi-3.5-mini,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,21087,Pass
+43,Phi-3.5-mini,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,21592,Pass
+44,Phi-3.5-mini,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,23460,Pass
+45,Phi-3.5-mini,customers whose company starts with B,T3,Customers,Customers,Yes,Yes,Yes,20390,Pass
+46,Phi-3.5-mini,products containing sauce,T3,Products,Products,Yes,Yes,Yes,21171,Pass
+47,Phi-3.5-mini,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,20700,Pass
+48,Phi-3.5-mini,customers with Trading in their company name,T3,Customers,Customers,Yes,Yes,Yes,21463,Pass
+49,Phi-3.5-mini,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,21504,Pass
+50,Phi-3.5-mini,products containing syrup,T3,Products,Products,Yes,Yes,Yes,20811,Pass
+51,Phi-3.5-mini,customers with Import in their name,T3,Customers,Customers,Yes,Yes,Yes,21880,Pass
+52,Phi-3.5-mini,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,20644,Fail
+53,Phi-3.5-mini,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,20639,Pass
+54,Phi-3.5-mini,customers with Gourmet in their name,T3,Customers,Customers,Yes,Yes,Yes,21333,Pass
+55,Phi-3.5-mini,orders shipped to Berlin,T3,Orders,Orders,Yes,Yes,Yes,20458,Pass
+56,Phi-3.5-mini,products containing pasta,T3,Products,Products,Yes,No,Yes,20574,Fail
+57,Phi-3.5-mini,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,Yes,Yes,20682,Pass
+58,Phi-3.5-mini,products with anchov in the name,T3,Products,Products,Yes,No,Yes,20757,Fail
+59,Phi-3.5-mini,products with caviar in the name,T3,Products,Products,Yes,No,Yes,20880,Fail
+60,Phi-3.5-mini,customers in cities starting with M,T3,Customers,Customers,Yes,Yes,Yes,20858,Pass
+61,Phi-3.5-mini,discontinued products,T4,Products,Products,Yes,Yes,Yes,21974,Pass
+62,Phi-3.5-mini,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,21508,Pass
+63,Phi-3.5-mini,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,21074,Pass
+64,Phi-3.5-mini,suppliers from USA,T4,Suppliers,Suppliers,Yes,Yes,Yes,21124,Pass
+65,Phi-3.5-mini,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,21455,Pass
+66,Phi-3.5-mini,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,26027,Pass
+67,Phi-3.5-mini,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,21846,Pass
+68,Phi-3.5-mini,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,21679,Pass
+69,Phi-3.5-mini,employees in Seattle,T4,Employees,Employees,Yes,Yes,Yes,25886,Pass
+70,Phi-3.5-mini,suppliers from Japan,T4,Suppliers,Suppliers,Yes,Yes,Yes,23720,Pass
+71,Phi-3.5-mini,customers from Brazil,T4,Customers,Customers,Yes,Yes,Yes,21508,Pass
+72,Phi-3.5-mini,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,21496,Pass
+73,Phi-3.5-mini,employees from London,T4,Employees,Employees,Yes,Yes,Yes,21464,Pass
+74,Phi-3.5-mini,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,21066,Pass
+75,Phi-3.5-mini,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,24125,Pass
+76,Phi-3.5-mini,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,23947,Pass
+77,Phi-3.5-mini,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,22805,Pass
+78,Phi-3.5-mini,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,23606,Pass
+79,Phi-3.5-mini,orders delivered to USA,T4,Orders,Orders,Yes,Yes,Yes,24272,Pass
+80,Phi-3.5-mini,active products,T4,Products,Products,Yes,Yes,Yes,22273,Pass
+81,Phi-3.5-mini,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,25114,Pass
+82,Phi-3.5-mini,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,26367,Pass
+83,Phi-3.5-mini,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,90837,Pass
+84,Phi-3.5-mini,customers from Mexico or Argentina,T5,Customers,Customers,Yes,No,No,23206,Fail
+85,Phi-3.5-mini,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,23243,Pass
+86,Phi-3.5-mini,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,22744,Pass
+87,Phi-3.5-mini,customers from Sweden or Denmark,T5,Customers,Customers,Yes,No,No,23554,Fail
+88,Phi-3.5-mini,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,22235,Pass
+89,Phi-3.5-mini,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,Yes,Yes,23286,Pass
+90,Phi-3.5-mini,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,22175,Pass
+91,Phi-3.5-mini,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,22518,Pass
+92,Phi-3.5-mini,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,22536,Pass
+93,Phi-3.5-mini,customers from USA or Canada,T5,Customers,Customers,Yes,Yes,Yes,21984,Pass
+94,Phi-3.5-mini,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,21286,Pass
+95,Phi-3.5-mini,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,23296,Pass
+96,Phi-3.5-mini,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,21805,Pass
+97,Phi-3.5-mini,customers from Australia or New Zealand,T5,Customers,,No,No,No,20266,Fail
+98,Phi-3.5-mini,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,Yes,Yes,22410,Pass
+99,Phi-3.5-mini,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,21915,Pass
+100,Phi-3.5-mini,customers from Norway or Finland,T5,Customers,,No,No,No,19950,Fail
