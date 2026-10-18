@@ -14,7 +14,26 @@
       "Bash(npm run *)",
       "Bash(kill %1)",
       "Bash(wait)",
-      "Bash(python3 -)"
+      "Bash(python3 -)",
+      "Bash(node --check scripts/score-exact-match.mjs)",
+      "Bash(node scripts/score-exact-match.mjs --self-test)",
+      "Bash(node scripts/check-gold.mjs)",
+      "Read(//Users/prasanthkumar/Downloads/**)",
+      "Bash(mv ~/Downloads/floria_benchmark_Qwen2_5_0_5B_2026-10-17.json /Users/prasanthkumar/projects/floria/BENCHMARK/runs/ && echo \"moved\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://ui5.sap.com/resources/sap/ui/unified/library-preload.js\")",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const a = require\\('@anthropic-ai/sdk'\\); console.log\\(Object.keys\\(a\\).filter\\(k => k.toLowerCase\\(\\).includes\\('bedrock'\\)\\)\\)\")",
+      "Bash(node -e \"const b = require\\('@anthropic-ai/bedrock-sdk'\\); console.log\\(Object.keys\\(b\\)\\)\")",
+      "Bash(node --env-file-if-exists=.env -e ' *)",
+      "Bash(pkill -f \"srv/server.mjs\")",
+      "Bash(node --env-file-if-exists=.env srv/server.mjs)",
+      "Bash(curl -s http://localhost:4004/llm/bedrock/health)",
+      "Bash(curl -s -X POST http://localhost:4004/llm/bedrock -H 'Content-Type: application/json' -d '{\"modelId\":\"eu.anthropic.claude-sonnet-4-6\",\"user\":\"Say hi in 3 words\",\"maxTokens\":20}')"
+    ],
+    "additionalDirectories": [
+      "/Users/prasanthkumar/Downloads"
     ]
   }
 }

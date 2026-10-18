@@ -80,6 +80,9 @@
                 <core:ListItem key="Llama-3.2-3B-Instruct-q4f16_1-MLC"       text="Llama-3.2-3B · Meta · ~2.0 GB · 3B"/>
                 <core:ListItem key="gemma-2-2b-it-q4f16_1-MLC"               text="Gemma-2-2B · Google · ~1.5 GB · 2B"/>
                 <core:ListItem key="Phi-3.5-mini-instruct-q4f16_1-MLC"       text="Phi-3.5-mini · Microsoft · ~2.2 GB · 3.8B"/>
+                <core:ListItem key="bedrock:eu.anthropic.claude-haiku-5-5"  text="Claude Haiku 5.5 · cloud baseline (AWS Bedrock)"/>
+                <core:ListItem key="bedrock:eu.anthropic.claude-sonnet-4-6" text="Claude Sonnet 4.6 · cloud baseline (AWS Bedrock)"/>
+                <core:ListItem key="direct-keyword"                                       text="Direct · keyword baseline (no model)"/>
               </items>
             </Select>
             <ObjectStatus
@@ -466,7 +469,7 @@
                     <HBox alignItems="Center" justifyContent="SpaceBetween" class="floraCacheRow">
                       <VBox class="floraCacheInfo">
                         <HBox alignItems="Center">
-                          <core:Icon src="sap-icon://ai" size="0.875rem" class="floraCacheModelIcon"/>
+                          <core:Icon src="{= ${provider} === 'bedrock' ? 'sap-icon://cloud' : (${provider} === 'direct' ? 'sap-icon://search' : 'sap-icon://ai')}" size="0.875rem" class="floraCacheModelIcon"/>
                           <Text text="{label}" class="floraCacheLabel sapUiTinyMarginBegin"/>
                         </HBox>
                         <Text text="{= ${vendor} + '  ·  ' + ${params} + '  ·  ' + ${sizeLabel}}" class="floraCacheMeta"/>
@@ -512,7 +515,7 @@
                   </VBox>
                   <HBox alignItems="Center">
                     <ObjectStatus
-                      text="{= ${/benchmark/done} ? ${/benchmark/passed} + '/' + ${/benchmark/total} + ' · ' + ${/benchmark/accuracy} : (${/benchmark/running} ? ${/benchmark/progress} + '%' : 'Not run')}"
+                      text="{= ${/benchmark/done} ? 'ESR ' + ${/benchmark/passed} + '/' + ${/benchmark/total} + ' (' + ${/benchmark/accuracy} + ') · EM ' + ${/benchmark/emPassed} + '/' + ${/benchmark/total} + ' (' + ${/benchmark/emAccuracy} + ')' : (${/benchmark/running} ? (${/benchmark/repeatLabel} ? ${/benchmark/repeatLabel} + ' · ' : '') + ${/benchmark/progress} + '%' : 'Not run')}"
                       state="{= ${/benchmark/done} ? 'Success' : (${/benchmark/running} ? 'Warning' : 'None')}"
                       icon="{= ${/benchmark/done} ? 'sap-icon://activity-2' : 'sap-icon://target-group'}"
                       class="sapUiSmallMarginEnd"/>
@@ -523,6 +526,14 @@
                       press=".onDownloadBenchmark"
                       enabled="{= ${/benchmark/results}.length > 0 &amp;&amp; !${/benchmark/running}}"
                       tooltip="Download results as CSV (opens in Excel)"
+                      class="sapUiSmallMarginEnd"/>
+                    <Button
+                      text="JSON"
+                      icon="sap-icon://attachment"
+                      type="Default"
+                      press=".onDownloadBenchmarkJson"
+                      enabled="{= ${/benchmark/results}.length > 0 &amp;&amp; !${/benchmark/running}}"
+                      tooltip="Download raw plans + URLs as JSON (for exact-match scoring)"
                       class="sapUiSmallMarginEnd"/>
                     <Button
                       text="{= ${/benchmark/running} ? 'Running…' : 'Run Benchmark'}"
@@ -545,6 +556,15 @@
                     </items>
                   </SegmentedButton>
                   <Text text="queries" class="floraBenchmarkSubtitle sapUiSmallMarginBegin sapUiSmallMarginEnd"/>
+                  <Text text="×" class="floraBenchmarkSubtitle sapUiTinyMarginEnd"/>
+                  <SegmentedButton selectedKey="{/benchmark/repeat}" tooltip="Repeat the whole set N times for mean ± sd">
+                    <items>
+                      <SegmentedButtonItem key="1" text="1"/>
+                      <SegmentedButtonItem key="3" text="3"/>
+                      <SegmentedButtonItem key="5" text="5"/>
+                    </items>
+                  </SegmentedButton>
+                  <Text text="runs" class="floraBenchmarkSubtitle sapUiSmallMarginBegin sapUiSmallMarginEnd"/>
                   <Button
                     text="+ Add Custom Query"
                     icon="sap-icon://add"
@@ -601,27 +621,32 @@
                   <VBox class="floraBenchmarkTypeTile">
                     <ObjectStatus text="T1 · Read" state="Information" class="floraBenchmarkTypeLabel"/>
                     <Title text="{= ${/benchmark/typeStats/T1/passed} + '/' + ${/benchmark/typeStats/T1/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
-                    <Text text="{/benchmark/typeStats/T1/pct}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'ESR ' + ${/benchmark/typeStats/T1/pct}}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'EM ' + ${/benchmark/typeStats/T1/em} + '/' + ${/benchmark/typeStats/T1/total} + ' · ' + ${/benchmark/typeStats/T1/emPct}}" class="floraBenchmarkTypePct"/>
                   </VBox>
                   <VBox class="floraBenchmarkTypeTile">
                     <ObjectStatus text="T2 · Numeric" state="Information" class="floraBenchmarkTypeLabel"/>
                     <Title text="{= ${/benchmark/typeStats/T2/passed} + '/' + ${/benchmark/typeStats/T2/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
-                    <Text text="{/benchmark/typeStats/T2/pct}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'ESR ' + ${/benchmark/typeStats/T2/pct}}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'EM ' + ${/benchmark/typeStats/T2/em} + '/' + ${/benchmark/typeStats/T2/total} + ' · ' + ${/benchmark/typeStats/T2/emPct}}" class="floraBenchmarkTypePct"/>
                   </VBox>
                   <VBox class="floraBenchmarkTypeTile">
                     <ObjectStatus text="T3 · String" state="Information" class="floraBenchmarkTypeLabel"/>
                     <Title text="{= ${/benchmark/typeStats/T3/passed} + '/' + ${/benchmark/typeStats/T3/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
-                    <Text text="{/benchmark/typeStats/T3/pct}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'ESR ' + ${/benchmark/typeStats/T3/pct}}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'EM ' + ${/benchmark/typeStats/T3/em} + '/' + ${/benchmark/typeStats/T3/total} + ' · ' + ${/benchmark/typeStats/T3/emPct}}" class="floraBenchmarkTypePct"/>
                   </VBox>
                   <VBox class="floraBenchmarkTypeTile">
                     <ObjectStatus text="T4 · Equality" state="Information" class="floraBenchmarkTypeLabel"/>
                     <Title text="{= ${/benchmark/typeStats/T4/passed} + '/' + ${/benchmark/typeStats/T4/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
-                    <Text text="{/benchmark/typeStats/T4/pct}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'ESR ' + ${/benchmark/typeStats/T4/pct}}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'EM ' + ${/benchmark/typeStats/T4/em} + '/' + ${/benchmark/typeStats/T4/total} + ' · ' + ${/benchmark/typeStats/T4/emPct}}" class="floraBenchmarkTypePct"/>
                   </VBox>
                   <VBox class="floraBenchmarkTypeTile">
                     <ObjectStatus text="T5 · OR" state="Information" class="floraBenchmarkTypeLabel"/>
                     <Title text="{= ${/benchmark/typeStats/T5/passed} + '/' + ${/benchmark/typeStats/T5/total}}" level="H5" class="floraBenchmarkTypeFraction"/>
-                    <Text text="{/benchmark/typeStats/T5/pct}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'ESR ' + ${/benchmark/typeStats/T5/pct}}" class="floraBenchmarkTypePct"/>
+                    <Text text="{= 'EM ' + ${/benchmark/typeStats/T5/em} + '/' + ${/benchmark/typeStats/T5/total} + ' · ' + ${/benchmark/typeStats/T5/emPct}}" class="floraBenchmarkTypePct"/>
                   </VBox>
                 </HBox>
 
@@ -635,12 +660,15 @@
                   class="floraBenchmarkTable sapUiTinyMarginTop">
                   <columns>
                     <Column width="3rem"><Label text="#"/></Column>
-                    <Column width="30%"><Label text="Query"/></Column>
-                    <Column width="7rem"><Label text="Type"/></Column>
-                    <Column width="10rem"><Label text="Expected"/></Column>
-                    <Column width="10rem"><Label text="Detected"/></Column>
-                    <Column width="5rem" hAlign="Center"><Label text="Match"/></Column>
-                    <Column width="5rem" hAlign="Center"><Label text="Results"/></Column>
+                    <Column width="18%"><Label text="Query"/></Column>
+                    <Column width="4rem"><Label text="Type"/></Column>
+                    <Column width="8rem"><Label text="Expected"/></Column>
+                    <Column width="8rem"><Label text="Detected"/></Column>
+                    <Column width="4.5rem" hAlign="Center"><Label text="Match"/></Column>
+                    <Column width="4.5rem" hAlign="Center"><Label text="Results"/></Column>
+                    <Column width="18%" minScreenWidth="Tablet" demandPopin="true"><Label text="Expected Query"/></Column>
+                    <Column width="18%" minScreenWidth="Tablet" demandPopin="true"><Label text="Generated Query"/></Column>
+                    <Column width="5rem" hAlign="Center"><Label text="EM"/></Column>
                     <Column width="5rem" hAlign="End"><Label text="ms"/></Column>
                     <Column width="6rem" hAlign="Center"><Label text="Status"/></Column>
                   </columns>
@@ -658,6 +686,11 @@
                         <core:Icon
                           src="{= ${hasResults} ? 'sap-icon://accept' : 'sap-icon://decline'}"
                           color="{= ${hasResults} ? 'Positive' : 'Negative'}"/>
+                        <Text text="{= ${goldFilter} === null ? '—' : (${goldFilter} === '' ? '(no filter)' : ${goldFilter})}" wrapping="false" tooltip="{goldFilter}"/>
+                        <Text text="{= ${plan} ? (${plan/filter} ? ${plan/filter} : '(no filter)') : (${error} ? ${error} : '—')}" wrapping="false" tooltip="{plan/filter}"/>
+                        <ObjectStatus
+                          text="{= ${exactMatch} === null ? '—' : (${exactMatch} ? 'Yes' : 'No')}"
+                          state="{= ${exactMatch} === null ? 'None' : (${exactMatch} ? 'Success' : 'Error')}"/>
                         <ObjectNumber number="{totalMs}" unit="ms" emphasized="false"/>
                         <ObjectStatus text="{status}" state="{statusState}"/>
                       </cells>

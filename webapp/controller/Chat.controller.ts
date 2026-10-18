@@ -50,7 +50,8 @@ import ColumnListItem from "sap/m/ColumnListItem";
 import Text from "sap/m/Text";
 import Label from "sap/m/Label";
 import ObjectNumber from "sap/m/ObjectNumber";
-import WebLLMService, { QueryPlan, MODEL_REGISTRY } from "../util/WebLLMService";
+import WebLLMService, { QueryPlan, MODEL_REGISTRY, PROMPT_VERSION, GenerationTrace, ModelProvider } from "../util/WebLLMService";
+import { GoldEntry, filterFromUrl, isExactMatch } from "../util/ExactMatch";
 import ODataQueryBuilder from "../util/ODataQueryBuilder";
 import QueryValidator, { ValidationResult } from "../util/QueryValidator";
 
@@ -100,7 +101,76 @@ interface BenchmarkResult {
   statusState: string;
   modelId: string;
   modelLabel: string;
+  /** Post-processed plan that was actually sent; null if generation threw. */
+  plan: QueryPlan | null;
+  /** Plan as parsed from the model, before fixKnownMistakes; null if unparseable. */
+  prePostProcessPlan: QueryPlan | null;
+  rawLlmText: string | null;
+  url: string | null;
+  httpStatus: number | null;
+  recordCount: number | null;
+  error: string | null;
+  errorStage: "generate" | "build" | "fetch" | null;
+  /** Which planner produced this row: on-device model, cloud model, or the keyword fallback. */
+  llmMode: ModelProvider;
+  /** Gold query this result was scored against; null for custom queries or if gold failed to load. */
+  goldIdx: number | null;
+  goldFilter: string | null;
+  /** Exact match (entity + normalized $filter vs gold); null when no gold is available. */
+  exactMatch: boolean | null;
 }
+
+/** Aggregate statistics for one benchmark run; written into both the CSV summary block and the JSON export. */
+interface RunSummary {
+  model: string;
+  modelId: string;
+  promptVersion: string;
+  runDate: string;
+  totalQueries: number;
+  passed: number;
+  esrPct: number;
+  /** Rows that had a gold entry; EM percentages use this as the denominator. */
+  emScored: number;
+  emPassed: number;
+  emPct: number;
+  /** ESR passed but EM failed — ESR's false positives, and their rate over all ESR passes. */
+  esrFalsePositives: number;
+  esrFpRatePct: number;
+  byType: Record<string, { total: number; passed: number; pct: number; em: number; emPct: number }>;
+  entityMatchCount: number;
+  hasResultsCount: number;
+  validationPassedCount: number;
+  errorCount: number;
+  medianMs: number;
+  meanMs: number;
+  maxMs: number;
+  stalls: number;
+}
+
+/** One complete pass over the query set; a benchmark run holds 1..N of these for variance reporting. */
+interface RunRepetition {
+  index: number;
+  startedAt: string;
+  finishedAt: string;
+  results: BenchmarkResult[];
+  summary: RunSummary;
+}
+
+/** Subset of the WebGPU adapter surface we read for hardware attribution (typed loosely; not all browsers expose it). */
+interface GpuAdapterLike {
+  info?: Record<string, string>;
+  requestAdapterInfo?: () => Promise<Record<string, string>>;
+  limits?: Record<string, number>;
+}
+
+/** Generation time above which a query counts as a WebGPU scheduler stall (inflates means 2–100×). */
+const STALL_THRESHOLD_MS = 100_000;
+
+const csvEscape = (v: unknown): string => {
+  const s = String(v ?? "");
+  return s.includes(",") || s.includes('"') || s.includes("\n")
+    ? `"${s.replace(/"/g, '""')}"` : s;
+};
 
 // ─── Static data ───────────────────────────────────────────────────────────────
 
@@ -350,6 +420,8 @@ export default class ChatController extends Controller {
   private llmService!: WebLLMService;
   private queryBuilder!: ODataQueryBuilder;
   private queryValidator!: QueryValidator;
+  /** Gold queries keyed by query text, loaded from the proxy at startup; empty if unavailable. */
+  private goldByQuery = new Map<string, GoldEntry>();
 
   /** Auto-incrementing ID for history entries — monotone so React-style keys are stable. */
   private historySeq = 0;
@@ -409,17 +481,25 @@ export default class ChatController extends Controller {
         total: BENCHMARK_QUERIES.length,
         passed: 0,
         accuracy: "—",
+        emPassed: 0,
+        emAccuracy: "—",
+        falsePositives: 0,
+        goldCount: 0,
+        repeat: "1",
+        repeatIndex: 0,
+        repeatLabel: "",
+        repetitions: [] as RunRepetition[],
         results: [] as BenchmarkResult[],
         queryCount: "100",
         customQueries: [] as Array<{ query: string; expectedEntity: string; type: string }>,
         currentQueryText: "",
         modelLabel: "",
         typeStats: {
-          T1: { total: 0, passed: 0, pct: "—" },
-          T2: { total: 0, passed: 0, pct: "—" },
-          T3: { total: 0, passed: 0, pct: "—" },
-          T4: { total: 0, passed: 0, pct: "—" },
-          T5: { total: 0, passed: 0, pct: "—" },
+          T1: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+          T2: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+          T3: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+          T4: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+          T5: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
         },
         newQuery: { query: "", entity: "Products", type: "T1" }
       },
@@ -436,16 +516,18 @@ export default class ChatController extends Controller {
       error: "",
       precaching: false,
       models: MODEL_REGISTRY.map(m => {
-        const cached = this.getCachedModelIds().has(m.id);
+        const local  = m.provider === "webllm";
+        const cached = local && this.getCachedModelIds().has(m.id);
         return {
           id:             m.id,
           label:          m.label,
           vendor:         m.vendor,
           sizeLabel:      m.sizeLabel,
           params:         m.params,
-          cacheStatus:    cached ? "Cached" : "Not cached",
-          cacheState:     cached ? "Success" : "None",
-          cacheIcon:      cached ? "sap-icon://accept" : "sap-icon://download",
+          provider:       m.provider,
+          cacheStatus:    !local ? (m.provider === "bedrock" ? "Cloud API" : "No model") : (cached ? "Cached" : "Not cached"),
+          cacheState:     !local ? "Information" : (cached ? "Success" : "None"),
+          cacheIcon:      !local ? (m.provider === "bedrock" ? "sap-icon://cloud" : "sap-icon://search") : (cached ? "sap-icon://accept" : "sap-icon://download"),
           cacheProgress:  cached ? 100 : 0,
           cacheProgressPct: cached ? "100%" : "",
           isDownloading:  false,
@@ -454,14 +536,16 @@ export default class ChatController extends Controller {
     });
     this.getView()?.setModel(this.model);
 
-    this.llmService    = new WebLLMService();
+    this.llmService    = new WebLLMService(new URL(this.ODATA_BASE).origin);
     this.queryBuilder  = new ODataQueryBuilder();
     this.queryValidator = new QueryValidator();
+    void this.loadGold();
+    void this.captureHardware();
 
     // Start model warm-up only when WebGPU is present; the await is intentionally
     // fire-and-forget — errors are caught inside initLLM and the UI degrades
     // gracefully to direct-mode search.
-    if (WebLLMService.isWebGPUAvailable()) void this.initLLM();
+    if (this.canInitSelectedModel()) void this.initLLM();
   }
 
   // ─── LLM init ──────────────────────────────────────────────────────────────
@@ -475,11 +559,15 @@ export default class ChatController extends Controller {
   private async initLLM(): Promise<void> {
     const mid   = this.model.getProperty("/llm/selectedModelId") as string;
     const mInfo = MODEL_REGISTRY.find(m => m.id === mid) ?? MODEL_REGISTRY[0];
+    const loadingText =
+      mInfo.provider === "bedrock" ? `Connecting to ${mInfo.label} via the local proxy…`
+      : mInfo.provider === "direct" ? "Keyword planner — no model to load"
+      : `Downloading ${mInfo.label} (${mInfo.sizeLabel}, cached after first run)…`;
 
     this.model.setProperty("/llm/loading",      true);
     this.model.setProperty("/llm/ready",        false);
-    this.model.setProperty("/llm/loadingText",  `Downloading ${mInfo.label} (${mInfo.sizeLabel}, cached after first run)…`);
-    this.model.setProperty("/llm/statusText",   "Loading AI…");
+    this.model.setProperty("/llm/loadingText",  loadingText);
+    this.model.setProperty("/llm/statusText",   mInfo.provider === "webllm" ? "Loading AI…" : "Connecting…");
     this.model.setProperty("/llm/statusState",  "Warning");
     this.model.setProperty("/llm/statusIcon",   "sap-icon://synchronize");
     try {
@@ -493,23 +581,37 @@ export default class ChatController extends Controller {
       this.model.setProperty("/llm/ready",        true);
       this.model.setProperty("/llm/statusText",   `${mInfo.label} Ready`);
       this.model.setProperty("/llm/statusState",  "Success");
-      this.model.setProperty("/llm/statusIcon",   "sap-icon://ai");
-      this.markModelCached(mid);
-      const models = this.model.getProperty("/models") as Array<Record<string, unknown>>;
-      const idx = models.findIndex(m => m.id === mid);
-      if (idx !== -1) {
-        this.model.setProperty(`/models/${idx}/cacheStatus`,   "Cached");
-        this.model.setProperty(`/models/${idx}/cacheState`,    "Success");
-        this.model.setProperty(`/models/${idx}/cacheIcon`,     "sap-icon://accept");
-        this.model.setProperty(`/models/${idx}/cacheProgress`, 100);
-        this.model.setProperty(`/models/${idx}/cacheProgressPct`, "100%");
+      this.model.setProperty("/llm/statusIcon",   mInfo.provider === "bedrock" ? "sap-icon://cloud" : mInfo.provider === "direct" ? "sap-icon://search" : "sap-icon://ai");
+      if (mInfo.provider === "webllm") {
+        this.markModelCached(mid);
+        const models = this.model.getProperty("/models") as Array<Record<string, unknown>>;
+        const idx = models.findIndex(m => m.id === mid);
+        if (idx !== -1) {
+          this.model.setProperty(`/models/${idx}/cacheStatus`,   "Cached");
+          this.model.setProperty(`/models/${idx}/cacheState`,    "Success");
+          this.model.setProperty(`/models/${idx}/cacheIcon`,     "sap-icon://accept");
+          this.model.setProperty(`/models/${idx}/cacheProgress`, 100);
+          this.model.setProperty(`/models/${idx}/cacheProgressPct`, "100%");
+        }
       }
-    } catch {
+    } catch (e) {
       this.model.setProperty("/llm/loading",      false);
-      this.model.setProperty("/llm/statusText",   "Direct Search");
-      this.model.setProperty("/llm/statusState",  "Information");
+      this.model.setProperty("/llm/statusText",   mInfo.provider === "bedrock" ? "Cloud unavailable — Direct Search" : "Direct Search");
+      this.model.setProperty("/llm/statusState",  mInfo.provider === "bedrock" ? "Error" : "Information");
       this.model.setProperty("/llm/statusIcon",   "sap-icon://search");
+      // The on-device path degrades silently (direct search is still useful); a misconfigured cloud baseline must be visible.
+      if (mInfo.provider === "bedrock") MessageToast.show(e instanceof Error ? e.message : String(e), { duration: 6000 });
     }
+  }
+
+  /** On-device models need WebGPU; cloud and keyword baselines do not. */
+  private canInitSelectedModel(): boolean {
+    return this.currentProvider() !== "webllm" || WebLLMService.isWebGPUAvailable();
+  }
+
+  private currentProvider(): ModelProvider {
+    const mid = this.model.getProperty("/llm/selectedModelId") as string;
+    return MODEL_REGISTRY.find(m => m.id === mid)?.provider ?? "webllm";
   }
 
   public onModelChange(event: { getSource(): { getSelectedKey(): string } }): void {
@@ -521,7 +623,7 @@ export default class ChatController extends Controller {
     this.model.setProperty("/llm/selectedModelVendor", mInfo.vendor);
     this.model.setProperty("/llm/selectedModelSize",   mInfo.sizeLabel);
     this.model.setProperty("/llm/ready",               false);
-    if (WebLLMService.isWebGPUAvailable()) void this.initLLM();
+    if (this.canInitSelectedModel()) void this.initLLM();
   }
 
   public async onPrecacheAll(): Promise<void> {
@@ -533,7 +635,7 @@ export default class ChatController extends Controller {
 
     for (let i = 0; i < models.length; i++) {
       const m = models[i];
-      if ((m.cacheStatus as string) === "Cached") continue;
+      if ((m.cacheStatus as string) === "Cached" || (m.provider as string) !== "webllm") continue;
 
       this.model.setProperty(`/models/${i}/isDownloading`,  true);
       this.model.setProperty(`/models/${i}/cacheStatus`,    "Downloading…");
@@ -598,7 +700,7 @@ export default class ChatController extends Controller {
     this.model.setProperty("/timing/fetchMs", 0);
     this.model.setProperty("/timing/totalMs", 0);
 
-    const llmReady = this.model.getProperty("/llm/ready") as boolean;
+    const llmReady = (this.model.getProperty("/llm/ready") as boolean) && this.currentProvider() !== "direct";
     const t0 = performance.now();
     let validatorCaught = false;
     let serverError = false;
@@ -719,29 +821,69 @@ export default class ChatController extends Controller {
   public async onRunBenchmark(): Promise<void> {
     if (this.model.getProperty("/benchmark/running") as boolean) return;
 
-    const queries = this.getQueriesToRun();
+    const queries  = this.getQueriesToRun();
+    const repeat   = Math.max(1, parseInt(this.model.getProperty("/benchmark/repeat") as string, 10) || 1);
+    const provider = this.currentProvider();
+    // The keyword baseline is selectable as a "model"; it never uses the LLM path.
+    const llmReady = (this.model.getProperty("/llm/ready") as boolean) && provider !== "direct";
+    const benchModelId    = this.model.getProperty("/llm/selectedModelId")    as string;
+    const benchModelLabel = this.model.getProperty("/llm/selectedModelLabel") as string;
 
-    this.model.setProperty("/benchmark/running",          true);
-    this.model.setProperty("/benchmark/done",             false);
+    this.model.setProperty("/benchmark/running",     true);
+    this.model.setProperty("/benchmark/done",        false);
+    this.model.setProperty("/benchmark/modelLabel",  benchModelLabel);
+    this.model.setProperty("/benchmark/total",       queries.length);
+    this.model.setProperty("/benchmark/repetitions", []);
+
+    const repetitions: RunRepetition[] = [];
+    for (let rep = 0; rep < repeat; rep++) {
+      this.model.setProperty("/benchmark/repeatIndex", rep + 1);
+      this.model.setProperty("/benchmark/repeatLabel", repeat > 1 ? `Run ${rep + 1}/${repeat}` : "");
+      const startedAt = new Date().toISOString();
+      this.model.setProperty("/benchmark/startedAt", startedAt);
+
+      const results = await this.runBenchmarkOnce(queries, { benchModelId, benchModelLabel, llmReady, provider });
+      repetitions.push({ index: rep + 1, startedAt, finishedAt: new Date().toISOString(), results, summary: this.computeRunSummary(results) });
+      this.model.setProperty("/benchmark/repetitions", [...repetitions]);
+    }
+
+    this.model.setProperty("/benchmark/running",          false);
+    this.model.setProperty("/benchmark/done",             true);
+    this.model.setProperty("/benchmark/currentQueryText", "");
+
+    const last    = repetitions[repetitions.length - 1].summary;
+    const emNote  = this.goldByQuery.size ? ` · EM ${last.emPassed}/${last.totalQueries}` : "";
+    const repNote = repeat > 1 ? ` · ${repeat} runs` : "";
+    MessageToast.show(`Benchmark complete — ESR ${last.passed}/${last.totalQueries} (${Math.round(last.esrPct)}%)${emNote}${repNote}`);
+  }
+
+  /** Runs the query set once, streaming rows into /benchmark/results as they complete. */
+  private async runBenchmarkOnce(
+    queries: Array<{ query: string; expectedEntity: string; type: string }>,
+    ctx: { benchModelId: string; benchModelLabel: string; llmReady: boolean; provider: ModelProvider }
+  ): Promise<BenchmarkResult[]> {
+    const { benchModelId, benchModelLabel, llmReady, provider } = ctx;
+
     this.model.setProperty("/benchmark/progress",         0);
     this.model.setProperty("/benchmark/passed",           0);
     this.model.setProperty("/benchmark/accuracy",         "—");
+    this.model.setProperty("/benchmark/emPassed",         0);
+    this.model.setProperty("/benchmark/emAccuracy",       "—");
+    this.model.setProperty("/benchmark/falsePositives",   0);
     this.model.setProperty("/benchmark/results",          []);
-    this.model.setProperty("/benchmark/total",            queries.length);
     this.model.setProperty("/benchmark/currentQueryText", "");
     this.model.setProperty("/benchmark/typeStats", {
-      T1: { total: 0, passed: 0, pct: "—" },
-      T2: { total: 0, passed: 0, pct: "—" },
-      T3: { total: 0, passed: 0, pct: "—" },
-      T4: { total: 0, passed: 0, pct: "—" },
-      T5: { total: 0, passed: 0, pct: "—" },
+      T1: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+      T2: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+      T3: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+      T4: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
+      T5: { total: 0, passed: 0, pct: "—", em: 0, emPct: "—" },
     });
 
-    const llmReady = this.model.getProperty("/llm/ready") as boolean;
-    const benchModelId    = this.model.getProperty("/llm/selectedModelId")    as string;
-    const benchModelLabel = this.model.getProperty("/llm/selectedModelLabel") as string;
-    this.model.setProperty("/benchmark/modelLabel", benchModelLabel);
+    const results: BenchmarkResult[] = [];
     let passed = 0;
+    let emPassed = 0;
+    let falsePositives = 0;
 
     for (let i = 0; i < queries.length; i++) {
       const bq = queries[i];
@@ -753,43 +895,78 @@ export default class ChatController extends Controller {
       let hasResults     = false;
       let validationPass = false;
       let entityMatch    = false;
+      let planOut: QueryPlan | null = null;
+      let trace: GenerationTrace | null = null;
+      let urlOut: string | null = null;
+      let httpStatus: number | null = null;
+      let recordCount: number | null = null;
+      let error: string | null = null;
+      let stage: "generate" | "build" | "fetch" = "generate";
 
       try {
         let plan: QueryPlan;
         if (llmReady) {
-          plan = await this.llmService.generateQueryPlan(bq.query);
+          plan  = await this.llmService.generateQueryPlan(bq.query);
+          trace = this.llmService.lastGeneration;
         } else {
           const entity = this.detectEntity(bq.query);
           const term   = this.extractKeyTerm(bq.query);
           plan = { entity, filter: (DIRECT_FILTERS[entity] ?? DIRECT_FILTERS.Products)(term), orderby: "", top: 20 };
         }
 
+        planOut        = plan;
         detectedEntity = plan.entity;
         entityMatch    = plan.entity === bq.expectedEntity;
 
         const vr  = this.queryValidator.validate(plan);
         validationPass = vr.valid;
 
+        stage = "build";
         const url = this.queryBuilder.build(plan, this.ODATA_BASE);
-        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        urlOut = url;
+
+        stage = "fetch";
+        const res  = await fetch(url, { headers: { Accept: "application/json" } });
+        httpStatus = res.status;
         if (res.ok) {
-          const data = await res.json() as { value: unknown[] };
-          hasResults = (data.value ?? []).length > 0;
+          const data  = await res.json() as { value: unknown[] };
+          recordCount = (data.value ?? []).length;
+          hasResults  = recordCount > 0;
         }
-      } catch { /* count as failed; continue */ }
+      } catch (e) {
+        error = e instanceof Error ? e.message : String(e);
+        // A JSON-parse failure throws before `trace` is assigned; recover it so rawLlmText is still logged.
+        if (llmReady) trace = trace ?? this.llmService.lastGeneration;
+      }
+      const errorStage = error ? stage : null;
 
       const totalMs  = Math.round(performance.now() - t0);
       const isPassed = entityMatch && hasResults;
       if (isPassed) passed++;
 
+      // Exact match against the gold query (looked up by text so query subsets still align).
+      // Scored on what was actually sent — the URL — falling back to the plan if build() threw.
+      const gold = this.goldByQuery.get(bq.query) ?? null;
+      let exactMatch: boolean | null = null;
+      if (gold) {
+        let gotEntity = detectedEntity, gotFilter = planOut?.filter ?? "";
+        if (urlOut) ({ entity: gotEntity, filter: gotFilter } = filterFromUrl(urlOut));
+        exactMatch = planOut !== null && isExactMatch(gotEntity, gotFilter, gold);
+      }
+      if (exactMatch) emPassed++;
+      if (isPassed && exactMatch === false) falsePositives++;
+
       // Per-type accuracy update
-      const ts = this.model.getProperty("/benchmark/typeStats") as Record<string, { total: number; passed: number; pct: string }>;
+      const ts = this.model.getProperty("/benchmark/typeStats") as Record<string, { total: number; passed: number; pct: string; em: number; emPct: string }>;
       const qt = bq.type;
       const tTotal  = (ts[qt]?.total  ?? 0) + 1;
       const tPassed = (ts[qt]?.passed ?? 0) + (isPassed ? 1 : 0);
+      const tEm     = (ts[qt]?.em     ?? 0) + (exactMatch ? 1 : 0);
       this.model.setProperty(`/benchmark/typeStats/${qt}`, {
         total: tTotal, passed: tPassed,
-        pct: `${Math.round((tPassed / tTotal) * 100)}%`
+        pct: `${Math.round((tPassed / tTotal) * 100)}%`,
+        em: tEm,
+        emPct: gold ? `${Math.round((tEm / tTotal) * 100)}%` : "—"
       });
 
       const entry: BenchmarkResult = {
@@ -800,19 +977,31 @@ export default class ChatController extends Controller {
         statusState: isPassed ? "Success" : "Error",
         modelId:    benchModelId,
         modelLabel: benchModelLabel,
+        plan: planOut,
+        prePostProcessPlan: trace?.prePostProcessPlan ?? null,
+        rawLlmText: trace?.rawText ?? null,
+        url: urlOut,
+        httpStatus,
+        recordCount,
+        error,
+        errorStage,
+        llmMode: llmReady ? provider : "direct",
+        goldIdx: gold?.idx ?? null,
+        goldFilter: gold?.filter ?? null,
+        exactMatch,
       };
 
-      const current = this.model.getProperty("/benchmark/results") as BenchmarkResult[];
-      this.model.setProperty("/benchmark/results",          [...current, entry]);
+      results.push(entry);
+      this.model.setProperty("/benchmark/results",          [...results]);
       this.model.setProperty("/benchmark/progress",         Math.round(((i + 1) / queries.length) * 100));
       this.model.setProperty("/benchmark/passed",           passed);
       this.model.setProperty("/benchmark/accuracy",         `${Math.round((passed / (i + 1)) * 100)}%`);
+      this.model.setProperty("/benchmark/emPassed",         emPassed);
+      this.model.setProperty("/benchmark/emAccuracy",       this.goldByQuery.size ? `${Math.round((emPassed / (i + 1)) * 100)}%` : "—");
+      this.model.setProperty("/benchmark/falsePositives",   falsePositives);
     }
 
-    this.model.setProperty("/benchmark/running",          false);
-    this.model.setProperty("/benchmark/done",             true);
-    this.model.setProperty("/benchmark/currentQueryText", "");
-    MessageToast.show(`Benchmark complete — ${passed}/${queries.length} passed (${Math.round((passed / queries.length) * 100)}%)`);
+    return results;
   }
 
   /** Returns the proportional query subset based on selected count, with custom queries appended. */
@@ -1094,19 +1283,14 @@ export default class ChatController extends Controller {
 
     const headers = [
       "#", "Model", "Query", "Type", "Expected Entity", "Detected Entity",
-      "Entity Match", "Has Results", "Validation Passed", "Time (ms)", "Status"
+      "Entity Match", "Has Results", "Validation Passed", "Time (ms)", "Status",
+      "Expected Query (Gold)", "Generated Query", "Exact Match", "OData URL", "Error"
     ];
-
-    const escape = (v: unknown) => {
-      const s = String(v ?? "");
-      return s.includes(",") || s.includes('"') || s.includes("\n")
-        ? `"${s.replace(/"/g, '""')}"` : s;
-    };
 
     const rows = results.map(r => [
       r.idx,
-      escape(r.modelLabel || ""),
-      escape(r.query),
+      csvEscape(r.modelLabel || ""),
+      csvEscape(r.query),
       r.queryType,
       r.expectedEntity,
       r.detectedEntity || "",
@@ -1114,22 +1298,243 @@ export default class ChatController extends Controller {
       r.hasResults ? "Yes" : "No",
       r.validationPassed ? "Yes" : "No",
       r.totalMs,
-      r.passed ? "Pass" : "Fail"
+      r.passed ? "Pass" : "Fail",
+      csvEscape(r.goldFilter ?? ""),
+      csvEscape(r.plan?.filter ?? ""),
+      r.exactMatch === null ? "n/a" : (r.exactMatch ? "Yes" : "No"),
+      csvEscape(r.url ?? ""),
+      csvEscape(r.error ?? "")
     ].join(","));
 
-    const csv = [headers.join(","), ...rows].join("\r\n");
+    const s = this.computeRunSummary(results);
+    const summaryRows: Array<[string, unknown]> = [
+      ["Model", s.model],
+      ["Model ID", s.modelId],
+      ["Prompt Version", s.promptVersion],
+      ["Run Date", s.runDate],
+      ["Total Queries", s.totalQueries],
+      ["Passed (ESR)", s.passed],
+      ["ESR %", s.esrPct],
+      ["Exact Match (EM)", s.emPassed],
+      ["EM %", s.emPct],
+      ["EM Scored (rows with gold)", s.emScored],
+      ["ESR False Positives (ESR pass, EM fail)", s.esrFalsePositives],
+      ["ESR FP Rate % (of ESR passes)", s.esrFpRatePct],
+      ...(["T1", "T2", "T3", "T4", "T5"] as const).flatMap((t): Array<[string, unknown]> => [
+        [`${t} Passed (ESR)`, s.byType[t].passed],
+        [`${t} Total`,        s.byType[t].total],
+        [`${t} ESR %`,        s.byType[t].pct],
+        [`${t} EM`,           s.byType[t].em],
+        [`${t} EM %`,         s.byType[t].emPct],
+      ]),
+      ["Entity Match Count", s.entityMatchCount],
+      ["Has Results Count", s.hasResultsCount],
+      ["Validation Passed Count", s.validationPassedCount],
+      ["Errors", s.errorCount],
+      ["Median ms", s.medianMs],
+      ["Mean ms", s.meanMs],
+      ["Max ms", s.maxMs],
+      [`Stalls (>${STALL_THRESHOLD_MS} ms)`, s.stalls],
+      ["Provider", this.currentProvider()],
+      ["Model Size", MODEL_REGISTRY.find(m => m.id === s.modelId)?.sizeLabel ?? ""],
+      ["GPU", this.gpuLabel()],
+      ["Browser", navigator.userAgent],
+      ["JS Heap Used (MB)", this.jsHeapUsedMb() ?? "n/a"],
+    ];
+    const reps = this.model.getProperty("/benchmark/repetitions") as RunRepetition[];
+    summaryRows.push(["Repetition Shown", `${this.model.getProperty("/benchmark/repeatIndex") as number} of ${reps.length || 1}`]);
+    if (reps.length > 1) {
+      const esr = this.meanSd(reps.map(r => r.summary.esrPct));
+      const em  = this.meanSd(reps.map(r => r.summary.emPct));
+      summaryRows.push([`ESR % mean ± sd (${reps.length} runs)`, `${esr.mean} ± ${esr.sd}`]);
+      summaryRows.push([`EM % mean ± sd (${reps.length} runs)`,  `${em.mean} ± ${em.sd}`]);
+    }
+
+    const csv = [
+      headers.join(","),
+      ...rows,
+      "",
+      "Metric,Value",
+      ...summaryRows.map(([k, v]) => `${csvEscape(k)},${csvEscape(v)}`)
+    ].join("\r\n");
+
     const bom  = "﻿"; // UTF-8 BOM so Excel detects encoding correctly
     const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
+    this.triggerDownload(blob, this.benchmarkFileName("csv"));
+    MessageToast.show(`Downloaded ${results.length} benchmark results`);
+  }
+
+  /**
+   * Downloads the completed benchmark as JSON, including every generated query
+   * plan and OData URL. This is the input for scripts/score-exact-match.mjs;
+   * drop the file into BENCHMARK/runs/ and run `npm run score`.
+   */
+  public onDownloadBenchmarkJson(): void {
+    const results = this.model.getProperty("/benchmark/results") as BenchmarkResult[];
+    if (!results || results.length === 0) {
+      MessageToast.show("No results to download — run the benchmark first");
+      return;
+    }
+
+    const summary = this.computeRunSummary(results);
+    const reps    = this.model.getProperty("/benchmark/repetitions") as RunRepetition[];
+    const aggregate = reps.length > 1 ? {
+      runs:   reps.length,
+      esrPct: this.meanSd(reps.map(r => r.summary.esrPct)),
+      emPct:  this.meanSd(reps.map(r => r.summary.emPct)),
+      esrFpRatePct: this.meanSd(reps.map(r => r.summary.esrFpRatePct)),
+      medianMs: this.meanSd(reps.map(r => r.summary.medianMs)),
+    } : null;
+    const payload = {
+      schemaVersion: 2,
+      model:         summary.model,
+      modelId:       summary.modelId,
+      provider:      this.currentProvider(),
+      modelSize:     MODEL_REGISTRY.find(m => m.id === summary.modelId)?.sizeLabel ?? null,
+      promptVersion: PROMPT_VERSION,
+      odataBase:     this.ODATA_BASE,
+      date:          summary.runDate,
+      queryCount:    results.length,
+      llmMode:       results[0]?.llmMode ?? this.currentProvider(),
+      goldCount:     this.goldByQuery.size,
+      hardware:      { ...this.hardware, jsHeapUsedMb: this.jsHeapUsedMb() },
+      repeat:        reps.length || 1,
+      aggregate,
+      summary,
+      results,
+      repetitions:   reps.map(r => ({ index: r.index, startedAt: r.startedAt, finishedAt: r.finishedAt, summary: r.summary, results: r.results })),
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    this.triggerDownload(blob, this.benchmarkFileName("json"));
+    MessageToast.show(`Downloaded ${results.length} results as JSON`);
+  }
+
+  private hardware: Record<string, unknown> = {};
+
+  /**
+   * Records what a browser can tell us about the client for the paper's performance section:
+   * UA, cores, (Chrome) device memory, and the WebGPU adapter description/limits. True VRAM
+   * use and GPU utilisation are not exposed to web pages and must be measured externally.
+   */
+  private async captureHardware(): Promise<void> {
+    const nav = navigator as Navigator & { deviceMemory?: number; gpu?: { requestAdapter(): Promise<GpuAdapterLike | null> } };
+    const hw: Record<string, unknown> = {
+      userAgent: nav.userAgent,
+      platform: nav.platform,
+      hardwareConcurrency: nav.hardwareConcurrency,
+      deviceMemoryGb: nav.deviceMemory ?? null,
+      gpu: null,
+      gpuLimits: null,
+    };
+    try {
+      const adapter = await nav.gpu?.requestAdapter();
+      if (adapter) {
+        const info = adapter.info ?? (adapter.requestAdapterInfo ? await adapter.requestAdapterInfo() : undefined);
+        if (info) hw.gpu = { vendor: info.vendor, architecture: info.architecture, device: info.device, description: info.description };
+        if (adapter.limits) hw.gpuLimits = { maxBufferSize: adapter.limits.maxBufferSize, maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize };
+      }
+    } catch { /* adapter info unavailable in this browser */ }
+    this.hardware = hw;
+  }
+
+  private gpuLabel(): string {
+    const g = this.hardware.gpu as Record<string, string> | null | undefined;
+    if (!g) return "n/a";
+    return [g.vendor, g.architecture, g.device, g.description].filter(Boolean).join(" · ");
+  }
+
+  private jsHeapUsedMb(): number | null {
+    const mem = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
+    return mem ? Math.round(mem.usedJSHeapSize / 1_048_576) : null;
+  }
+
+  /** Mean and sample standard deviation (n−1), both to one decimal. */
+  private meanSd(xs: number[]): { mean: number; sd: number; n: number } {
+    const n = xs.length;
+    if (n === 0) return { mean: 0, sd: 0, n };
+    const mean = xs.reduce((a, b) => a + b, 0) / n;
+    const sd = n > 1 ? Math.sqrt(xs.reduce((a, x) => a + (x - mean) ** 2, 0) / (n - 1)) : 0;
+    return { mean: Math.round(mean * 10) / 10, sd: Math.round(sd * 10) / 10, n };
+  }
+
+  /**
+   * Loads BENCHMARK/gold/gold_queries.json through the local proxy (srv/server.mjs serves
+   * it at /gold). Exact match is only computed when this succeeds; otherwise EM shows "—".
+   */
+  private async loadGold(): Promise<void> {
+    try {
+      const res = await fetch(`${new URL(this.ODATA_BASE).origin}/gold/gold_queries.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json() as { entries: GoldEntry[] };
+      this.goldByQuery = new Map(data.entries.map(g => [g.query, g]));
+      this.model.setProperty("/benchmark/goldCount", this.goldByQuery.size);
+    } catch (e) {
+      console.warn("Gold queries unavailable — exact-match column disabled.", e);
+      this.model.setProperty("/benchmark/goldCount", 0);
+    }
+  }
+
+  private computeRunSummary(results: BenchmarkResult[]): RunSummary {
+    const times = results.map(r => r.totalMs).sort((a, b) => a - b);
+    const n = times.length;
+    const median = n === 0 ? 0
+      : n % 2 === 1 ? times[(n - 1) / 2]
+      : Math.round((times[n / 2 - 1] + times[n / 2]) / 2);
+    const mean = n === 0 ? 0 : Math.round(times.reduce((a, b) => a + b, 0) / n);
+    const pct  = (p: number, t: number) => (t === 0 ? 0 : Math.round((p / t) * 1000) / 10);
+
+    const byType: RunSummary["byType"] = {};
+    for (const t of ["T1", "T2", "T3", "T4", "T5"]) {
+      const rows   = results.filter(r => r.queryType === t);
+      const p      = rows.filter(r => r.passed).length;
+      const em     = rows.filter(r => r.exactMatch === true).length;
+      const scored = rows.filter(r => r.exactMatch !== null).length;
+      byType[t]    = { total: rows.length, passed: p, pct: pct(p, rows.length), em, emPct: pct(em, scored) };
+    }
+
+    const passed            = results.filter(r => r.passed).length;
+    const emScored          = results.filter(r => r.exactMatch !== null).length;
+    const emPassed          = results.filter(r => r.exactMatch === true).length;
+    const esrFalsePositives = results.filter(r => r.passed && r.exactMatch === false).length;
+    return {
+      model:         (this.model.getProperty("/benchmark/modelLabel") as string) || "unknown",
+      modelId:       results[0]?.modelId ?? ((this.model.getProperty("/llm/selectedModelId") as string) || ""),
+      promptVersion: PROMPT_VERSION,
+      runDate:       (this.model.getProperty("/benchmark/startedAt") as string) || new Date().toISOString(),
+      totalQueries:  n,
+      passed,
+      esrPct:        pct(passed, n),
+      emScored,
+      emPassed,
+      emPct:         pct(emPassed, emScored),
+      esrFalsePositives,
+      esrFpRatePct:  pct(esrFalsePositives, passed),
+      byType,
+      entityMatchCount:      results.filter(r => r.entityMatch).length,
+      hasResultsCount:       results.filter(r => r.hasResults).length,
+      validationPassedCount: results.filter(r => r.validationPassed).length,
+      errorCount:            results.filter(r => r.error).length,
+      medianMs: median,
+      meanMs:   mean,
+      maxMs:    n ? times[n - 1] : 0,
+      stalls:   results.filter(r => r.totalMs > STALL_THRESHOLD_MS).length,
+    };
+  }
+
+  private benchmarkFileName(ext: "csv" | "json"): string {
+    const label = ((this.model.getProperty("/benchmark/modelLabel") as string) || "unknown").replace(/[^a-zA-Z0-9]/g, "_");
+    return `floria_benchmark_${label}_${new Date().toISOString().slice(0, 10)}.${ext}`;
+  }
+
+  private triggerDownload(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const a   = document.createElement("a");
     a.href     = url;
-    const csvModel = ((this.model.getProperty("/benchmark/modelLabel") as string) || "unknown").replace(/[^a-zA-Z0-9]/g, "_");
-    a.download = `floria_benchmark_${csvModel}_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
-    MessageToast.show(`Downloaded ${results.length} benchmark results`);
   }
 }

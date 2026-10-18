@@ -1,0 +1,753 @@
+{
+  "schemaVersion": 1,
+  "description": "Gold OData v4 queries for the Floria 100-item benchmark. EM = entity + normalized $filter; `alt` lists accepted equivalents; `review` flags ambiguous readings awaiting author sign-off.",
+  "entries": [
+    {
+      "idx": 1,
+      "type": "T1",
+      "query": "list all categories",
+      "entity": "Categories",
+      "filter": ""
+    },
+    {
+      "idx": 2,
+      "type": "T1",
+      "query": "show all employees",
+      "entity": "Employees",
+      "filter": ""
+    },
+    {
+      "idx": 3,
+      "type": "T1",
+      "query": "show all products",
+      "entity": "Products",
+      "filter": ""
+    },
+    {
+      "idx": 4,
+      "type": "T1",
+      "query": "list all customers",
+      "entity": "Customers",
+      "filter": ""
+    },
+    {
+      "idx": 5,
+      "type": "T1",
+      "query": "show all orders",
+      "entity": "Orders",
+      "filter": ""
+    },
+    {
+      "idx": 6,
+      "type": "T1",
+      "query": "list all suppliers",
+      "entity": "Suppliers",
+      "filter": ""
+    },
+    {
+      "idx": 7,
+      "type": "T1",
+      "query": "show all order details",
+      "entity": "Order_Details",
+      "filter": ""
+    },
+    {
+      "idx": 8,
+      "type": "T1",
+      "query": "display all product categories",
+      "entity": "Categories",
+      "filter": ""
+    },
+    {
+      "idx": 9,
+      "type": "T1",
+      "query": "get all staff",
+      "entity": "Employees",
+      "filter": ""
+    },
+    {
+      "idx": 10,
+      "type": "T1",
+      "query": "what products do we have",
+      "entity": "Products",
+      "filter": ""
+    },
+    {
+      "idx": 11,
+      "type": "T1",
+      "query": "show me all clients",
+      "entity": "Customers",
+      "filter": ""
+    },
+    {
+      "idx": 12,
+      "type": "T1",
+      "query": "list all shipments",
+      "entity": "Orders",
+      "filter": "",
+      "note": "colloquial synonym: shipments → Orders"
+    },
+    {
+      "idx": 13,
+      "type": "T1",
+      "query": "show all vendors",
+      "entity": "Suppliers",
+      "filter": ""
+    },
+    {
+      "idx": 14,
+      "type": "T1",
+      "query": "list all line items",
+      "entity": "Order_Details",
+      "filter": ""
+    },
+    {
+      "idx": 15,
+      "type": "T1",
+      "query": "get all product groups",
+      "entity": "Categories",
+      "filter": "",
+      "note": "colloquial synonym: product groups → Categories"
+    },
+    {
+      "idx": 16,
+      "type": "T1",
+      "query": "fetch all workers",
+      "entity": "Employees",
+      "filter": ""
+    },
+    {
+      "idx": 17,
+      "type": "T1",
+      "query": "display all items in catalog",
+      "entity": "Products",
+      "filter": ""
+    },
+    {
+      "idx": 18,
+      "type": "T1",
+      "query": "show all buyers",
+      "entity": "Customers",
+      "filter": ""
+    },
+    {
+      "idx": 19,
+      "type": "T1",
+      "query": "list all purchases",
+      "entity": "Orders",
+      "filter": ""
+    },
+    {
+      "idx": 20,
+      "type": "T1",
+      "query": "show me all manufacturers",
+      "entity": "Suppliers",
+      "filter": ""
+    },
+    {
+      "idx": 21,
+      "type": "T2",
+      "query": "products cheaper than $15",
+      "entity": "Products",
+      "filter": "UnitPrice lt 15"
+    },
+    {
+      "idx": 22,
+      "type": "T2",
+      "query": "orders with freight over 100",
+      "entity": "Orders",
+      "filter": "Freight gt 100"
+    },
+    {
+      "idx": 23,
+      "type": "T2",
+      "query": "products with unit price above 50",
+      "entity": "Products",
+      "filter": "UnitPrice gt 50"
+    },
+    {
+      "idx": 24,
+      "type": "T2",
+      "query": "items with less than 5 units in stock",
+      "entity": "Products",
+      "filter": "UnitsInStock lt 5"
+    },
+    {
+      "idx": 25,
+      "type": "T2",
+      "query": "products priced under 20 dollars",
+      "entity": "Products",
+      "filter": "UnitPrice lt 20"
+    },
+    {
+      "idx": 26,
+      "type": "T2",
+      "query": "orders with freight less than 20",
+      "entity": "Orders",
+      "filter": "Freight lt 20"
+    },
+    {
+      "idx": 27,
+      "type": "T2",
+      "query": "products with more than 100 units in stock",
+      "entity": "Products",
+      "filter": "UnitsInStock gt 100"
+    },
+    {
+      "idx": 28,
+      "type": "T2",
+      "query": "order details with quantity greater than 50",
+      "entity": "Order_Details",
+      "filter": "Quantity gt 50"
+    },
+    {
+      "idx": 29,
+      "type": "T2",
+      "query": "products costing more than 100",
+      "entity": "Products",
+      "filter": "UnitPrice gt 100"
+    },
+    {
+      "idx": 30,
+      "type": "T2",
+      "query": "order details with discount over 0.2",
+      "entity": "Order_Details",
+      "filter": "Discount gt 0.2"
+    },
+    {
+      "idx": 31,
+      "type": "T2",
+      "query": "orders with high freight above 200",
+      "entity": "Orders",
+      "filter": "Freight gt 200"
+    },
+    {
+      "idx": 32,
+      "type": "T2",
+      "query": "products with stock below 10",
+      "entity": "Products",
+      "filter": "UnitsInStock lt 10"
+    },
+    {
+      "idx": 33,
+      "type": "T2",
+      "query": "order line items with unit price above 30",
+      "entity": "Order_Details",
+      "filter": "UnitPrice gt 30"
+    },
+    {
+      "idx": 34,
+      "type": "T2",
+      "query": "order line items with quantity over 100",
+      "entity": "Order_Details",
+      "filter": "Quantity gt 100"
+    },
+    {
+      "idx": 35,
+      "type": "T2",
+      "query": "products with stock between 20 and 50",
+      "entity": "Products",
+      "filter": "UnitsInStock ge 20 and UnitsInStock le 50",
+      "alt": [
+        "UnitsInStock gt 20 and UnitsInStock lt 50"
+      ],
+      "review": true,
+      "note": "inclusive vs exclusive 'between'"
+    },
+    {
+      "idx": 36,
+      "type": "T2",
+      "query": "orders with freight between 50 and 150",
+      "entity": "Orders",
+      "filter": "Freight ge 50 and Freight le 150",
+      "alt": [
+        "Freight gt 50 and Freight lt 150"
+      ],
+      "review": true,
+      "note": "inclusive vs exclusive 'between'"
+    },
+    {
+      "idx": 37,
+      "type": "T2",
+      "query": "order details with zero discount",
+      "entity": "Order_Details",
+      "filter": "Discount eq 0",
+      "review": true
+    },
+    {
+      "idx": 38,
+      "type": "T2",
+      "query": "order line items with unit price under 10",
+      "entity": "Order_Details",
+      "filter": "UnitPrice lt 10"
+    },
+    {
+      "idx": 39,
+      "type": "T2",
+      "query": "products in stock less than 20 units",
+      "entity": "Products",
+      "filter": "UnitsInStock lt 20"
+    },
+    {
+      "idx": 40,
+      "type": "T2",
+      "query": "products with price above 75",
+      "entity": "Products",
+      "filter": "UnitPrice gt 75"
+    },
+    {
+      "idx": 41,
+      "type": "T3",
+      "query": "products with chai in the name",
+      "entity": "Products",
+      "filter": "contains(ProductName,'chai')"
+    },
+    {
+      "idx": 42,
+      "type": "T3",
+      "query": "customers with restaurant in name",
+      "entity": "Customers",
+      "filter": "contains(CompanyName,'restaurant')"
+    },
+    {
+      "idx": 43,
+      "type": "T3",
+      "query": "suppliers starting with exotic",
+      "entity": "Suppliers",
+      "filter": "startswith(CompanyName,'Exotic')"
+    },
+    {
+      "idx": 44,
+      "type": "T3",
+      "query": "employees with last name starting with D",
+      "entity": "Employees",
+      "filter": "startswith(LastName,'D')"
+    },
+    {
+      "idx": 45,
+      "type": "T3",
+      "query": "customers whose company starts with B",
+      "entity": "Customers",
+      "filter": "startswith(CompanyName,'B')"
+    },
+    {
+      "idx": 46,
+      "type": "T3",
+      "query": "products containing sauce",
+      "entity": "Products",
+      "filter": "contains(ProductName,'sauce')"
+    },
+    {
+      "idx": 47,
+      "type": "T3",
+      "query": "products with tofu in the name",
+      "entity": "Products",
+      "filter": "contains(ProductName,'tofu')"
+    },
+    {
+      "idx": 48,
+      "type": "T3",
+      "query": "customers with Trading in their company name",
+      "entity": "Customers",
+      "filter": "contains(CompanyName,'Trading')"
+    },
+    {
+      "idx": 49,
+      "type": "T3",
+      "query": "employees with name starting with A",
+      "entity": "Employees",
+      "filter": "startswith(LastName,'A')",
+      "alt": [
+        "startswith(FirstName,'A')"
+      ],
+      "review": true,
+      "note": "'name' could mean first or last name"
+    },
+    {
+      "idx": 50,
+      "type": "T3",
+      "query": "products containing syrup",
+      "entity": "Products",
+      "filter": "contains(ProductName,'syrup')"
+    },
+    {
+      "idx": 51,
+      "type": "T3",
+      "query": "customers with Import in their name",
+      "entity": "Customers",
+      "filter": "contains(CompanyName,'Import')"
+    },
+    {
+      "idx": 52,
+      "type": "T3",
+      "query": "orders shipped to cities starting with L",
+      "entity": "Orders",
+      "filter": "startswith(ShipCity,'L')",
+      "note": "data-limited: no Northwind ShipCity starts with L"
+    },
+    {
+      "idx": 53,
+      "type": "T3",
+      "query": "products starting with Chef",
+      "entity": "Products",
+      "filter": "startswith(ProductName,'Chef')"
+    },
+    {
+      "idx": 54,
+      "type": "T3",
+      "query": "customers with Gourmet in their name",
+      "entity": "Customers",
+      "filter": "contains(CompanyName,'Gourmet')"
+    },
+    {
+      "idx": 55,
+      "type": "T3",
+      "query": "orders shipped to Berlin",
+      "entity": "Orders",
+      "filter": "contains(ShipCity,'Berlin')",
+      "alt": [
+        "ShipCity eq 'Berlin'"
+      ],
+      "review": true,
+      "note": "typed T3 but reads as equality; both accepted"
+    },
+    {
+      "idx": 56,
+      "type": "T3",
+      "query": "products containing pasta",
+      "entity": "Products",
+      "filter": "contains(ProductName,'pasta')",
+      "note": "data-limited: no product name contains 'pasta'"
+    },
+    {
+      "idx": 57,
+      "type": "T3",
+      "query": "suppliers with Tokyo in their city",
+      "entity": "Suppliers",
+      "filter": "contains(City,'Tokyo')",
+      "alt": [
+        "City eq 'Tokyo'"
+      ],
+      "review": true
+    },
+    {
+      "idx": 58,
+      "type": "T3",
+      "query": "products with anchov in the name",
+      "entity": "Products",
+      "filter": "contains(ProductName,'anchov')",
+      "note": "data-limited: anchovy products use Danish names"
+    },
+    {
+      "idx": 59,
+      "type": "T3",
+      "query": "products with caviar in the name",
+      "entity": "Products",
+      "filter": "contains(ProductName,'caviar')",
+      "note": "data-limited: no caviar product in Northwind v4"
+    },
+    {
+      "idx": 60,
+      "type": "T3",
+      "query": "customers in cities starting with M",
+      "entity": "Customers",
+      "filter": "startswith(City,'M')"
+    },
+    {
+      "idx": 61,
+      "type": "T4",
+      "query": "discontinued products",
+      "entity": "Products",
+      "filter": "Discontinued eq true"
+    },
+    {
+      "idx": 62,
+      "type": "T4",
+      "query": "employees from USA",
+      "entity": "Employees",
+      "filter": "Country eq 'USA'"
+    },
+    {
+      "idx": 63,
+      "type": "T4",
+      "query": "customers from Germany",
+      "entity": "Customers",
+      "filter": "Country eq 'Germany'"
+    },
+    {
+      "idx": 64,
+      "type": "T4",
+      "query": "suppliers from USA",
+      "entity": "Suppliers",
+      "filter": "Country eq 'USA'"
+    },
+    {
+      "idx": 65,
+      "type": "T4",
+      "query": "employees based in UK",
+      "entity": "Employees",
+      "filter": "Country eq 'UK'",
+      "review": true,
+      "note": "Northwind spells it 'UK'"
+    },
+    {
+      "idx": 66,
+      "type": "T4",
+      "query": "customers located in London",
+      "entity": "Customers",
+      "filter": "City eq 'London'",
+      "review": true,
+      "note": "City, not Country"
+    },
+    {
+      "idx": 67,
+      "type": "T4",
+      "query": "orders shipped to France",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'France'"
+    },
+    {
+      "idx": 68,
+      "type": "T4",
+      "query": "customers from Mexico",
+      "entity": "Customers",
+      "filter": "Country eq 'Mexico'"
+    },
+    {
+      "idx": 69,
+      "type": "T4",
+      "query": "employees in Seattle",
+      "entity": "Employees",
+      "filter": "City eq 'Seattle'",
+      "review": true
+    },
+    {
+      "idx": 70,
+      "type": "T4",
+      "query": "suppliers from Japan",
+      "entity": "Suppliers",
+      "filter": "Country eq 'Japan'"
+    },
+    {
+      "idx": 71,
+      "type": "T4",
+      "query": "customers from Brazil",
+      "entity": "Customers",
+      "filter": "Country eq 'Brazil'"
+    },
+    {
+      "idx": 72,
+      "type": "T4",
+      "query": "orders going to Germany",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'Germany'"
+    },
+    {
+      "idx": 73,
+      "type": "T4",
+      "query": "employees from London",
+      "entity": "Employees",
+      "filter": "City eq 'London'",
+      "review": true,
+      "note": "'from London' → City (Employees.Country for them is 'UK')"
+    },
+    {
+      "idx": 74,
+      "type": "T4",
+      "query": "customers from Spain",
+      "entity": "Customers",
+      "filter": "Country eq 'Spain'"
+    },
+    {
+      "idx": 75,
+      "type": "T4",
+      "query": "suppliers based in France",
+      "entity": "Suppliers",
+      "filter": "Country eq 'France'"
+    },
+    {
+      "idx": 76,
+      "type": "T4",
+      "query": "orders shipped to Argentina",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'Argentina'"
+    },
+    {
+      "idx": 77,
+      "type": "T4",
+      "query": "customers from Sweden",
+      "entity": "Customers",
+      "filter": "Country eq 'Sweden'"
+    },
+    {
+      "idx": 78,
+      "type": "T4",
+      "query": "employees in Tacoma",
+      "entity": "Employees",
+      "filter": "City eq 'Tacoma'",
+      "review": true
+    },
+    {
+      "idx": 79,
+      "type": "T4",
+      "query": "orders delivered to USA",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'USA'",
+      "review": true
+    },
+    {
+      "idx": 80,
+      "type": "T4",
+      "query": "active products",
+      "entity": "Products",
+      "filter": "Discontinued eq false",
+      "review": true,
+      "note": "'active' = not discontinued"
+    },
+    {
+      "idx": 81,
+      "type": "T5",
+      "query": "customers from Germany or France",
+      "entity": "Customers",
+      "filter": "Country eq 'Germany' or Country eq 'France'"
+    },
+    {
+      "idx": 82,
+      "type": "T5",
+      "query": "orders to France or Brazil",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'France' or ShipCountry eq 'Brazil'"
+    },
+    {
+      "idx": 83,
+      "type": "T5",
+      "query": "employees from USA or UK",
+      "entity": "Employees",
+      "filter": "Country eq 'USA' or Country eq 'UK'"
+    },
+    {
+      "idx": 84,
+      "type": "T5",
+      "query": "customers from Mexico or Argentina",
+      "entity": "Customers",
+      "filter": "Country eq 'Mexico' or Country eq 'Argentina'"
+    },
+    {
+      "idx": 85,
+      "type": "T5",
+      "query": "products containing chai or tofu",
+      "entity": "Products",
+      "filter": "contains(ProductName,'chai') or contains(ProductName,'tofu')",
+      "review": true
+    },
+    {
+      "idx": 86,
+      "type": "T5",
+      "query": "suppliers from Germany or France",
+      "entity": "Suppliers",
+      "filter": "Country eq 'Germany' or Country eq 'France'"
+    },
+    {
+      "idx": 87,
+      "type": "T5",
+      "query": "customers from Sweden or Denmark",
+      "entity": "Customers",
+      "filter": "Country eq 'Sweden' or Country eq 'Denmark'"
+    },
+    {
+      "idx": 88,
+      "type": "T5",
+      "query": "orders shipped to Germany or Austria",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'Germany' or ShipCountry eq 'Austria'"
+    },
+    {
+      "idx": 89,
+      "type": "T5",
+      "query": "employees from Seattle or Tacoma",
+      "entity": "Employees",
+      "filter": "City eq 'Seattle' or City eq 'Tacoma'",
+      "review": true
+    },
+    {
+      "idx": 90,
+      "type": "T5",
+      "query": "customers from Spain or Portugal",
+      "entity": "Customers",
+      "filter": "Country eq 'Spain' or Country eq 'Portugal'"
+    },
+    {
+      "idx": 91,
+      "type": "T5",
+      "query": "products with sauce or syrup in name",
+      "entity": "Products",
+      "filter": "contains(ProductName,'sauce') or contains(ProductName,'syrup')",
+      "review": true
+    },
+    {
+      "idx": 92,
+      "type": "T5",
+      "query": "orders to Italy or Switzerland",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'Italy' or ShipCountry eq 'Switzerland'"
+    },
+    {
+      "idx": 93,
+      "type": "T5",
+      "query": "customers from USA or Canada",
+      "entity": "Customers",
+      "filter": "Country eq 'USA' or Country eq 'Canada'"
+    },
+    {
+      "idx": 94,
+      "type": "T5",
+      "query": "suppliers from UK or USA",
+      "entity": "Suppliers",
+      "filter": "Country eq 'UK' or Country eq 'USA'"
+    },
+    {
+      "idx": 95,
+      "type": "T5",
+      "query": "employees from UK or Germany",
+      "entity": "Employees",
+      "filter": "Country eq 'UK' or Country eq 'Germany'"
+    },
+    {
+      "idx": 96,
+      "type": "T5",
+      "query": "orders to Austria or Belgium",
+      "entity": "Orders",
+      "filter": "ShipCountry eq 'Austria' or ShipCountry eq 'Belgium'"
+    },
+    {
+      "idx": 97,
+      "type": "T5",
+      "query": "customers from Australia or New Zealand",
+      "entity": "Customers",
+      "filter": "Country eq 'Australia' or Country eq 'New Zealand'",
+      "note": "data-limited: no such customers in Northwind v4"
+    },
+    {
+      "idx": 98,
+      "type": "T5",
+      "query": "suppliers from Spain or Italy",
+      "entity": "Suppliers",
+      "filter": "Country eq 'Spain' or Country eq 'Italy'"
+    },
+    {
+      "idx": 99,
+      "type": "T5",
+      "query": "products with chai or anchovy in name",
+      "entity": "Products",
+      "filter": "contains(ProductName,'chai') or contains(ProductName,'anchovy')",
+      "review": true
+    },
+    {
+      "idx": 100,
+      "type": "T5",
+      "query": "customers from Norway or Finland",
+      "entity": "Customers",
+      "filter": "Country eq 'Norway' or Country eq 'Finland'"
+    }
+  ]
+}

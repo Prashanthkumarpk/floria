@@ -48,6 +48,17 @@ export interface QueryPlan {
   top?: number;
 }
 
+/**
+ * Diagnostic capture of the most recent generateQueryPlan() call, taken before
+ * fixKnownMistakes runs. The benchmark harness persists this so exact-match
+ * scoring and failure analysis can see what the model actually produced.
+ */
+export interface GenerationTrace {
+  rawText: string;
+  prePostProcessPlan: QueryPlan | null;
+  parseError?: string;
+}
+
 interface InitProgressReport {
   progress: number;   // 0.0 – 1.0
   timeElapsed: number;
@@ -59,20 +70,37 @@ export type ProgressCallback = (report: InitProgressReport) => void;
 // Opaque type for the MLC engine — we only use it through the chat.completions API.
 type MLCEngine = Record<string, unknown>;
 
+/**
+ * Where a model runs. "webllm" = on-device via WebGPU (the paper's subject);
+ * "bedrock" = cloud baseline through the local proxy; "direct" = the keyword
+ * planner with no language model at all (lower-bound baseline).
+ */
+export type ModelProvider = "webllm" | "bedrock" | "direct";
+
 export interface ModelInfo {
   id: string;
   label: string;
   vendor: string;
   sizeLabel: string;
   params: string;
+  provider: ModelProvider;
 }
 
+/** Prefix on registry ids whose remainder is the Bedrock model id sent to the proxy. */
+export const BEDROCK_ID_PREFIX = "bedrock:";
+
 export const MODEL_REGISTRY: ModelInfo[] = [
-  { id: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",       label: "Qwen2.5-0.5B",       vendor: "Alibaba",   sizeLabel: "~300 MB", params: "0.5B"  },
-  { id: "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",  label: "Qwen2.5-Coder-1.5B", vendor: "Alibaba",   sizeLabel: "~900 MB", params: "1.5B"  },
-  { id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",        label: "Llama-3.2-3B",       vendor: "Meta",      sizeLabel: "~2.0 GB", params: "3B"    },
-  { id: "gemma-2-2b-it-q4f16_1-MLC",                label: "Gemma-2-2B",          vendor: "Google",    sizeLabel: "~1.5 GB", params: "2B"    },
-  { id: "Phi-3.5-mini-instruct-q4f16_1-MLC",        label: "Phi-3.5-mini",        vendor: "Microsoft", sizeLabel: "~2.2 GB", params: "3.8B"  },
+  { id: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",       label: "Qwen2.5-0.5B",       vendor: "Alibaba",   sizeLabel: "~300 MB", params: "0.5B", provider: "webllm" },
+  { id: "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",  label: "Qwen2.5-Coder-1.5B", vendor: "Alibaba",   sizeLabel: "~900 MB", params: "1.5B", provider: "webllm" },
+  { id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",        label: "Llama-3.2-3B",       vendor: "Meta",      sizeLabel: "~2.0 GB", params: "3B",   provider: "webllm" },
+  { id: "gemma-2-2b-it-q4f16_1-MLC",                label: "Gemma-2-2B",          vendor: "Google",    sizeLabel: "~1.5 GB", params: "2B",   provider: "webllm" },
+  { id: "Phi-3.5-mini-instruct-q4f16_1-MLC",        label: "Phi-3.5-mini",        vendor: "Microsoft", sizeLabel: "~2.2 GB", params: "3.8B", provider: "webllm" },
+  // Cloud baselines (R1/R3): same prompt, post-processor, validator and scoring — only the model differs.
+  // If your Bedrock account lists a different id for these models, edit the id after "bedrock:".
+  { id: `${BEDROCK_ID_PREFIX}eu.anthropic.claude-haiku-5-5`,  label: "Claude Haiku 5.5 (cloud)",  vendor: "Anthropic · AWS Bedrock", sizeLabel: "cloud", params: "—", provider: "bedrock" },
+  { id: `${BEDROCK_ID_PREFIX}eu.anthropic.claude-sonnet-4-6`, label: "Claude Sonnet 4.6 (cloud)", vendor: "Anthropic · AWS Bedrock", sizeLabel: "cloud", params: "—", provider: "bedrock" },
+  // Lower-bound baseline: the keyword planner Floria falls back to when no model is loaded.
+  { id: "direct-keyword", label: "Direct (keyword baseline)", vendor: "no model", sizeLabel: "0 MB", params: "—", provider: "direct" },
 ];
 
 /**
@@ -81,10 +109,23 @@ export const MODEL_REGISTRY: ModelInfo[] = [
 export default class WebLLMService {
 
   private currentModelId = MODEL_REGISTRY[0].id;
+  /** Origin of srv/server.mjs, which fronts both Northwind and the Bedrock cloud baseline. */
+  private readonly proxyOrigin: string;
+
+  constructor(proxyOrigin = "http://localhost:4004") {
+    this.proxyOrigin = proxyOrigin;
+  }
+
+  public getProvider(): ModelProvider {
+    return MODEL_REGISTRY.find(m => m.id === this.currentModelId)?.provider ?? "webllm";
+  }
 
   private engine: MLCEngine | null = null;
   private initPromise: Promise<void> | null = null;
   private isReady = false;
+
+  /** Trace of the last generateQueryPlan() call; null until a generation completes or fails to parse. */
+  public lastGeneration: GenerationTrace | null = null;
 
   // Static flags prevent duplicate script injection across multiple service instances.
   private static scriptLoaded = false;
@@ -112,6 +153,26 @@ export default class WebLLMService {
    */
   public async initialize(progressCallback?: ProgressCallback): Promise<void> {
     if (this.initPromise) return this.initPromise;
+    const provider = this.getProvider();
+
+    if (provider === "direct") {
+      this.isReady = true;
+      this.initPromise = Promise.resolve();
+      return this.initPromise;
+    }
+
+    if (provider === "bedrock") {
+      this.initPromise = (async () => {
+        progressCallback?.({ progress: 0.5, timeElapsed: 0, text: "Connecting to AWS Bedrock via the local proxy…" });
+        const res = await fetch(`${this.proxyOrigin}/llm/bedrock/health`).catch(() => null);
+        const health = res?.ok ? await res.json() as { enabled: boolean; reason?: string | null } : null;
+        if (!health) throw new Error("Bedrock proxy unreachable — is `npm run start:odata` running?");
+        if (!health.enabled) throw new Error(health.reason ?? "Bedrock is not configured on the proxy.");
+        this.isReady = true;
+      })();
+      return this.initPromise;
+    }
+
     if (!WebLLMService.isWebGPUAvailable()) throw new Error("WebGPU unavailable.");
 
     this.initPromise = (async () => {
@@ -160,8 +221,20 @@ export default class WebLLMService {
    * @throws If the engine is not ready or the model returns unparseable JSON.
    */
   public async generateQueryPlan(userQuestion: string): Promise<QueryPlan> {
-    if (!this.engine || !this.isReady) throw new Error("AI not ready yet.");
+    if (!this.isReady) throw new Error("AI not ready yet.");
+    this.lastGeneration = null;
 
+    const provider = this.getProvider();
+    if (provider === "direct") throw new Error("Direct mode has no language model; use the keyword planner.");
+
+    const rawText = provider === "bedrock"
+      ? await this.completeViaBedrock(userQuestion)
+      : await this.completeViaWebLLM(userQuestion);
+    return this.parsePlan(rawText);
+  }
+
+  private async completeViaWebLLM(userQuestion: string): Promise<string> {
+    if (!this.engine) throw new Error("AI not ready yet.");
     const request = {
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
@@ -176,7 +249,30 @@ export default class WebLLMService {
       .chat.completions.create(request);
 
     const choices = response.choices as Array<Record<string, Record<string, unknown>>>;
-    let raw = (choices[0]?.message?.content as string ?? "").trim();
+    return (choices[0]?.message?.content as string ?? "").trim();
+  }
+
+  /** Cloud baseline: identical prompt and sampling settings, routed through srv/server.mjs so the key never reaches the browser. */
+  private async completeViaBedrock(userQuestion: string): Promise<string> {
+    const res = await fetch(`${this.proxyOrigin}/llm/bedrock`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        modelId: this.currentModelId.replace(BEDROCK_ID_PREFIX, ""),
+        system: SYSTEM_PROMPT,
+        user: userQuestion,
+        temperature: 0.1,
+        maxTokens: 150,
+      }),
+    });
+    const data = await res.json().catch(() => ({})) as { text?: string; error?: string };
+    if (!res.ok || typeof data.text !== "string") throw new Error(data.error ?? `Bedrock proxy error ${res.status}`);
+    return data.text.trim();
+  }
+
+  /** Shared by both providers: fence stripping, first-JSON-object extraction, parse, post-processing. */
+  private parsePlan(rawText: string): QueryPlan {
+    let raw = rawText;
 
     // Strip optional markdown code fence (```json ... ```)
     const fenced = raw.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
@@ -188,8 +284,10 @@ export default class WebLLMService {
 
     try {
       const plan = JSON.parse(raw) as QueryPlan;
+      this.lastGeneration = { rawText, prePostProcessPlan: { ...plan } };
       return this.fixKnownMistakes(plan);
     } catch {
+      this.lastGeneration = { rawText, prePostProcessPlan: null, parseError: "invalid JSON" };
       throw new Error("AI returned invalid JSON. Try rephrasing your question.");
     }
   }
@@ -327,6 +425,9 @@ export default class WebLLMService {
 // Temperature is fixed at 0.1 across all runs to maximise determinism.
 // response_format:{type:"json_object"} is intentionally excluded — in WebLLM
 // v0.2.84 it triggers a WASM binding crash inside the TVM grammar compiler.
+
+/** Bump whenever SYSTEM_PROMPT changes so benchmark run files stay attributable to a prompt revision. */
+export const PROMPT_VERSION = "2026-10-17";
 
 const SYSTEM_PROMPT = `You generate OData v4 query plans for the Northwind database.
 Output ONLY a valid JSON object. No explanation, no markdown, no extra text.
