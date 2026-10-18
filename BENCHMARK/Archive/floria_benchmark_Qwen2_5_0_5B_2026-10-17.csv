@@ -1,0 +1,154 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status,Expected Query (Gold),Generated Query,Exact Match,OData URL,Error
+1,Qwen2.5-0.5B,list all categories,T1,Categories,Categories,Yes,Yes,Yes,3641,Pass,,,Yes,http://localhost:4004/odata/Categories?%24count=true&%24top=20&%24orderby=CategoryName+asc,
+2,Qwen2.5-0.5B,show all employees,T1,Employees,Employees,Yes,Yes,Yes,2150,Pass,,,Yes,http://localhost:4004/odata/Employees?%24count=true&%24top=20&%24orderby=LastName+asc,
+3,Qwen2.5-0.5B,show all products,T1,Products,Products,Yes,Yes,Yes,1875,Pass,,,Yes,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=ProductName+asc,
+4,Qwen2.5-0.5B,list all customers,T1,Customers,Customers,Yes,Yes,Yes,1907,Pass,,,Yes,http://localhost:4004/odata/Customers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+5,Qwen2.5-0.5B,show all orders,T1,Orders,Orders,Yes,Yes,Yes,1909,Pass,,,Yes,http://localhost:4004/odata/Orders?%24count=true&%24top=20&%24orderby=OrderDate+desc,
+6,Qwen2.5-0.5B,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,1921,Pass,,,Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+7,Qwen2.5-0.5B,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,1812,Pass,,,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24top=20&%24orderby=Quantity+desc,
+8,Qwen2.5-0.5B,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,1984,Pass,,,Yes,http://localhost:4004/odata/Categories?%24count=true&%24top=10&%24orderby=CategoryName+asc,
+9,Qwen2.5-0.5B,get all staff,T1,Employees,Employees,Yes,Yes,Yes,1964,Pass,,,Yes,http://localhost:4004/odata/Employees?%24count=true&%24top=20&%24orderby=FirstName+asc,
+10,Qwen2.5-0.5B,what products do we have,T1,Products,,No,No,No,4066,Fail,,,No,,AI returned invalid JSON. Try rephrasing your question.
+11,Qwen2.5-0.5B,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,2614,Pass,,,Yes,http://localhost:4004/odata/Customers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+12,Qwen2.5-0.5B,list all shipments,T1,Orders,Orders,Yes,Yes,Yes,1906,Pass,,,Yes,http://localhost:4004/odata/Orders?%24count=true&%24top=20&%24orderby=ShipCountry+asc,
+13,Qwen2.5-0.5B,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,2069,Pass,,,Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+14,Qwen2.5-0.5B,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,1818,Pass,,,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24top=10&%24orderby=Quantity+desc,
+15,Qwen2.5-0.5B,get all product groups,T1,Categories,Products,No,No,No,1970,Fail,,,No,http://localhost:4004/odata/Products?%24count=true&%24top=10&%24orderby=CategoryName+asc,
+16,Qwen2.5-0.5B,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,2426,Pass,,,Yes,http://localhost:4004/odata/Employees?%24count=true&%24top=20&%24orderby=LastName+asc,
+17,Qwen2.5-0.5B,display all items in catalog,T1,Products,Products,Yes,No,No,1833,Fail,,,Yes,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=CategoryName+asc,
+18,Qwen2.5-0.5B,show all buyers,T1,Customers,Customers,Yes,No,No,1780,Fail,,,Yes,http://localhost:4004/odata/Customers?%24count=true&%24top=20&%24orderby=FirstName+asc,
+19,Qwen2.5-0.5B,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,2398,Pass,,,Yes,http://localhost:4004/odata/Orders?%24count=true&%24top=10&%24orderby=OrderDate+desc,
+20,Qwen2.5-0.5B,show me all manufacturers,T1,Suppliers,Suppliers,Yes,Yes,Yes,1792,Pass,,,Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+21,Qwen2.5-0.5B,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,1929,Pass,UnitPrice lt 15,UnitPrice lt 15,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+lt+15&%24top=20&%24orderby=UnitPrice+asc,
+22,Qwen2.5-0.5B,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,2033,Pass,Freight gt 100,Freight gt 100,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+gt+100&%24top=20&%24orderby=Freight+desc,
+23,Qwen2.5-0.5B,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,1994,Pass,UnitPrice gt 50,UnitPrice gt 50,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+gt+50&%24top=10&%24orderby=UnitPrice+asc,
+24,Qwen2.5-0.5B,items with less than 5 units in stock,T2,Products,Order_Details,No,No,No,2698,Fail,UnitsInStock lt 5,UnitsInStock lt 5,No,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=UnitsInStock+lt+5&%24top=20&%24orderby=Quantity+desc,
+25,Qwen2.5-0.5B,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,2600,Pass,UnitPrice lt 20,UnitPrice lt 20,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+lt+20&%24top=10&%24orderby=UnitPrice+asc,
+26,Qwen2.5-0.5B,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,1937,Pass,Freight lt 20,Freight lt 20,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+lt+20&%24top=10&%24orderby=Freight+desc,
+27,Qwen2.5-0.5B,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,2165,Pass,UnitsInStock gt 100,UnitsInStock gt 100,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+gt+100&%24top=20&%24orderby=UnitsOnOrder+asc,
+28,Qwen2.5-0.5B,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,2085,Pass,Quantity gt 50,Quantity gt 50,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Quantity+gt+50&%24top=20&%24orderby=Quantity+desc,
+29,Qwen2.5-0.5B,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,2617,Pass,UnitPrice gt 100,UnitPrice gt 100,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+gt+100&%24top=20&%24orderby=UnitPrice+desc,
+30,Qwen2.5-0.5B,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,1939,Pass,Discount gt 0.2,Discount gt 0.2,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Discount+gt+0.2&%24top=10&%24orderby=Quantity+desc,
+31,Qwen2.5-0.5B,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,2061,Pass,Freight gt 200,Freight gt 200,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+gt+200&%24top=10&%24orderby=Freight+desc,
+32,Qwen2.5-0.5B,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,2088,Pass,UnitsInStock lt 10,UnitsInStock lt 10,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+lt+10&%24top=20&%24orderby=UnitsInStock+asc,
+33,Qwen2.5-0.5B,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,2021,Pass,UnitPrice gt 30,UnitPrice gt 30,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=UnitPrice+gt+30&%24top=10&%24orderby=Quantity+desc,
+34,Qwen2.5-0.5B,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,2084,Pass,Quantity gt 100,Quantity gt 100,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Quantity+gt+100&%24top=20&%24orderby=Quantity+desc,
+35,Qwen2.5-0.5B,products with stock between 20 and 50,T2,Products,Products,Yes,Yes,Yes,2242,Pass,UnitsInStock ge 20 and UnitsInStock le 50,UnitsInStock ge 20 and UnitsInStock le 50,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+ge+20+and+UnitsInStock+le+50&%24top=10&%24orderby=UnitsInStock+asc,
+36,Qwen2.5-0.5B,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,2215,Pass,Freight ge 50 and Freight le 150,Freight gt 50 and Freight lt 150,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+gt+50+and+Freight+lt+150&%24top=20&%24orderby=Freight+desc,
+37,Qwen2.5-0.5B,order details with zero discount,T2,Order_Details,,No,No,No,1593,Fail,Discount eq 0,,No,,AI returned invalid JSON. Try rephrasing your question.
+38,Qwen2.5-0.5B,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,1916,Pass,UnitPrice lt 10,UnitPrice lt 10,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=UnitPrice+lt+10&%24top=20&%24orderby=Quantity+desc,
+39,Qwen2.5-0.5B,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,2057,Pass,UnitsInStock lt 20,UnitsInStock lt 20,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+lt+20&%24top=10&%24orderby=UnitsInStock+asc,
+40,Qwen2.5-0.5B,products with price above 75,T2,Products,Products,Yes,Yes,Yes,2048,Pass,UnitPrice gt 75,UnitPrice gt 75,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+gt+75&%24top=10&%24orderby=UnitPrice+asc,
+41,Qwen2.5-0.5B,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,2021,Pass,"contains(ProductName,'chai')","contains(ProductName,'chai')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chai%27%29&%24top=20&%24orderby=ProductName+asc,
+42,Qwen2.5-0.5B,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,2003,Pass,"contains(CompanyName,'restaurant')","contains(CompanyName,'restaurant')",Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28CompanyName%2C%27restaurant%27%29&%24top=20&%24orderby=CompanyName+asc,
+43,Qwen2.5-0.5B,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,2162,Pass,"startswith(CompanyName,'Exotic')","contains(CompanyName,'exotic')",No,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=contains%28CompanyName%2C%27exotic%27%29&%24top=20&%24orderby=CompanyName+asc,
+44,Qwen2.5-0.5B,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,3938,Pass,"startswith(LastName,'D')","startswith(LastName,'D')",Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=startswith%28LastName%2C%27D%27%29&%24top=20&%24orderby=LastName+asc,
+45,Qwen2.5-0.5B,customers whose company starts with B,T3,Customers,Customers,Yes,Yes,Yes,2242,Pass,"startswith(CompanyName,'B')","contains(CompanyName,'B')",No,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28CompanyName%2C%27B%27%29&%24top=20&%24orderby=ContactName+asc,
+46,Qwen2.5-0.5B,products containing sauce,T3,Products,Products,Yes,Yes,Yes,1939,Pass,"contains(ProductName,'sauce')","contains(ProductName,' sauce')",No,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27+sauce%27%29&%24top=20&%24orderby=ProductName+asc,
+47,Qwen2.5-0.5B,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,2348,Pass,"contains(ProductName,'tofu')","contains(ProductName,' tofu')",No,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27+tofu%27%29&%24top=20&%24orderby=ProductName+asc,
+48,Qwen2.5-0.5B,customers with Trading in their company name,T3,Customers,Customers,Yes,No,No,1904,Fail,"contains(CompanyName,'Trading')",Trading eq 'true',No,http://localhost:4004/odata/Customers?%24count=true&%24filter=Trading+eq+%27true%27&%24top=20&%24orderby=ContactName+asc,
+49,Qwen2.5-0.5B,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,1988,Pass,"startswith(LastName,'A')","startswith(FirstName,'A')",Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=startswith%28FirstName%2C%27A%27%29&%24top=20&%24orderby=LastName+asc,
+50,Qwen2.5-0.5B,products containing syrup,T3,Products,Products,Yes,Yes,Yes,1956,Pass,"contains(ProductName,'syrup')","contains(ProductName,'syrup')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27syrup%27%29&%24top=20&%24orderby=ProductName+asc,
+51,Qwen2.5-0.5B,customers with Import in their name,T3,Customers,Customers,Yes,No,No,2011,Fail,"contains(CompanyName,'Import')","contains(Import,'import')",No,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28Import%2C%27import%27%29&%24top=20&%24orderby=FirstName+asc,
+52,Qwen2.5-0.5B,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,2045,Fail,"startswith(ShipCity,'L')",ShipCity eq 'L',No,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCity+eq+%27L%27&%24top=20&%24orderby=ShipCity+asc,
+53,Qwen2.5-0.5B,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,2016,Pass,"startswith(ProductName,'Chef')","contains(ProductName,'chef')",No,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chef%27%29&%24top=20&%24orderby=ProductName+asc,
+54,Qwen2.5-0.5B,customers with Gourmet in their name,T3,Customers,Customers,Yes,No,No,2038,Fail,"contains(CompanyName,'Gourmet')","contains(FirstName,'Gourmet')",No,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28FirstName%2C%27Gourmet%27%29&%24top=20&%24orderby=ContactName+asc,
+55,Qwen2.5-0.5B,orders shipped to Berlin,T3,Orders,Orders,Yes,Yes,Yes,2030,Pass,"contains(ShipCity,'Berlin')",ShipCity eq 'Berlin',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCity+eq+%27Berlin%27&%24top=20&%24orderby=OrderDate+desc,
+56,Qwen2.5-0.5B,products containing pasta,T3,Products,Products,Yes,No,Yes,2031,Fail,"contains(ProductName,'pasta')","contains(ProductName,'pasta')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27pasta%27%29&%24top=20&%24orderby=ProductName+asc,
+57,Qwen2.5-0.5B,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,No,No,1958,Fail,"contains(City,'Tokyo')",City eq 'Tokyo',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=City+eq+%27Tokyo%27&%24top=20&%24orderby=ShipCity+asc,
+58,Qwen2.5-0.5B,products with anchov in the name,T3,Products,Customers,No,No,Yes,2039,Fail,"contains(ProductName,'anchov')","contains(CompanyName,'anchov')",No,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28CompanyName%2C%27anchov%27%29&%24top=20&%24orderby=CompanyName+asc,
+59,Qwen2.5-0.5B,products with caviar in the name,T3,Products,Products,Yes,No,Yes,2053,Fail,"contains(ProductName,'caviar')","contains(ProductName,'caviar')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27caviar%27%29&%24top=20&%24orderby=ProductName+asc,
+60,Qwen2.5-0.5B,customers in cities starting with M,T3,Customers,Customers,Yes,No,Yes,2053,Fail,"startswith(City,'M')",City eq 'M',No,http://localhost:4004/odata/Customers?%24count=true&%24filter=City+eq+%27M%27&%24top=20&%24orderby=ContactName+asc,
+61,Qwen2.5-0.5B,discontinued products,T4,Products,Products,Yes,Yes,Yes,1852,Pass,Discontinued eq true,,No,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=ProductName+asc,
+62,Qwen2.5-0.5B,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,3724,Pass,Country eq 'USA',Country eq 'USA',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27USA%27&%24top=20&%24orderby=LastName+asc,
+63,Qwen2.5-0.5B,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,2588,Pass,Country eq 'Germany',Country eq 'Germany',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Germany%27&%24top=20&%24orderby=CompanyName+asc,
+64,Qwen2.5-0.5B,suppliers from USA,T4,Suppliers,Suppliers,Yes,Yes,Yes,3705,Pass,Country eq 'USA',Country eq 'USA',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27USA%27&%24top=20&%24orderby=CompanyName+asc,
+65,Qwen2.5-0.5B,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,4066,Pass,Country eq 'UK',Country eq 'UK',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27UK%27&%24top=20&%24orderby=LastName+asc,
+66,Qwen2.5-0.5B,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,1921,Pass,City eq 'London',City eq 'London',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=City+eq+%27London%27&%24top=20&%24orderby=ContactName+asc,
+67,Qwen2.5-0.5B,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,2049,Pass,ShipCountry eq 'France',ShipCountry eq 'France',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27France%27&%24top=20&%24orderby=OrderDate+desc,
+68,Qwen2.5-0.5B,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,2006,Pass,Country eq 'Mexico',Country eq 'Mexico',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Mexico%27&%24top=20&%24orderby=ContactName+asc,
+69,Qwen2.5-0.5B,employees in Seattle,T4,Employees,Employees,Yes,No,No,2042,Fail,City eq 'Seattle',ShipCity eq 'Seattle',No,http://localhost:4004/odata/Employees?%24count=true&%24filter=ShipCity+eq+%27Seattle%27&%24top=20&%24orderby=LastName+asc,
+70,Qwen2.5-0.5B,suppliers from Japan,T4,Suppliers,Suppliers,Yes,Yes,Yes,9885,Pass,Country eq 'Japan',Country eq 'Japan',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27Japan%27&%24top=20&%24orderby=CompanyName+asc,
+71,Qwen2.5-0.5B,customers from Brazil,T4,Customers,Customers,Yes,No,No,1973,Fail,Country eq 'Brazil',Country eq 'Brazil',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Brazil%27&%24top=20&%24orderby=FirstName+asc,
+72,Qwen2.5-0.5B,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,2026,Pass,ShipCountry eq 'Germany',ShipCountry eq 'Germany',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Germany%27&%24top=20&%24orderby=OrderDate+desc,
+73,Qwen2.5-0.5B,employees from London,T4,Employees,Employees,Yes,Yes,Yes,5019,Pass,City eq 'London',City eq 'London',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27London%27&%24top=20&%24orderby=LastName+asc,
+74,Qwen2.5-0.5B,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,1930,Pass,Country eq 'Spain',Country eq 'Spain',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Spain%27&%24top=20&%24orderby=ContactName+asc,
+75,Qwen2.5-0.5B,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,2019,Pass,Country eq 'France',Country eq 'France',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27France%27&%24top=20&%24orderby=CompanyName+asc,
+76,Qwen2.5-0.5B,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,2039,Pass,ShipCountry eq 'Argentina',ShipCountry eq 'Argentina',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Argentina%27&%24top=20&%24orderby=OrderDate+desc,
+77,Qwen2.5-0.5B,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,2367,Pass,Country eq 'Sweden',Country eq 'Sweden',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Sweden%27&%24top=20&%24orderby=ContactName+asc,
+78,Qwen2.5-0.5B,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,2288,Pass,City eq 'Tacoma',City eq 'Tacoma',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27Tacoma%27&%24top=20&%24orderby=LastName+asc,
+79,Qwen2.5-0.5B,orders delivered to USA,T4,Orders,Orders,Yes,Yes,Yes,1982,Pass,ShipCountry eq 'USA',ShipCountry eq 'USA',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27USA%27&%24top=20&%24orderby=OrderDate+desc,
+80,Qwen2.5-0.5B,active products,T4,Products,Products,Yes,Yes,Yes,1883,Pass,Discontinued eq false,,No,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=UnitPrice+asc,
+81,Qwen2.5-0.5B,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,2092,Pass,Country eq 'Germany' or Country eq 'France',Country eq 'Germany' or Country eq 'France',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Germany%27+or+Country+eq+%27France%27&%24top=20&%24orderby=CompanyName+asc,
+82,Qwen2.5-0.5B,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,2142,Pass,ShipCountry eq 'France' or ShipCountry eq 'Brazil',ShipCountry eq 'France' or ShipCountry eq 'Brazil',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27France%27+or+ShipCountry+eq+%27Brazil%27&%24top=20&%24orderby=OrderDate+desc,
+83,Qwen2.5-0.5B,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,5244,Pass,Country eq 'USA' or Country eq 'UK',Country eq 'USA' or Country eq 'UK',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27USA%27+or+Country+eq+%27UK%27&%24top=20&%24orderby=LastName+asc,
+84,Qwen2.5-0.5B,customers from Mexico or Argentina,T5,Customers,Customers,Yes,Yes,Yes,2316,Pass,Country eq 'Mexico' or Country eq 'Argentina',Country eq 'Mexico' or Country eq 'Argentina',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Mexico%27+or+Country+eq+%27Argentina%27&%24top=20&%24orderby=City+desc,
+85,Qwen2.5-0.5B,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,2148,Pass,"contains(ProductName,'chai') or contains(ProductName,'tofu')","contains(ProductName,'chai') or contains(ProductName,'tofu')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chai%27%29+or+contains%28ProductName%2C%27tofu%27%29&%24top=20&%24orderby=ProductName+asc,
+86,Qwen2.5-0.5B,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,2116,Pass,Country eq 'Germany' or Country eq 'France',Country eq 'Germany' or Country eq 'France',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27Germany%27+or+Country+eq+%27France%27&%24top=20&%24orderby=CompanyName+asc,
+87,Qwen2.5-0.5B,customers from Sweden or Denmark,T5,Customers,Customers,Yes,Yes,Yes,2658,Pass,Country eq 'Sweden' or Country eq 'Denmark',Country eq 'Sweden' or Country eq 'Denmark',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Sweden%27+or+Country+eq+%27Denmark%27&%24top=20&%24orderby=City+desc,
+88,Qwen2.5-0.5B,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,2599,Pass,ShipCountry eq 'Germany' or ShipCountry eq 'Austria',ShipCountry eq 'Germany' or ShipCountry eq 'Austria',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Germany%27+or+ShipCountry+eq+%27Austria%27&%24top=20&%24orderby=ShipCountry+asc,
+89,Qwen2.5-0.5B,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,Yes,Yes,5385,Pass,City eq 'Seattle' or City eq 'Tacoma',City eq 'Seattle' or City eq 'Tacoma',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27Seattle%27+or+City+eq+%27Tacoma%27&%24top=20&%24orderby=FirstName+asc,
+90,Qwen2.5-0.5B,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,2088,Pass,Country eq 'Spain' or Country eq 'Portugal',Country eq 'Spain' or Country eq 'Portugal',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Spain%27+or+Country+eq+%27Portugal%27&%24top=20&%24orderby=City+desc,
+91,Qwen2.5-0.5B,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,2234,Pass,"contains(ProductName,'sauce') or contains(ProductName,'syrup')","contains(ProductName,'sauce') or contains(ProductName,'syracuse')",No,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27sauce%27%29+or+contains%28ProductName%2C%27syracuse%27%29&%24top=20&%24orderby=ProductName+asc,
+92,Qwen2.5-0.5B,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,2207,Pass,ShipCountry eq 'Italy' or ShipCountry eq 'Switzerland',ShipCountry eq 'Italy' or ShipCountry eq 'Switzerland',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Italy%27+or+ShipCountry+eq+%27Switzerland%27&%24top=20&%24orderby=ShipCountry+asc,
+93,Qwen2.5-0.5B,customers from USA or Canada,T5,Customers,Customers,Yes,No,No,2099,Fail,Country eq 'USA' or Country eq 'Canada',Country eq 'USA' or Country eq 'Canada',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27USA%27+or+Country+eq+%27Canada%27&%24top=20&%24orderby=FirstName+asc,
+94,Qwen2.5-0.5B,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,2128,Pass,Country eq 'UK' or Country eq 'USA',Country eq 'UK' or Country eq 'USA',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27UK%27+or+Country+eq+%27USA%27&%24top=20&%24orderby=CompanyName+asc,
+95,Qwen2.5-0.5B,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,3095,Pass,Country eq 'UK' or Country eq 'Germany',Country eq 'UK' or Country eq 'Germany',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27UK%27+or+Country+eq+%27Germany%27&%24top=20&%24orderby=LastName+asc,
+96,Qwen2.5-0.5B,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,2146,Pass,ShipCountry eq 'Austria' or ShipCountry eq 'Belgium',ShipCountry eq 'Austria' or ShipCountry eq 'Belgium',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Austria%27+or+ShipCountry+eq+%27Belgium%27&%24top=20&%24orderby=OrderDate+desc,
+97,Qwen2.5-0.5B,customers from Australia or New Zealand,T5,Customers,Customers,Yes,No,Yes,2080,Fail,Country eq 'Australia' or Country eq 'New Zealand',Country eq 'Australia' or Country eq 'New Zealand',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Australia%27+or+Country+eq+%27New+Zealand%27&%24top=20&%24orderby=City+asc,
+98,Qwen2.5-0.5B,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,Yes,Yes,2293,Pass,Country eq 'Spain' or Country eq 'Italy',Country eq 'Spain' or Country eq 'Italy',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27Spain%27+or+Country+eq+%27Italy%27&%24top=20&%24orderby=CompanyName+asc,
+99,Qwen2.5-0.5B,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,2216,Pass,"contains(ProductName,'chai') or contains(ProductName,'anchovy')","contains(ProductName,'chai') or contains(ProductName,'anchovy')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chai%27%29+or+contains%28ProductName%2C%27anchovy%27%29&%24top=20&%24orderby=ProductName+asc,
+100,Qwen2.5-0.5B,customers from Norway or Finland,T5,Customers,Customers,Yes,Yes,Yes,2770,Pass,Country eq 'Norway' or Country eq 'Finland',Country eq 'Norway' or Country eq 'Finland',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Norway%27+or+Country+eq+%27Finland%27&%24top=20&%24orderby=City+desc,
+
+Metric,Value
+Model,Qwen2.5-0.5B
+Model ID,Qwen2.5-0.5B-Instruct-q4f16_1-MLC
+Prompt Version,2026-10-17
+Run Date,2026-10-17T15:47:28.209Z
+Total Queries,100
+Passed (ESR),81
+ESR %,81
+Exact Match (EM),81
+EM %,81
+EM Scored (rows with gold),100
+"ESR False Positives (ESR pass, EM fail)",8
+ESR FP Rate % (of ESR passes),9.9
+T1 Passed (ESR),16
+T1 Total,20
+T1 ESR %,80
+T1 EM,18
+T1 EM %,90
+T2 Passed (ESR),18
+T2 Total,20
+T2 ESR %,90
+T2 EM,18
+T2 EM %,90
+T3 Passed (ESR),11
+T3 Total,20
+T3 ESR %,55
+T3 EM,9
+T3 EM %,45
+T4 Passed (ESR),18
+T4 Total,20
+T4 ESR %,90
+T4 EM,17
+T4 EM %,85
+T5 Passed (ESR),18
+T5 Total,20
+T5 ESR %,90
+T5 EM,19
+T5 EM %,95
+Entity Match Count,95
+Has Results Count,81
+Validation Passed Count,87
+Errors,2
+Median ms,2055
+Mean ms,2384
+Max ms,9885
+Stalls (>100000 ms),0
+Provider,webllm
+Model Size,~300 MB
+GPU,apple · apple · apple · apple
+Browser,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15"
+JS Heap Used (MB),n/a
+Repetition Shown,1 of 1

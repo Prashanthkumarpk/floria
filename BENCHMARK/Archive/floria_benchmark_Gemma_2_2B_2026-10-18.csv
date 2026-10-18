@@ -1,0 +1,154 @@
+﻿#,Model,Query,Type,Expected Entity,Detected Entity,Entity Match,Has Results,Validation Passed,Time (ms),Status,Expected Query (Gold),Generated Query,Exact Match,OData URL,Error
+1,Gemma-2-2B,list all categories,T1,Categories,Categories,Yes,Yes,Yes,8954,Pass,,,Yes,http://localhost:4004/odata/Categories?%24count=true&%24top=20&%24orderby=CategoryName+asc,
+2,Gemma-2-2B,show all employees,T1,Employees,Employees,Yes,Yes,Yes,8975,Pass,,,Yes,http://localhost:4004/odata/Employees?%24count=true&%24top=20&%24orderby=FirstName+asc,
+3,Gemma-2-2B,show all products,T1,Products,Products,Yes,Yes,Yes,8554,Pass,,,Yes,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=ProductName+asc,
+4,Gemma-2-2B,list all customers,T1,Customers,Customers,Yes,Yes,Yes,8211,Pass,,,Yes,http://localhost:4004/odata/Customers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+5,Gemma-2-2B,show all orders,T1,Orders,Orders,Yes,Yes,Yes,8480,Pass,,,Yes,http://localhost:4004/odata/Orders?%24count=true&%24top=20&%24orderby=OrderDate+desc,
+6,Gemma-2-2B,list all suppliers,T1,Suppliers,Suppliers,Yes,Yes,Yes,8364,Pass,,,Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+7,Gemma-2-2B,show all order details,T1,Order_Details,Order_Details,Yes,Yes,Yes,9647,Pass,,,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24top=20&%24orderby=Quantity+desc,
+8,Gemma-2-2B,display all product categories,T1,Categories,Categories,Yes,Yes,Yes,10337,Pass,,,Yes,http://localhost:4004/odata/Categories?%24count=true&%24top=20&%24orderby=CategoryName+asc,
+9,Gemma-2-2B,get all staff,T1,Employees,Employees,Yes,Yes,Yes,14406,Pass,,,Yes,http://localhost:4004/odata/Employees?%24count=true&%24top=20&%24orderby=FirstName+asc,
+10,Gemma-2-2B,what products do we have,T1,Products,Products,Yes,Yes,Yes,10436,Pass,,,Yes,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=ProductName+asc,
+11,Gemma-2-2B,show me all clients,T1,Customers,Customers,Yes,Yes,Yes,11855,Pass,,,Yes,http://localhost:4004/odata/Customers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+12,Gemma-2-2B,list all shipments,T1,Orders,Orders,Yes,Yes,Yes,12256,Pass,,,Yes,http://localhost:4004/odata/Orders?%24count=true&%24top=20&%24orderby=OrderDate+desc,
+13,Gemma-2-2B,show all vendors,T1,Suppliers,Suppliers,Yes,Yes,Yes,12519,Pass,,,Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+14,Gemma-2-2B,list all line items,T1,Order_Details,Order_Details,Yes,Yes,Yes,12345,Pass,,,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24top=20&%24orderby=Quantity+desc,
+15,Gemma-2-2B,get all product groups,T1,Categories,Products,No,No,No,11872,Fail,,,No,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=CategoryName+asc,
+16,Gemma-2-2B,fetch all workers,T1,Employees,Employees,Yes,Yes,Yes,12794,Pass,,,Yes,http://localhost:4004/odata/Employees?%24count=true&%24top=20&%24orderby=FirstName+asc,
+17,Gemma-2-2B,display all items in catalog,T1,Products,Products,Yes,Yes,Yes,11015,Pass,,,Yes,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=ProductName+asc,
+18,Gemma-2-2B,show all buyers,T1,Customers,Customers,Yes,Yes,Yes,11464,Pass,,,Yes,http://localhost:4004/odata/Customers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+19,Gemma-2-2B,list all purchases,T1,Orders,Orders,Yes,Yes,Yes,11264,Pass,,,Yes,http://localhost:4004/odata/Orders?%24count=true&%24top=20&%24orderby=OrderDate+desc,
+20,Gemma-2-2B,show me all manufacturers,T1,Suppliers,Suppliers,Yes,Yes,Yes,11260,Pass,,,Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24top=20&%24orderby=CompanyName+asc,
+21,Gemma-2-2B,products cheaper than $15,T2,Products,Products,Yes,Yes,Yes,11474,Pass,UnitPrice lt 15,UnitPrice lt 15,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+lt+15&%24top=20&%24orderby=UnitPrice+asc,
+22,Gemma-2-2B,orders with freight over 100,T2,Orders,Orders,Yes,Yes,Yes,11591,Pass,Freight gt 100,Freight gt 100,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+gt+100&%24top=20&%24orderby=Freight+desc,
+23,Gemma-2-2B,products with unit price above 50,T2,Products,Products,Yes,Yes,Yes,11500,Pass,UnitPrice gt 50,UnitPrice gt 50,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+gt+50&%24top=20&%24orderby=UnitPrice+asc,
+24,Gemma-2-2B,items with less than 5 units in stock,T2,Products,Products,Yes,Yes,Yes,11512,Pass,UnitsInStock lt 5,UnitsInStock lt 5,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+lt+5&%24top=20&%24orderby=ProductName+asc,
+25,Gemma-2-2B,products priced under 20 dollars,T2,Products,Products,Yes,Yes,Yes,12828,Pass,UnitPrice lt 20,UnitPrice lt 20,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+lt+20&%24top=20&%24orderby=UnitPrice+asc,
+26,Gemma-2-2B,orders with freight less than 20,T2,Orders,Orders,Yes,Yes,Yes,11301,Pass,Freight lt 20,Freight lt 20,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+lt+20&%24top=20&%24orderby=OrderDate+desc,
+27,Gemma-2-2B,products with more than 100 units in stock,T2,Products,Products,Yes,Yes,Yes,11771,Pass,UnitsInStock gt 100,UnitsInStock gt 100,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+gt+100&%24top=20&%24orderby=UnitsInStock+asc,
+28,Gemma-2-2B,order details with quantity greater than 50,T2,Order_Details,Order_Details,Yes,Yes,Yes,12144,Pass,Quantity gt 50,Quantity gt 50,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Quantity+gt+50&%24top=20&%24orderby=Quantity+desc,
+29,Gemma-2-2B,products costing more than 100,T2,Products,Products,Yes,Yes,Yes,12742,Pass,UnitPrice gt 100,UnitPrice gt 100,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+gt+100&%24top=20&%24orderby=UnitPrice+asc,
+30,Gemma-2-2B,order details with discount over 0.2,T2,Order_Details,Order_Details,Yes,Yes,Yes,11576,Pass,Discount gt 0.2,Discount gt 0.2,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Discount+gt+0.2&%24top=20&%24orderby=Quantity+desc,
+31,Gemma-2-2B,orders with high freight above 200,T2,Orders,Orders,Yes,Yes,Yes,11637,Pass,Freight gt 200,Freight gt 200,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+gt+200&%24top=20&%24orderby=Freight+desc,
+32,Gemma-2-2B,products with stock below 10,T2,Products,Products,Yes,Yes,Yes,11566,Pass,UnitsInStock lt 10,UnitsInStock lt 10,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+lt+10&%24top=20&%24orderby=UnitsInStock+asc,
+33,Gemma-2-2B,order line items with unit price above 30,T2,Order_Details,Order_Details,Yes,Yes,Yes,11742,Pass,UnitPrice gt 30,UnitPrice gt 30,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=UnitPrice+gt+30&%24top=20&%24orderby=Quantity+desc,
+34,Gemma-2-2B,order line items with quantity over 100,T2,Order_Details,Order_Details,Yes,Yes,Yes,11773,Pass,Quantity gt 100,Quantity gt 100,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Quantity+gt+100&%24top=20&%24orderby=Quantity+desc,
+35,Gemma-2-2B,products with stock between 20 and 50,T2,Products,Products,Yes,No,Yes,12054,Fail,UnitsInStock ge 20 and UnitsInStock le 50,UnitsInStock between 20 and 50,No,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+between+20+and+50&%24top=20&%24orderby=UnitsInStock+asc,
+36,Gemma-2-2B,orders with freight between 50 and 150,T2,Orders,Orders,Yes,Yes,Yes,12080,Pass,Freight ge 50 and Freight le 150,Freight gt 50 and Freight lt 150,Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=Freight+gt+50+and+Freight+lt+150&%24top=20&%24orderby=OrderDate+desc,
+37,Gemma-2-2B,order details with zero discount,T2,Order_Details,Order_Details,Yes,No,Yes,12582,Fail,Discount eq 0,Discount lt 0,No,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=Discount+lt+0&%24top=20&%24orderby=Quantity+desc,
+38,Gemma-2-2B,order line items with unit price under 10,T2,Order_Details,Order_Details,Yes,Yes,Yes,11459,Pass,UnitPrice lt 10,UnitPrice lt 10,Yes,http://localhost:4004/odata/Order_Details?%24count=true&%24filter=UnitPrice+lt+10&%24top=20&%24orderby=Quantity+desc,
+39,Gemma-2-2B,products in stock less than 20 units,T2,Products,Products,Yes,Yes,Yes,11312,Pass,UnitsInStock lt 20,UnitsInStock lt 20,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitsInStock+lt+20&%24top=20&%24orderby=ProductName+asc,
+40,Gemma-2-2B,products with price above 75,T2,Products,Products,Yes,Yes,Yes,11705,Pass,UnitPrice gt 75,UnitPrice gt 75,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=UnitPrice+gt+75&%24top=20&%24orderby=UnitPrice+asc,
+41,Gemma-2-2B,products with chai in the name,T3,Products,Products,Yes,Yes,Yes,12634,Pass,"contains(ProductName,'chai')","contains(ProductName,'chai')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chai%27%29&%24top=20&%24orderby=ProductName+asc,
+42,Gemma-2-2B,customers with restaurant in name,T3,Customers,Customers,Yes,Yes,Yes,11282,Pass,"contains(CompanyName,'restaurant')","contains(CompanyName,'restaurant')",Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28CompanyName%2C%27restaurant%27%29&%24top=20&%24orderby=CompanyName+asc,
+43,Gemma-2-2B,suppliers starting with exotic,T3,Suppliers,Suppliers,Yes,Yes,Yes,11692,Pass,"startswith(CompanyName,'Exotic')","startswith(CompanyName,'Exotic')",Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=startswith%28CompanyName%2C%27Exotic%27%29&%24top=20&%24orderby=CompanyName+asc,
+44,Gemma-2-2B,employees with last name starting with D,T3,Employees,Employees,Yes,Yes,Yes,12034,Pass,"startswith(LastName,'D')","startswith(LastName,'D')",Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=startswith%28LastName%2C%27D%27%29&%24top=20&%24orderby=LastName+asc,
+45,Gemma-2-2B,customers whose company starts with B,T3,Customers,Customers,Yes,Yes,Yes,11355,Pass,"startswith(CompanyName,'B')","startswith(CompanyName,'B')",Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=startswith%28CompanyName%2C%27B%27%29&%24top=20&%24orderby=CompanyName+asc,
+46,Gemma-2-2B,products containing sauce,T3,Products,Products,Yes,Yes,Yes,12350,Pass,"contains(ProductName,'sauce')","contains(ProductName,'sauce')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27sauce%27%29&%24top=20&%24orderby=ProductName+asc,
+47,Gemma-2-2B,products with tofu in the name,T3,Products,Products,Yes,Yes,Yes,11559,Pass,"contains(ProductName,'tofu')","contains(ProductName,'tofu')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27tofu%27%29&%24top=20&%24orderby=ProductName+asc,
+48,Gemma-2-2B,customers with Trading in their company name,T3,Customers,Customers,Yes,No,Yes,14025,Fail,"contains(CompanyName,'Trading')",CompanyName contains('Trading'),No,http://localhost:4004/odata/Customers?%24count=true&%24filter=CompanyName+contains%28%27Trading%27%29&%24top=20&%24orderby=CompanyName+asc,
+49,Gemma-2-2B,employees with name starting with A,T3,Employees,Employees,Yes,Yes,Yes,11240,Pass,"startswith(LastName,'A')","startswith(FirstName,'A')",Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=startswith%28FirstName%2C%27A%27%29&%24top=20&%24orderby=LastName+asc,
+50,Gemma-2-2B,products containing syrup,T3,Products,Products,Yes,Yes,Yes,11354,Pass,"contains(ProductName,'syrup')","contains(ProductName,'syrup')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27syrup%27%29&%24top=20&%24orderby=ProductName+asc,
+51,Gemma-2-2B,customers with Import in their name,T3,Customers,Customers,Yes,Yes,Yes,11588,Pass,"contains(CompanyName,'Import')","contains(CompanyName,'Import')",Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28CompanyName%2C%27Import%27%29&%24top=20&%24orderby=CompanyName+asc,
+52,Gemma-2-2B,orders shipped to cities starting with L,T3,Orders,Orders,Yes,No,Yes,11806,Fail,"startswith(ShipCity,'L')",ShipCity startswith('L'),No,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCity+startswith%28%27L%27%29&%24top=20&%24orderby=OrderDate+desc,
+53,Gemma-2-2B,products starting with Chef,T3,Products,Products,Yes,Yes,Yes,13211,Pass,"startswith(ProductName,'Chef')","startswith(ProductName,'Chef')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=startswith%28ProductName%2C%27Chef%27%29&%24top=20&%24orderby=ProductName+asc,
+54,Gemma-2-2B,customers with Gourmet in their name,T3,Customers,Customers,Yes,Yes,Yes,11242,Pass,"contains(CompanyName,'Gourmet')","contains(CompanyName,'Gourmet')",Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=contains%28CompanyName%2C%27Gourmet%27%29&%24top=20&%24orderby=CompanyName+asc,
+55,Gemma-2-2B,orders shipped to Berlin,T3,Orders,Orders,Yes,Yes,Yes,11497,Pass,"contains(ShipCity,'Berlin')",ShipCity eq 'Berlin',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCity+eq+%27Berlin%27&%24top=20&%24orderby=OrderDate+desc,
+56,Gemma-2-2B,products containing pasta,T3,Products,Products,Yes,No,Yes,11929,Fail,"contains(ProductName,'pasta')","contains(ProductName,'pasta')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27pasta%27%29&%24top=20&%24orderby=ProductName+asc,
+57,Gemma-2-2B,suppliers with Tokyo in their city,T3,Suppliers,Suppliers,Yes,No,Yes,11339,Fail,"contains(City,'Tokyo')",City contains('Tokyo'),No,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=City+contains%28%27Tokyo%27%29&%24top=20&%24orderby=CompanyName+asc,
+58,Gemma-2-2B,products with anchov in the name,T3,Products,Products,Yes,No,Yes,11764,Fail,"contains(ProductName,'anchov')","contains(ProductName,'anchov')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27anchov%27%29&%24top=20&%24orderby=ProductName+asc,
+59,Gemma-2-2B,products with caviar in the name,T3,Products,Products,Yes,No,Yes,11517,Fail,"contains(ProductName,'caviar')","contains(ProductName,'caviar')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27caviar%27%29&%24top=20&%24orderby=ProductName+asc,
+60,Gemma-2-2B,customers in cities starting with M,T3,Customers,Customers,Yes,No,Yes,11510,Fail,"startswith(City,'M')",City startswith('M'),No,http://localhost:4004/odata/Customers?%24count=true&%24filter=City+startswith%28%27M%27%29&%24top=20&%24orderby=CompanyName+asc,
+61,Gemma-2-2B,discontinued products,T4,Products,Products,Yes,Yes,Yes,11534,Pass,Discontinued eq true,Discontinued eq true,Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=Discontinued+eq+true&%24top=20&%24orderby=ProductName+asc,
+62,Gemma-2-2B,employees from USA,T4,Employees,Employees,Yes,Yes,Yes,12061,Pass,Country eq 'USA',Country eq 'USA',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27USA%27&%24top=20&%24orderby=LastName+asc,
+63,Gemma-2-2B,customers from Germany,T4,Customers,Customers,Yes,Yes,Yes,11555,Pass,Country eq 'Germany',Country eq 'Germany',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Germany%27&%24top=20&%24orderby=CompanyName+asc,
+64,Gemma-2-2B,suppliers from USA,T4,Suppliers,Suppliers,Yes,No,Yes,11442,Fail,Country eq 'USA',CompanyName eq 'USA',No,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=CompanyName+eq+%27USA%27&%24top=20&%24orderby=CompanyName+asc,
+65,Gemma-2-2B,employees based in UK,T4,Employees,Employees,Yes,Yes,Yes,12123,Pass,Country eq 'UK',Country eq 'UK',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27UK%27&%24top=20&%24orderby=FirstName+asc,
+66,Gemma-2-2B,customers located in London,T4,Customers,Customers,Yes,Yes,Yes,11266,Pass,City eq 'London',City eq 'London',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=City+eq+%27London%27&%24top=20&%24orderby=CompanyName+asc,
+67,Gemma-2-2B,orders shipped to France,T4,Orders,Orders,Yes,Yes,Yes,11480,Pass,ShipCountry eq 'France',ShipCountry eq 'France',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27France%27&%24top=20&%24orderby=OrderDate+desc,
+68,Gemma-2-2B,customers from Mexico,T4,Customers,Customers,Yes,Yes,Yes,11556,Pass,Country eq 'Mexico',Country eq 'Mexico',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Mexico%27&%24top=20&%24orderby=CompanyName+asc,
+69,Gemma-2-2B,employees in Seattle,T4,Employees,Employees,Yes,Yes,Yes,11949,Pass,City eq 'Seattle',City eq 'Seattle',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27Seattle%27&%24top=20&%24orderby=FirstName+asc,
+70,Gemma-2-2B,suppliers from Japan,T4,Suppliers,Suppliers,Yes,No,Yes,11577,Fail,Country eq 'Japan',CompanyName eq 'Yamatoya',No,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=CompanyName+eq+%27Yamatoya%27&%24top=20&%24orderby=CompanyName+asc,
+71,Gemma-2-2B,customers from Brazil,T4,Customers,Customers,Yes,Yes,Yes,11765,Pass,Country eq 'Brazil',Country eq 'Brazil',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Brazil%27&%24top=20&%24orderby=CompanyName+asc,
+72,Gemma-2-2B,orders going to Germany,T4,Orders,Orders,Yes,Yes,Yes,11544,Pass,ShipCountry eq 'Germany',ShipCountry eq 'Germany',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Germany%27&%24top=20&%24orderby=OrderDate+desc,
+73,Gemma-2-2B,employees from London,T4,Employees,Employees,Yes,Yes,Yes,11961,Pass,City eq 'London',City eq 'London',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27London%27&%24top=20&%24orderby=FirstName+asc,
+74,Gemma-2-2B,customers from Spain,T4,Customers,Customers,Yes,Yes,Yes,11363,Pass,Country eq 'Spain',Country eq 'Spain',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Spain%27&%24top=20&%24orderby=CompanyName+asc,
+75,Gemma-2-2B,suppliers based in France,T4,Suppliers,Suppliers,Yes,Yes,Yes,11501,Pass,Country eq 'France',Country eq 'France',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27France%27&%24top=20&%24orderby=CompanyName+asc,
+76,Gemma-2-2B,orders shipped to Argentina,T4,Orders,Orders,Yes,Yes,Yes,11698,Pass,ShipCountry eq 'Argentina',ShipCountry eq 'Argentina',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Argentina%27&%24top=20&%24orderby=OrderDate+desc,
+77,Gemma-2-2B,customers from Sweden,T4,Customers,Customers,Yes,Yes,Yes,11851,Pass,Country eq 'Sweden',Country eq 'Sweden',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Sweden%27&%24top=20&%24orderby=CompanyName+asc,
+78,Gemma-2-2B,employees in Tacoma,T4,Employees,Employees,Yes,Yes,Yes,11242,Pass,City eq 'Tacoma',City eq 'Tacoma',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27Tacoma%27&%24top=20&%24orderby=FirstName+asc,
+79,Gemma-2-2B,orders delivered to USA,T4,Orders,Orders,Yes,Yes,Yes,11686,Pass,ShipCountry eq 'USA',ShipCountry eq 'USA',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27USA%27&%24top=20&%24orderby=OrderDate+desc,
+80,Gemma-2-2B,active products,T4,Products,Products,Yes,Yes,Yes,11507,Pass,Discontinued eq false,,No,http://localhost:4004/odata/Products?%24count=true&%24top=20&%24orderby=ProductName+asc,
+81,Gemma-2-2B,customers from Germany or France,T5,Customers,Customers,Yes,Yes,Yes,11887,Pass,Country eq 'Germany' or Country eq 'France',Country eq 'Germany' or Country eq 'France',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Germany%27+or+Country+eq+%27France%27&%24top=20&%24orderby=CompanyName+asc,
+82,Gemma-2-2B,orders to France or Brazil,T5,Orders,Orders,Yes,Yes,Yes,12048,Pass,ShipCountry eq 'France' or ShipCountry eq 'Brazil',ShipCountry eq 'France' or ShipCountry eq 'Brazil',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27France%27+or+ShipCountry+eq+%27Brazil%27&%24top=20&%24orderby=OrderDate+desc,
+83,Gemma-2-2B,employees from USA or UK,T5,Employees,Employees,Yes,Yes,Yes,12836,Pass,Country eq 'USA' or Country eq 'UK',Country eq 'USA' or Country eq 'UK',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27USA%27+or+Country+eq+%27UK%27&%24top=20&%24orderby=FirstName+asc,
+84,Gemma-2-2B,customers from Mexico or Argentina,T5,Customers,Customers,Yes,Yes,Yes,11763,Pass,Country eq 'Mexico' or Country eq 'Argentina',Country eq 'Mexico' or Country eq 'Argentina',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Mexico%27+or+Country+eq+%27Argentina%27&%24top=20&%24orderby=CompanyName+asc,
+85,Gemma-2-2B,products containing chai or tofu,T5,Products,Products,Yes,Yes,Yes,12032,Pass,"contains(ProductName,'chai') or contains(ProductName,'tofu')","contains(ProductName,'chai') or contains(ProductName,'tofu')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chai%27%29+or+contains%28ProductName%2C%27tofu%27%29&%24top=20&%24orderby=ProductName+asc,
+86,Gemma-2-2B,suppliers from Germany or France,T5,Suppliers,Suppliers,Yes,Yes,Yes,11728,Pass,Country eq 'Germany' or Country eq 'France',Country eq 'Germany' or Country eq 'France',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27Germany%27+or+Country+eq+%27France%27&%24top=20&%24orderby=CompanyName+asc,
+87,Gemma-2-2B,customers from Sweden or Denmark,T5,Customers,Customers,Yes,Yes,Yes,11848,Pass,Country eq 'Sweden' or Country eq 'Denmark',Country eq 'Sweden' or Country eq 'Denmark',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Sweden%27+or+Country+eq+%27Denmark%27&%24top=20&%24orderby=CompanyName+asc,
+88,Gemma-2-2B,orders shipped to Germany or Austria,T5,Orders,Orders,Yes,Yes,Yes,12192,Pass,ShipCountry eq 'Germany' or ShipCountry eq 'Austria',ShipCountry eq 'Germany' or ShipCountry eq 'Austria',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Germany%27+or+ShipCountry+eq+%27Austria%27&%24top=20&%24orderby=OrderDate+desc,
+89,Gemma-2-2B,employees from Seattle or Tacoma,T5,Employees,Employees,Yes,Yes,Yes,13419,Pass,City eq 'Seattle' or City eq 'Tacoma',City eq 'Seattle' or City eq 'Tacoma',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=City+eq+%27Seattle%27+or+City+eq+%27Tacoma%27&%24top=20&%24orderby=LastName+asc,
+90,Gemma-2-2B,customers from Spain or Portugal,T5,Customers,Customers,Yes,Yes,Yes,11467,Pass,Country eq 'Spain' or Country eq 'Portugal',Country eq 'Spain' or Country eq 'Portugal',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Spain%27+or+Country+eq+%27Portugal%27&%24top=20&%24orderby=CompanyName+asc,
+91,Gemma-2-2B,products with sauce or syrup in name,T5,Products,Products,Yes,Yes,Yes,12353,Pass,"contains(ProductName,'sauce') or contains(ProductName,'syrup')","contains(ProductName,'sauce') or contains(ProductName,'syrup')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27sauce%27%29+or+contains%28ProductName%2C%27syrup%27%29&%24top=20&%24orderby=ProductName+asc,
+92,Gemma-2-2B,orders to Italy or Switzerland,T5,Orders,Orders,Yes,Yes,Yes,12037,Pass,ShipCountry eq 'Italy' or ShipCountry eq 'Switzerland',ShipCountry eq 'Italy' or ShipCountry eq 'Switzerland',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Italy%27+or+ShipCountry+eq+%27Switzerland%27&%24top=20&%24orderby=OrderDate+desc,
+93,Gemma-2-2B,customers from USA or Canada,T5,Customers,Customers,Yes,Yes,Yes,11777,Pass,Country eq 'USA' or Country eq 'Canada',Country eq 'USA' or Country eq 'Canada',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27USA%27+or+Country+eq+%27Canada%27&%24top=20&%24orderby=CompanyName+asc,
+94,Gemma-2-2B,suppliers from UK or USA,T5,Suppliers,Suppliers,Yes,Yes,Yes,11867,Pass,Country eq 'UK' or Country eq 'USA',Country eq 'UK' or Country eq 'USA',Yes,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=Country+eq+%27UK%27+or+Country+eq+%27USA%27&%24top=20&%24orderby=CompanyName+asc,
+95,Gemma-2-2B,employees from UK or Germany,T5,Employees,Employees,Yes,Yes,Yes,12417,Pass,Country eq 'UK' or Country eq 'Germany',Country eq 'UK' or Country eq 'Germany',Yes,http://localhost:4004/odata/Employees?%24count=true&%24filter=Country+eq+%27UK%27+or+Country+eq+%27Germany%27&%24top=20&%24orderby=FirstName+asc,
+96,Gemma-2-2B,orders to Austria or Belgium,T5,Orders,Orders,Yes,Yes,Yes,12115,Pass,ShipCountry eq 'Austria' or ShipCountry eq 'Belgium',ShipCountry eq 'Austria' or ShipCountry eq 'Belgium',Yes,http://localhost:4004/odata/Orders?%24count=true&%24filter=ShipCountry+eq+%27Austria%27+or+ShipCountry+eq+%27Belgium%27&%24top=20&%24orderby=OrderDate+desc,
+97,Gemma-2-2B,customers from Australia or New Zealand,T5,Customers,Customers,Yes,No,Yes,11942,Fail,Country eq 'Australia' or Country eq 'New Zealand',Country eq 'Australia' or Country eq 'New Zealand',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Australia%27+or+Country+eq+%27New+Zealand%27&%24top=20&%24orderby=CompanyName+asc,
+98,Gemma-2-2B,suppliers from Spain or Italy,T5,Suppliers,Suppliers,Yes,No,Yes,11878,Fail,Country eq 'Spain' or Country eq 'Italy',CompanyName eq 'Spain' or CompanyName eq 'Italy',No,http://localhost:4004/odata/Suppliers?%24count=true&%24filter=CompanyName+eq+%27Spain%27+or+CompanyName+eq+%27Italy%27&%24top=20&%24orderby=CompanyName+asc,
+99,Gemma-2-2B,products with chai or anchovy in name,T5,Products,Products,Yes,Yes,Yes,12024,Pass,"contains(ProductName,'chai') or contains(ProductName,'anchovy')","contains(ProductName,'chai') or contains(ProductName,'anchovy')",Yes,http://localhost:4004/odata/Products?%24count=true&%24filter=contains%28ProductName%2C%27chai%27%29+or+contains%28ProductName%2C%27anchovy%27%29&%24top=20&%24orderby=ProductName+asc,
+100,Gemma-2-2B,customers from Norway or Finland,T5,Customers,Customers,Yes,Yes,Yes,11767,Pass,Country eq 'Norway' or Country eq 'Finland',Country eq 'Norway' or Country eq 'Finland',Yes,http://localhost:4004/odata/Customers?%24count=true&%24filter=Country+eq+%27Norway%27+or+Country+eq+%27Finland%27&%24top=20&%24orderby=CompanyName+asc,
+
+Metric,Value
+Model,Gemma-2-2B
+Model ID,gemma-2-2b-it-q4f16_1-MLC
+Prompt Version,2026-10-17
+Run Date,2026-10-18T08:54:55.798Z
+Total Queries,100
+Passed (ESR),86
+ESR %,86
+Exact Match (EM),89
+EM %,89
+EM Scored (rows with gold),100
+"ESR False Positives (ESR pass, EM fail)",1
+ESR FP Rate % (of ESR passes),1.2
+T1 Passed (ESR),19
+T1 Total,20
+T1 ESR %,95
+T1 EM,19
+T1 EM %,95
+T2 Passed (ESR),18
+T2 Total,20
+T2 ESR %,90
+T2 EM,18
+T2 EM %,90
+T3 Passed (ESR),13
+T3 Total,20
+T3 ESR %,65
+T3 EM,16
+T3 EM %,80
+T4 Passed (ESR),18
+T4 Total,20
+T4 ESR %,90
+T4 EM,17
+T4 EM %,85
+T5 Passed (ESR),18
+T5 Total,20
+T5 ESR %,90
+T5 EM,19
+T5 EM %,95
+Entity Match Count,99
+Has Results Count,86
+Validation Passed Count,99
+Errors,0
+Median ms,11702
+Mean ms,11623
+Max ms,14406
+Stalls (>100000 ms),0
+Provider,webllm
+Model Size,~1.5 GB
+GPU,apple · apple · apple · apple
+Browser,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15"
+JS Heap Used (MB),n/a
+Repetition Shown,1 of 1

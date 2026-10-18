@@ -1,0 +1,1758 @@
+{
+  "generatedAt": "2026-10-18T09:23:27.178Z",
+  "gold": {
+    "count": 100,
+    "path": "BENCHMARK/gold/gold_queries.json"
+  },
+  "models": [
+    {
+      "modelId": "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",
+      "model": "Qwen2.5-Coder-1.5B",
+      "provider": "webllm",
+      "runs": 3,
+      "files": [
+        "floria_benchmark_Qwen2_5_Coder_1_5B_2026-10-17.json"
+      ],
+      "promptVersions": [
+        "2026-10-17"
+      ],
+      "modelSize": "~900 MB",
+      "hardware": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+        "platform": "MacIntel",
+        "hardwareConcurrency": 8,
+        "deviceMemoryGb": null,
+        "gpu": {
+          "vendor": "apple",
+          "architecture": "apple",
+          "device": "apple",
+          "description": "apple"
+        },
+        "gpuLimits": {
+          "maxBufferSize": 2147483644,
+          "maxStorageBufferBindingSize": 2147483644
+        },
+        "jsHeapUsedMb": null
+      },
+      "em": {
+        "pct": {
+          "mean": 96.3,
+          "sd": 0.6,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 90,
+            "sd": 0,
+            "n": 3
+          },
+          "T2": {
+            "mean": 96.7,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T3": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          },
+          "T4": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T5": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "esr": {
+        "pct": {
+          "mean": 93.7,
+          "sd": 0.6,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 93.3,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T2": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 80,
+            "sd": 0,
+            "n": 3
+          },
+          "T4": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T5": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "fpRatePct": {
+        "mean": 1.4,
+        "sd": 1.2,
+        "n": 3
+      },
+      "timing": {
+        "medianMs": {
+          "mean": 7218,
+          "sd": 404.3,
+          "n": 3
+        },
+        "maxMs": 9212,
+        "stalls": 0
+      },
+      "repetitions": [
+        {
+          "file": "floria_benchmark_Qwen2_5_Coder_1_5B_2026-10-17.json",
+          "rep": 1,
+          "model": "Qwen2.5-Coder-1.5B",
+          "modelId": "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T16:33:28.050Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~900 MB",
+          "scored": 100,
+          "emTotal": 96,
+          "emPct": 96,
+          "emByType": {
+            "T1": 90,
+            "T2": 95,
+            "T3": 95,
+            "T4": 100,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 18
+            },
+            "T2": {
+              "n": 20,
+              "hit": 19
+            },
+            "T3": {
+              "n": 20,
+              "hit": 19
+            },
+            "T4": {
+              "n": 20,
+              "hit": 20
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 94,
+          "esrPct": 94,
+          "esrByType": {
+            "T1": 95,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 95
+          },
+          "falsePositives": 2,
+          "fpRatePct": 2.1,
+          "timing": {
+            "medianMs": 6796,
+            "meanMs": 6904,
+            "maxMs": 9212,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Qwen2_5_Coder_1_5B_2026-10-17.json",
+          "rep": 2,
+          "model": "Qwen2.5-Coder-1.5B",
+          "modelId": "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T16:57:48.124Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~900 MB",
+          "scored": 100,
+          "emTotal": 96,
+          "emPct": 96,
+          "emByType": {
+            "T1": 90,
+            "T2": 95,
+            "T3": 95,
+            "T4": 100,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 18
+            },
+            "T2": {
+              "n": 20,
+              "hit": 19
+            },
+            "T3": {
+              "n": 20,
+              "hit": 19
+            },
+            "T4": {
+              "n": 20,
+              "hit": 20
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 94,
+          "esrPct": 94,
+          "esrByType": {
+            "T1": 95,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 95
+          },
+          "falsePositives": 2,
+          "fpRatePct": 2.1,
+          "timing": {
+            "medianMs": 7256,
+            "meanMs": 7238,
+            "maxMs": 8703,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Qwen2_5_Coder_1_5B_2026-10-17.json",
+          "rep": 3,
+          "model": "Qwen2.5-Coder-1.5B",
+          "modelId": "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T17:09:53.329Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~900 MB",
+          "scored": 100,
+          "emTotal": 97,
+          "emPct": 97,
+          "emByType": {
+            "T1": 90,
+            "T2": 100,
+            "T3": 95,
+            "T4": 100,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 18
+            },
+            "T2": {
+              "n": 20,
+              "hit": 20
+            },
+            "T3": {
+              "n": 20,
+              "hit": 19
+            },
+            "T4": {
+              "n": 20,
+              "hit": 20
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 93,
+          "esrPct": 93,
+          "esrByType": {
+            "T1": 90,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 95
+          },
+          "falsePositives": 0,
+          "fpRatePct": 0,
+          "timing": {
+            "medianMs": 7602,
+            "meanMs": 7623,
+            "maxMs": 8721,
+            "stalls": 0
+          }
+        }
+      ]
+    },
+    {
+      "modelId": "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+      "model": "Llama-3.2-3B",
+      "provider": "webllm",
+      "runs": 3,
+      "files": [
+        "floria_benchmark_Llama_3_2_3B_2026-10-17.json"
+      ],
+      "promptVersions": [
+        "2026-10-17"
+      ],
+      "modelSize": "~2.0 GB",
+      "hardware": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+        "platform": "MacIntel",
+        "hardwareConcurrency": 8,
+        "deviceMemoryGb": null,
+        "gpu": {
+          "vendor": "apple",
+          "architecture": "apple",
+          "device": "apple",
+          "description": "apple"
+        },
+        "gpuLimits": {
+          "maxBufferSize": 2147483644,
+          "maxStorageBufferBindingSize": 2147483644
+        },
+        "jsHeapUsedMb": null
+      },
+      "em": {
+        "pct": {
+          "mean": 91.7,
+          "sd": 0.6,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          },
+          "T2": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 78.3,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T4": {
+            "mean": 90,
+            "sd": 0,
+            "n": 3
+          },
+          "T5": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "esr": {
+        "pct": {
+          "mean": 89,
+          "sd": 0,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          },
+          "T2": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 65,
+            "sd": 0,
+            "n": 3
+          },
+          "T4": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          },
+          "T5": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "fpRatePct": {
+        "mean": 1.5,
+        "sd": 0.6,
+        "n": 3
+      },
+      "timing": {
+        "medianMs": {
+          "mean": 12396.7,
+          "sd": 231.7,
+          "n": 3
+        },
+        "maxMs": 15922,
+        "stalls": 0
+      },
+      "repetitions": [
+        {
+          "file": "floria_benchmark_Llama_3_2_3B_2026-10-17.json",
+          "rep": 1,
+          "model": "Llama-3.2-3B",
+          "modelId": "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T17:27:06.116Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~2.0 GB",
+          "scored": 100,
+          "emTotal": 92,
+          "emPct": 92,
+          "emByType": {
+            "T1": 95,
+            "T2": 95,
+            "T3": 80,
+            "T4": 90,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 19
+            },
+            "T2": {
+              "n": 20,
+              "hit": 19
+            },
+            "T3": {
+              "n": 20,
+              "hit": 16
+            },
+            "T4": {
+              "n": 20,
+              "hit": 18
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 89,
+          "esrPct": 89,
+          "esrByType": {
+            "T1": 95,
+            "T2": 95,
+            "T3": 65,
+            "T4": 95,
+            "T5": 95
+          },
+          "falsePositives": 1,
+          "fpRatePct": 1.1,
+          "timing": {
+            "medianMs": 12271,
+            "meanMs": 12106,
+            "maxMs": 14221,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Llama_3_2_3B_2026-10-17.json",
+          "rep": 2,
+          "model": "Llama-3.2-3B",
+          "modelId": "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T17:47:20.271Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~2.0 GB",
+          "scored": 100,
+          "emTotal": 92,
+          "emPct": 92,
+          "emByType": {
+            "T1": 95,
+            "T2": 95,
+            "T3": 80,
+            "T4": 90,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 19
+            },
+            "T2": {
+              "n": 20,
+              "hit": 19
+            },
+            "T3": {
+              "n": 20,
+              "hit": 16
+            },
+            "T4": {
+              "n": 20,
+              "hit": 18
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 89,
+          "esrPct": 89,
+          "esrByType": {
+            "T1": 95,
+            "T2": 95,
+            "T3": 65,
+            "T4": 95,
+            "T5": 95
+          },
+          "falsePositives": 1,
+          "fpRatePct": 1.1,
+          "timing": {
+            "medianMs": 12255,
+            "meanMs": 12204,
+            "maxMs": 13353,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Llama_3_2_3B_2026-10-17.json",
+          "rep": 3,
+          "model": "Llama-3.2-3B",
+          "modelId": "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T18:07:55.154Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~2.0 GB",
+          "scored": 100,
+          "emTotal": 91,
+          "emPct": 91,
+          "emByType": {
+            "T1": 95,
+            "T2": 95,
+            "T3": 75,
+            "T4": 90,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 19
+            },
+            "T2": {
+              "n": 20,
+              "hit": 19
+            },
+            "T3": {
+              "n": 20,
+              "hit": 15
+            },
+            "T4": {
+              "n": 20,
+              "hit": 18
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 89,
+          "esrPct": 89,
+          "esrByType": {
+            "T1": 95,
+            "T2": 95,
+            "T3": 65,
+            "T4": 95,
+            "T5": 95
+          },
+          "falsePositives": 2,
+          "fpRatePct": 2.2,
+          "timing": {
+            "medianMs": 12664,
+            "meanMs": 12687,
+            "maxMs": 15922,
+            "stalls": 0
+          }
+        }
+      ]
+    },
+    {
+      "modelId": "gemma-2-2b-it-q4f16_1-MLC",
+      "model": "Gemma-2-2B",
+      "provider": "webllm",
+      "runs": 1,
+      "files": [
+        "floria_benchmark_Gemma_2_2B_2026-10-18.json"
+      ],
+      "promptVersions": [
+        "2026-10-17"
+      ],
+      "modelSize": "~1.5 GB",
+      "hardware": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+        "platform": "MacIntel",
+        "hardwareConcurrency": 8,
+        "deviceMemoryGb": null,
+        "gpu": {
+          "vendor": "apple",
+          "architecture": "apple",
+          "device": "apple",
+          "description": "apple"
+        },
+        "gpuLimits": {
+          "maxBufferSize": 2147483644,
+          "maxStorageBufferBindingSize": 2147483644
+        },
+        "jsHeapUsedMb": null
+      },
+      "em": {
+        "pct": {
+          "mean": 89,
+          "sd": 0,
+          "n": 1
+        },
+        "byType": {
+          "T1": {
+            "mean": 95,
+            "sd": 0,
+            "n": 1
+          },
+          "T2": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          },
+          "T3": {
+            "mean": 80,
+            "sd": 0,
+            "n": 1
+          },
+          "T4": {
+            "mean": 85,
+            "sd": 0,
+            "n": 1
+          },
+          "T5": {
+            "mean": 95,
+            "sd": 0,
+            "n": 1
+          }
+        }
+      },
+      "esr": {
+        "pct": {
+          "mean": 86,
+          "sd": 0,
+          "n": 1
+        },
+        "byType": {
+          "T1": {
+            "mean": 95,
+            "sd": 0,
+            "n": 1
+          },
+          "T2": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          },
+          "T3": {
+            "mean": 65,
+            "sd": 0,
+            "n": 1
+          },
+          "T4": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          },
+          "T5": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          }
+        }
+      },
+      "fpRatePct": {
+        "mean": 1.2,
+        "sd": 0,
+        "n": 1
+      },
+      "timing": {
+        "medianMs": {
+          "mean": 11702,
+          "sd": 0,
+          "n": 1
+        },
+        "maxMs": 14406,
+        "stalls": 0
+      },
+      "repetitions": [
+        {
+          "file": "floria_benchmark_Gemma_2_2B_2026-10-18.json",
+          "rep": 1,
+          "model": "Gemma-2-2B",
+          "modelId": "gemma-2-2b-it-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-18T08:54:55.798Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~1.5 GB",
+          "scored": 100,
+          "emTotal": 89,
+          "emPct": 89,
+          "emByType": {
+            "T1": 95,
+            "T2": 90,
+            "T3": 80,
+            "T4": 85,
+            "T5": 95
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 19
+            },
+            "T2": {
+              "n": 20,
+              "hit": 18
+            },
+            "T3": {
+              "n": 20,
+              "hit": 16
+            },
+            "T4": {
+              "n": 20,
+              "hit": 17
+            },
+            "T5": {
+              "n": 20,
+              "hit": 19
+            }
+          },
+          "esrTotal": 86,
+          "esrPct": 86,
+          "esrByType": {
+            "T1": 95,
+            "T2": 90,
+            "T3": 65,
+            "T4": 90,
+            "T5": 90
+          },
+          "falsePositives": 1,
+          "fpRatePct": 1.2,
+          "timing": {
+            "medianMs": 11702,
+            "meanMs": 11623,
+            "maxMs": 14406,
+            "stalls": 0
+          }
+        }
+      ]
+    },
+    {
+      "modelId": "Phi-3.5-mini-instruct-q4f16_1-MLC",
+      "model": "Phi-3.5-mini",
+      "provider": "webllm",
+      "runs": 1,
+      "files": [
+        "floria_benchmark_Phi_3_5_mini_2026-10-18.json"
+      ],
+      "promptVersions": [
+        "2026-10-17"
+      ],
+      "modelSize": "~2.2 GB",
+      "hardware": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+        "platform": "MacIntel",
+        "hardwareConcurrency": 8,
+        "deviceMemoryGb": null,
+        "gpu": {
+          "vendor": "apple",
+          "architecture": "apple",
+          "device": "apple",
+          "description": "apple"
+        },
+        "gpuLimits": {
+          "maxBufferSize": 2147483644,
+          "maxStorageBufferBindingSize": 2147483644
+        },
+        "jsHeapUsedMb": null
+      },
+      "em": {
+        "pct": {
+          "mean": 87,
+          "sd": 0,
+          "n": 1
+        },
+        "byType": {
+          "T1": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          },
+          "T2": {
+            "mean": 95,
+            "sd": 0,
+            "n": 1
+          },
+          "T3": {
+            "mean": 85,
+            "sd": 0,
+            "n": 1
+          },
+          "T4": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          },
+          "T5": {
+            "mean": 75,
+            "sd": 0,
+            "n": 1
+          }
+        }
+      },
+      "esr": {
+        "pct": {
+          "mean": 90,
+          "sd": 0,
+          "n": 1
+        },
+        "byType": {
+          "T1": {
+            "mean": 90,
+            "sd": 0,
+            "n": 1
+          },
+          "T2": {
+            "mean": 100,
+            "sd": 0,
+            "n": 1
+          },
+          "T3": {
+            "mean": 80,
+            "sd": 0,
+            "n": 1
+          },
+          "T4": {
+            "mean": 100,
+            "sd": 0,
+            "n": 1
+          },
+          "T5": {
+            "mean": 80,
+            "sd": 0,
+            "n": 1
+          }
+        }
+      },
+      "fpRatePct": {
+        "mean": 5.6,
+        "sd": 0,
+        "n": 1
+      },
+      "timing": {
+        "medianMs": {
+          "mean": 20582,
+          "sd": 0,
+          "n": 1
+        },
+        "maxMs": 30123,
+        "stalls": 0
+      },
+      "repetitions": [
+        {
+          "file": "floria_benchmark_Phi_3_5_mini_2026-10-18.json",
+          "rep": 1,
+          "model": "Phi-3.5-mini",
+          "modelId": "Phi-3.5-mini-instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-18T08:19:03.245Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~2.2 GB",
+          "scored": 100,
+          "emTotal": 87,
+          "emPct": 87,
+          "emByType": {
+            "T1": 90,
+            "T2": 95,
+            "T3": 85,
+            "T4": 90,
+            "T5": 75
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 18
+            },
+            "T2": {
+              "n": 20,
+              "hit": 19
+            },
+            "T3": {
+              "n": 20,
+              "hit": 17
+            },
+            "T4": {
+              "n": 20,
+              "hit": 18
+            },
+            "T5": {
+              "n": 20,
+              "hit": 15
+            }
+          },
+          "esrTotal": 90,
+          "esrPct": 90,
+          "esrByType": {
+            "T1": 90,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 80
+          },
+          "falsePositives": 5,
+          "fpRatePct": 5.6,
+          "timing": {
+            "medianMs": 20582,
+            "meanMs": 20747,
+            "maxMs": 30123,
+            "stalls": 0
+          }
+        }
+      ]
+    },
+    {
+      "modelId": "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+      "model": "Qwen2.5-0.5B",
+      "provider": "webllm",
+      "runs": 3,
+      "files": [
+        "floria_benchmark_Qwen2_5_0_5B_2026-10-17.json"
+      ],
+      "promptVersions": [
+        "2026-10-17"
+      ],
+      "modelSize": "~300 MB",
+      "hardware": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+        "platform": "MacIntel",
+        "hardwareConcurrency": 8,
+        "deviceMemoryGb": null,
+        "gpu": {
+          "vendor": "apple",
+          "architecture": "apple",
+          "device": "apple",
+          "description": "apple"
+        },
+        "gpuLimits": {
+          "maxBufferSize": 2147483644,
+          "maxStorageBufferBindingSize": 2147483644
+        },
+        "jsHeapUsedMb": null
+      },
+      "em": {
+        "pct": {
+          "mean": 82.3,
+          "sd": 0.6,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 91.7,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T2": {
+            "mean": 90,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 48.3,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T4": {
+            "mean": 86.7,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T5": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "esr": {
+        "pct": {
+          "mean": 80.3,
+          "sd": 0.6,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 81.7,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T2": {
+            "mean": 90,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 48.3,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T4": {
+            "mean": 91.7,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T5": {
+            "mean": 90,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "fpRatePct": {
+        "mean": 8.3,
+        "sd": 0.7,
+        "n": 3
+      },
+      "timing": {
+        "medianMs": {
+          "mean": 2082,
+          "sd": 19.7,
+          "n": 3
+        },
+        "maxMs": 9826,
+        "stalls": 0
+      },
+      "repetitions": [
+        {
+          "file": "floria_benchmark_Qwen2_5_0_5B_2026-10-17.json",
+          "rep": 1,
+          "model": "Qwen2.5-0.5B",
+          "modelId": "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T16:03:16.137Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~300 MB",
+          "scored": 100,
+          "emTotal": 82,
+          "emPct": 82,
+          "emByType": {
+            "T1": 95,
+            "T2": 90,
+            "T3": 45,
+            "T4": 85,
+            "T5": 95
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 19
+            },
+            "T2": {
+              "n": 20,
+              "hit": 18
+            },
+            "T3": {
+              "n": 20,
+              "hit": 9
+            },
+            "T4": {
+              "n": 20,
+              "hit": 17
+            },
+            "T5": {
+              "n": 20,
+              "hit": 19
+            }
+          },
+          "esrTotal": 81,
+          "esrPct": 81,
+          "esrByType": {
+            "T1": 85,
+            "T2": 90,
+            "T3": 50,
+            "T4": 90,
+            "T5": 90
+          },
+          "falsePositives": 7,
+          "fpRatePct": 8.6,
+          "timing": {
+            "medianMs": 2066,
+            "meanMs": 2422,
+            "maxMs": 9826,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Qwen2_5_0_5B_2026-10-17.json",
+          "rep": 2,
+          "model": "Qwen2.5-0.5B",
+          "modelId": "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T16:07:19.470Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~300 MB",
+          "scored": 100,
+          "emTotal": 83,
+          "emPct": 83,
+          "emByType": {
+            "T1": 90,
+            "T2": 90,
+            "T3": 50,
+            "T4": 90,
+            "T5": 95
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 18
+            },
+            "T2": {
+              "n": 20,
+              "hit": 18
+            },
+            "T3": {
+              "n": 20,
+              "hit": 10
+            },
+            "T4": {
+              "n": 20,
+              "hit": 18
+            },
+            "T5": {
+              "n": 20,
+              "hit": 19
+            }
+          },
+          "esrTotal": 80,
+          "esrPct": 80,
+          "esrByType": {
+            "T1": 80,
+            "T2": 90,
+            "T3": 45,
+            "T4": 95,
+            "T5": 90
+          },
+          "falsePositives": 6,
+          "fpRatePct": 7.5,
+          "timing": {
+            "medianMs": 2104,
+            "meanMs": 2450,
+            "maxMs": 6184,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Qwen2_5_0_5B_2026-10-17.json",
+          "rep": 3,
+          "model": "Qwen2.5-0.5B",
+          "modelId": "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+          "provider": "webllm",
+          "date": "2026-10-17T16:11:25.558Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "~300 MB",
+          "scored": 100,
+          "emTotal": 82,
+          "emPct": 82,
+          "emByType": {
+            "T1": 90,
+            "T2": 90,
+            "T3": 50,
+            "T4": 85,
+            "T5": 95
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 18
+            },
+            "T2": {
+              "n": 20,
+              "hit": 18
+            },
+            "T3": {
+              "n": 20,
+              "hit": 10
+            },
+            "T4": {
+              "n": 20,
+              "hit": 17
+            },
+            "T5": {
+              "n": 20,
+              "hit": 19
+            }
+          },
+          "esrTotal": 80,
+          "esrPct": 80,
+          "esrByType": {
+            "T1": 80,
+            "T2": 90,
+            "T3": 50,
+            "T4": 90,
+            "T5": 90
+          },
+          "falsePositives": 7,
+          "fpRatePct": 8.8,
+          "timing": {
+            "medianMs": 2076,
+            "meanMs": 2365,
+            "maxMs": 6252,
+            "stalls": 0
+          }
+        }
+      ]
+    },
+    {
+      "modelId": "bedrock:eu.anthropic.claude-haiku-5-5",
+      "model": "Claude Haiku 5.5 (cloud)",
+      "provider": "bedrock",
+      "runs": 3,
+      "files": [
+        "floria_benchmark_Claude_Haiku_5_5__cloud__2026-10-18.json"
+      ],
+      "promptVersions": [
+        "2026-10-17"
+      ],
+      "modelSize": "cloud",
+      "hardware": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+        "platform": "MacIntel",
+        "hardwareConcurrency": 8,
+        "deviceMemoryGb": null,
+        "gpu": {
+          "vendor": "apple",
+          "architecture": "apple",
+          "device": "apple",
+          "description": "apple"
+        },
+        "gpuLimits": {
+          "maxBufferSize": 2147483644,
+          "maxStorageBufferBindingSize": 2147483644
+        },
+        "jsHeapUsedMb": null
+      },
+      "em": {
+        "pct": {
+          "mean": 99.3,
+          "sd": 0.6,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T2": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 96.7,
+            "sd": 2.9,
+            "n": 3
+          },
+          "T4": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T5": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "esr": {
+        "pct": {
+          "mean": 95,
+          "sd": 0,
+          "n": 3
+        },
+        "byType": {
+          "T1": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T2": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T3": {
+            "mean": 80,
+            "sd": 0,
+            "n": 3
+          },
+          "T4": {
+            "mean": 100,
+            "sd": 0,
+            "n": 3
+          },
+          "T5": {
+            "mean": 95,
+            "sd": 0,
+            "n": 3
+          }
+        }
+      },
+      "fpRatePct": {
+        "mean": 0,
+        "sd": 0,
+        "n": 3
+      },
+      "timing": {
+        "medianMs": {
+          "mean": 1301.3,
+          "sd": 5.7,
+          "n": 3
+        },
+        "maxMs": 6138,
+        "stalls": 0
+      },
+      "repetitions": [
+        {
+          "file": "floria_benchmark_Claude_Haiku_5_5__cloud__2026-10-18.json",
+          "rep": 1,
+          "model": "Claude Haiku 5.5 (cloud)",
+          "modelId": "bedrock:eu.anthropic.claude-haiku-5-5",
+          "provider": "bedrock",
+          "date": "2026-10-18T07:29:42.718Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "cloud",
+          "scored": 100,
+          "emTotal": 99,
+          "emPct": 99,
+          "emByType": {
+            "T1": 100,
+            "T2": 100,
+            "T3": 95,
+            "T4": 100,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 20
+            },
+            "T2": {
+              "n": 20,
+              "hit": 20
+            },
+            "T3": {
+              "n": 20,
+              "hit": 19
+            },
+            "T4": {
+              "n": 20,
+              "hit": 20
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 95,
+          "esrPct": 95,
+          "esrByType": {
+            "T1": 100,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 95
+          },
+          "falsePositives": 0,
+          "fpRatePct": 0,
+          "timing": {
+            "medianMs": 1303,
+            "meanMs": 1448,
+            "maxMs": 6138,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Claude_Haiku_5_5__cloud__2026-10-18.json",
+          "rep": 2,
+          "model": "Claude Haiku 5.5 (cloud)",
+          "modelId": "bedrock:eu.anthropic.claude-haiku-5-5",
+          "provider": "bedrock",
+          "date": "2026-10-18T07:32:08.586Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "cloud",
+          "scored": 100,
+          "emTotal": 100,
+          "emPct": 100,
+          "emByType": {
+            "T1": 100,
+            "T2": 100,
+            "T3": 100,
+            "T4": 100,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 20
+            },
+            "T2": {
+              "n": 20,
+              "hit": 20
+            },
+            "T3": {
+              "n": 20,
+              "hit": 20
+            },
+            "T4": {
+              "n": 20,
+              "hit": 20
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 95,
+          "esrPct": 95,
+          "esrByType": {
+            "T1": 100,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 95
+          },
+          "falsePositives": 0,
+          "fpRatePct": 0,
+          "timing": {
+            "medianMs": 1295,
+            "meanMs": 1345,
+            "maxMs": 2954,
+            "stalls": 0
+          }
+        },
+        {
+          "file": "floria_benchmark_Claude_Haiku_5_5__cloud__2026-10-18.json",
+          "rep": 3,
+          "model": "Claude Haiku 5.5 (cloud)",
+          "modelId": "bedrock:eu.anthropic.claude-haiku-5-5",
+          "provider": "bedrock",
+          "date": "2026-10-18T07:34:24.169Z",
+          "promptVersion": "2026-10-17",
+          "hardware": {
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+            "platform": "MacIntel",
+            "hardwareConcurrency": 8,
+            "deviceMemoryGb": null,
+            "gpu": {
+              "vendor": "apple",
+              "architecture": "apple",
+              "device": "apple",
+              "description": "apple"
+            },
+            "gpuLimits": {
+              "maxBufferSize": 2147483644,
+              "maxStorageBufferBindingSize": 2147483644
+            },
+            "jsHeapUsedMb": null
+          },
+          "modelSize": "cloud",
+          "scored": 100,
+          "emTotal": 99,
+          "emPct": 99,
+          "emByType": {
+            "T1": 100,
+            "T2": 100,
+            "T3": 95,
+            "T4": 100,
+            "T5": 100
+          },
+          "emByTypeRaw": {
+            "T1": {
+              "n": 20,
+              "hit": 20
+            },
+            "T2": {
+              "n": 20,
+              "hit": 20
+            },
+            "T3": {
+              "n": 20,
+              "hit": 19
+            },
+            "T4": {
+              "n": 20,
+              "hit": 20
+            },
+            "T5": {
+              "n": 20,
+              "hit": 20
+            }
+          },
+          "esrTotal": 95,
+          "esrPct": 95,
+          "esrByType": {
+            "T1": 100,
+            "T2": 100,
+            "T3": 80,
+            "T4": 100,
+            "T5": 95
+          },
+          "falsePositives": 0,
+          "fpRatePct": 0,
+          "timing": {
+            "medianMs": 1306,
+            "meanMs": 1391,
+            "maxMs": 3081,
+            "stalls": 0
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}
