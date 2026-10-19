@@ -32,7 +32,13 @@
       "Bash(curl -s http://localhost:4004/llm/bedrock/health)",
       "Bash(curl -s -X POST http://localhost:4004/llm/bedrock -H 'Content-Type: application/json' -d '{\"modelId\":\"eu.anthropic.claude-sonnet-4-6\",\"user\":\"Say hi in 3 words\",\"maxTokens\":20}')",
       "Bash(# Move all JSON run files to BENCHMARK/runs/ *)",
-      "Bash(node scripts/score-exact-match.mjs)"
+      "Bash(node scripts/score-exact-match.mjs)",
+      "Bash(curl -sL \"https://export.arxiv.org/api/query?id_list=2505.19825\")",
+      "Bash(pdftotext conference_before_cr.pdf /tmp/before.txt)",
+      "Bash(pdftotext conference.pdf /tmp/after.txt)",
+      "Bash(grep -E \"this ?is valid|this$\")",
+      "Bash(pdftotext conference_before_c2.pdf /tmp/b.txt)",
+      "Bash(pdftotext conference.pdf /tmp/a.txt)"
     ],
     "additionalDirectories": [
       "/Users/prasanthkumar/Downloads"
