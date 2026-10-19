@@ -38,7 +38,12 @@
       "Bash(pdftotext conference.pdf /tmp/after.txt)",
       "Bash(grep -E \"this ?is valid|this$\")",
       "Bash(pdftotext conference_before_c2.pdf /tmp/b.txt)",
-      "Bash(pdftotext conference.pdf /tmp/a.txt)"
+      "Bash(pdftotext conference.pdf /tmp/a.txt)",
+      "Bash(node -e 'console.log\\(JSON.stringify\\(require\\(\"./package.json\"\\).scripts,null,1\\)\\)')",
+      "Bash(node -e 'const g=require\\(\"./BENCHMARK/gold/gold_queries.json\"\\);console.log\\(g.entries.length, g.entries.filter\\(e=>e.alt&&e.alt.length\\).length\\)')",
+      "Bash(node -e 'const p=require\\(\"./package.json\"\\);console.log\\(p.dependencies[\"@mlc-ai/web-llm\"], p.devDependencies?.[\"@mlc-ai/web-llm\"]\\)')",
+      "Bash(node -e 'const m=require\\(\"./BENCHMARK/exact_match/mismatches.json\"\\);const c={};for\\(const x of m\\){c[x.model]=\\(c[x.model]||0\\)+1}console.log\\(c\\)')",
+      "Bash(git checkout *)"
     ],
     "additionalDirectories": [
       "/Users/prasanthkumar/Downloads"
