@@ -300,22 +300,47 @@ First series = ESR, second = EM.
 
 ### Per-Run Detail (raw counts out of 100)
 
-| Model | Run | ESR | EM | Pass both | ESR only (= FP) | EM only | FP rate | Median ms |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Qwen-0.5B | 1 | 81 | 82 | 74 | 7 | 8 | 7/81 = 8.6% | 2 066 |
-| Qwen-0.5B | 2 | 80 | 83 | 74 | 6 | 9 | 6/80 = 7.5% | 2 104 |
-| Qwen-0.5B | 3 | 80 | 82 | 73 | 7 | 9 | 7/80 = 8.8% | 2 076 |
-| Qwen-Coder-1.5B | 1 | 94 | 96 | 92 | 2 | 4 | 2/94 = 2.1% | 6 796 |
-| Qwen-Coder-1.5B | 2 | 94 | 96 | 92 | 2 | 4 | 2/94 = 2.1% | 7 256 |
-| Qwen-Coder-1.5B | 3 | 93 | 97 | 93 | 0 | 4 | 0/93 = 0.0% | 7 602 |
-| Gemma-2B | 1 | 86 | 89 | 85 | 1 | 4 | 1/86 = 1.2% | 11 702 |
-| Llama-3B | 1 | 89 | 92 | 88 | 1 | 4 | 1/89 = 1.1% | 12 271 |
-| Llama-3B | 2 | 89 | 92 | 88 | 1 | 4 | 1/89 = 1.1% | 12 255 |
-| Llama-3B | 3 | 89 | 91 | 87 | 2 | 4 | 2/89 = 2.2% | 12 664 |
-| Phi-3.5B | 1 | 90 | 87 | 85 | 5 | 2 | 5/90 = 5.6% | 20 582 |
-| Haiku-5.5 (cloud) | 1 | 95 | 99 | 95 | 0 | 4 | 0/95 = 0.0% | 1 303 |
-| Haiku-5.5 (cloud) | 2 | 95 | 100 | 95 | 0 | 5 | 0/95 = 0.0% | 1 295 |
-| Haiku-5.5 (cloud) | 3 | 95 | 99 | 95 | 0 | 4 | 0/95 = 0.0% | 1 306 |
+Every query is scored under **both** metrics in every run, so each of the 100 queries lands in exactly one of four cells. Qwen-0.5B run 1 as an example:
+
+```
+                      │ Passed EM │ Failed EM │  total
+──────────────────────┼───────────┼───────────┼────────
+ Passed ESR (rows>0)  │    74     │     7     │   81   ← ESR score
+ Failed ESR (0 rows)  │     8     │    11     │   19
+──────────────────────┼───────────┼───────────┼────────
+ total                │    82     │    18     │  100
+                        ↑ EM score
+
+ Both ✓    = 74   correct filter, rows returned
+ ESR ✓ EM ✗ =  7   wrong filter that still returned rows  → FALSE POSITIVES
+ ESR ✗ EM ✓ =  8   correct filter, but Northwind has 0 matching rows
+ Both ✗    = 11   wrong filter / wrong entity / invalid JSON, nothing returned
+
+ ESR  = 74 + 7  = 81
+ EM   = 74 + 8  = 82
+ FP rate = 7 ÷ 81 = 8.6 %
+```
+
+The four cells always sum to 100. ESR and EM are *derived* from them (shown with `=` below).
+
+| Model | Run | Both ✓ | ESR ✓ EM ✗ | ESR ✗ EM ✓ | Both ✗ | = ESR | = EM | FP rate | Median ms |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Qwen-0.5B | 1 | 74 | 7 | 8 | 11 | 81 | 82 | 7/81 = 8.6% | 2 066 |
+| Qwen-0.5B | 2 | 74 | 6 | 9 | 11 | 80 | 83 | 6/80 = 7.5% | 2 104 |
+| Qwen-0.5B | 3 | 73 | 7 | 9 | 11 | 80 | 82 | 7/80 = 8.8% | 2 076 |
+| Qwen-Coder-1.5B | 1 | 92 | 2 | 4 | 2 | 94 | 96 | 2/94 = 2.1% | 6 796 |
+| Qwen-Coder-1.5B | 2 | 92 | 2 | 4 | 2 | 94 | 96 | 2/94 = 2.1% | 7 256 |
+| Qwen-Coder-1.5B | 3 | 93 | 0 | 4 | 3 | 93 | 97 | 0/93 = 0.0% | 7 602 |
+| Gemma-2B | 1 | 85 | 1 | 4 | 10 | 86 | 89 | 1/86 = 1.2% | 11 702 |
+| Llama-3B | 1 | 88 | 1 | 4 | 7 | 89 | 92 | 1/89 = 1.1% | 12 271 |
+| Llama-3B | 2 | 88 | 1 | 4 | 7 | 89 | 92 | 1/89 = 1.1% | 12 255 |
+| Llama-3B | 3 | 87 | 2 | 4 | 7 | 89 | 91 | 2/89 = 2.2% | 12 664 |
+| Phi-3.5B | 1 | 85 | 5 | 2 | 8 | 90 | 87 | 5/90 = 5.6% | 20 582 |
+| Haiku-5.5 (cloud) | 1 | 95 | 0 | 4 | 1 | 95 | 99 | 0/95 = 0.0% | 1 303 |
+| Haiku-5.5 (cloud) | 2 | 95 | 0 | 5 | 0 | 95 | 100 | 0/95 = 0.0% | 1 295 |
+| Haiku-5.5 (cloud) | 3 | 95 | 0 | 4 | 1 | 95 | 99 | 0/95 = 0.0% | 1 306 |
+
+Read any row as: `ESR = Both ✓ + ESR ✓ EM ✗` and `EM = Both ✓ + ESR ✗ EM ✓`.
 
 #### Worked example — how the Qwen-0.5B row is computed
 
