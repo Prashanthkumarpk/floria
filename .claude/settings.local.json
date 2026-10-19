@@ -43,7 +43,15 @@
       "Bash(node -e 'const g=require\\(\"./BENCHMARK/gold/gold_queries.json\"\\);console.log\\(g.entries.length, g.entries.filter\\(e=>e.alt&&e.alt.length\\).length\\)')",
       "Bash(node -e 'const p=require\\(\"./package.json\"\\);console.log\\(p.dependencies[\"@mlc-ai/web-llm\"], p.devDependencies?.[\"@mlc-ai/web-llm\"]\\)')",
       "Bash(node -e 'const m=require\\(\"./BENCHMARK/exact_match/mismatches.json\"\\);const c={};for\\(const x of m\\){c[x.model]=\\(c[x.model]||0\\)+1}console.log\\(c\\)')",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Edit(/.claude/skills/ieee-paper-guidelines/**)",
+      "Bash(awk -F: '!seen[$2]++')",
+      "Bash(grep -n -o -E \"\\\\`\\\\`[^']+[.,]''\" conference.tex)",
+      "Bash(grep -n -o -E \"cloud-based LLM API|HIPAA compliant|user's discrete GPU|sub-4B small language models from four different providers on NL-to-OData translation|\\\\\\(SFT then GRPO\\\\\\)|The reinforcement learning approach|Fine-tuned systems allow RL models|latency data presented in Table~II was|takes up 2.2 GB|designated by \\\\$\\\\\\\\\\\\\\\\dagger\\\\$|\\\\\\\\\\\\\\\\dagger\" conference.tex)",
+      "Bash(python3 -I -)",
+      "Bash(claude mcp *)",
+      "Bash(which claude-code *)",
+      "Read(//Users/prasanthkumar/.claude/**)"
     ],
     "additionalDirectories": [
       "/Users/prasanthkumar/Downloads"
