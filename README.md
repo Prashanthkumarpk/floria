@@ -18,6 +18,10 @@
 
 ---
 
+![Floria chat interface — query "Products cheaper than 10$" generating UnitPrice lt 10 and returning 11 products](docs/screenshot-chat.png)
+
+---
+
 Floria is a browser-based SAP Fiori application that translates plain-English questions into OData v4 queries using small language models that run **entirely on-device** via WebGPU. No query text ever reaches a remote inference server.
 
 Five models from four providers — 0.5B to 3.8B parameters, **none fine-tuned on OData** — were evaluated against a 100-item benchmark under two metrics: the **Effective Success Rate (ESR)** and a stricter **exact match (EM)** against hand-written gold queries. Over up to three repeated runs the five on-device models averaged **87.8% ESR** and **89.3% EM**. A cloud model (Claude Haiku 5.5 via AWS Bedrock) run through the *same* prompt, post-processor and validator reached **95.0% ESR / 99.3% EM**, which bounds how much of the remaining gap is model capacity rather than pipeline design.
@@ -63,6 +67,24 @@ flowchart TD
 ```
 
 The **LLM path** is used when Qwen / Gemma / Llama / Phi has finished loading. The **direct path** runs keyword scoring immediately, so the application is fully functional even before the model is cached. (The keyword path is *not* a meaningful baseline: it handles a single search term only and fails T2 and T5 by construction.)
+
+---
+
+## Research Dashboard
+
+The application ships with a live implementation of the paper's evaluation framework — no separate tooling required.
+
+| Feature | What it shows |
+|---|---|
+| **Session statistics strip** | Total Queries · AI Mode · Direct Mode · Validator Catches · Server Errors · ESR % |
+| **Query type classifier** | Assigns T1–T5 label to every query in real time using `classifyQueryType` |
+| **Query history panel** | Timestamped entries with entity, type, validation state, timing, confidence, and success |
+| **Benchmark runner** | Runs the 100-query suite (plus custom queries) ×N times; shows expected vs generated query, ESR and EM per row, timing; exports CSV (with summary block) and JSON (for `npm run score`) |
+| **Pre-cache All** | Downloads every registered model once for instant switching |
+
+![Research Dashboard session statistics — Total Queries, AI Mode, Direct Mode, Validator Catches, Server Errors, ESR%](docs/screenshot-stats.png)
+
+![Benchmark runner — 10-query suite with T1–T5 type breakdown, expected vs generated filter, EM pass/fail, and per-query timing in ms](docs/screenshot-benchmark.png)
 
 ---
 
@@ -546,20 +568,6 @@ floria/
 ├── CLAUDE.md                       Full architecture reference
 └── README.md                       This file
 ```
-
----
-
-## Research Dashboard
-
-The application ships with a live implementation of the paper's evaluation framework — no separate tooling required.
-
-| Feature | What it shows |
-|---|---|
-| **Session statistics strip** | Total Queries · AI Mode · Direct Mode · Validator Catches · Server Errors · ESR % |
-| **Query type classifier** | Assigns T1–T5 label to every query in real time using `classifyQueryType` |
-| **Query history panel** | Timestamped entries with entity, type, validation state, timing, confidence, and success |
-| **Benchmark runner** | Runs the 100-query suite (plus custom queries) ×N times; shows expected vs generated query, ESR and EM per row, timing; exports CSV (with summary block) and JSON (for `npm run score`) |
-| **Pre-cache All** | Downloads every registered model once for instant switching |
 
 ---
 
